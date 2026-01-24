@@ -17,11 +17,12 @@ def register():
     last_name = request.form["last_name"]
     email = request.form["email"]
     dob = request.form["dob"]
+    user_type = request.form["user_type"]
     password = request.form["password"]
     repeat_password = request.form["repeat_password"]
 
     # Display form data for debugging
-    print(first_name, last_name, email, dob, password, repeat_password)
+    print(first_name, last_name, email, dob, user_type, password, repeat_password)
 
     # If registration successful, return successful message
     return "Registration Complete"
