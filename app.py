@@ -1,4 +1,4 @@
-# Importmodules
+# Import modules
 from flask import Flask, request, render_template, redirect, url_for
 
 # Create an instance of a Flask Application
@@ -10,22 +10,25 @@ def index():
     return render_template("register.html") # display register.html by default
 
 # Create a route to handle user registration
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    # Fetch data from registration form
-    first_name = request.form["first_name"]
-    last_name = request.form["last_name"]
-    email = request.form["email"]
-    dob = request.form["dob"]
-    user_type = request.form["user_type"]
-    password = request.form["password"]
-    repeat_password = request.form["repeat_password"]
+    if request.method == "POST":
+        # Fetch data from registration form
+        first_name = request.form["first_name"]
+        last_name = request.form["last_name"]
+        email = request.form["email"]
+        dob = request.form["dob"]
+        user_type = request.form["user_type"]
+        password = request.form["password"]
+        repeat_password = request.form["repeat_password"]
 
-    # Display form data for debugging
-    print(first_name, last_name, email, dob, user_type, password, repeat_password)
+        # Display form data for debugging
+        print(first_name, last_name, email, dob, user_type, password, repeat_password)
 
-    # If registration successful, return successful message
-    return "Registration Complete"
+        # Take user to login page
+        return redirect(url_for("login"))
+    
+    return render_template("register.html")
 
 # Route to handle user login
 @app.route("/login", methods=["GET", "POST"])
@@ -37,10 +40,14 @@ def login():
         password = request.form["password"]
 
         print(email, password) # print login details for debugging
-        return "Login Complete" # if login successful, return successful message
+        return redirect(url_for("dashboard")) # if login successful, redirect to dashboard
 
     # If request method is GET, display login.html
     return render_template("login.html")
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
 
 # Run Flask App
 if __name__ == '__main__':
