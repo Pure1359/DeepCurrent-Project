@@ -1,19 +1,32 @@
-import Flask, request, jsonify
+from flask import Flask, request, jsonify
 import pymysql
 import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path="DeepCurrent-Project\secret.env")
 
 DeepCurrent = os.getenv('FLASK_APP', 'DeepCurrent') # Sets the Flask app name from an environment variable to "DeepCurrent" - Uses os module to get environment variable
 
 app = Flask(DeepCurrent) # Replace all of the placeholders with actual values (Denoted by __e.g.__)
-app.config['MYSQL_HOST'] = '__localhost__'
-app.config['MYSQL_USER'] = '__yourusername__'
-app.config['MYSQL_PASSWORD'] = '__yourpassword__'
-app.config['MYSQL_DB'] = '__yourdatabase__'
+print("MYSQL_USER:", os.getenv('MYSQL_USER'))
+print("MYSQL_PASSWORD:", os.getenv('MYSQL_PASSWORD'))
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
 connection = pymysql.connect(host=app.config['MYSQL_HOST'],
                             user=app.config['MYSQL_USER'],
                             password=app.config['MYSQL_PASSWORD'],
                             db=app.config['MYSQL_DB'])
 cursor = connection.cursor() # Establishes a cursor for database operations - needed for getters and setters
+
+def Database_Overview():
+    cursor.execute("SHOW TABLES")
+    tables = cursor.fetchall()
+    print(f"table list is {tables}")
+
+Database_Overview()
+
 
 @app.route('/data', methods=['GET']) # Handles GET requests to retrieve data as a "getter"
 def get_data():
@@ -29,3 +42,5 @@ def set_data():
     return jsonify({'message': 'Data added successfully!'}), 201
 
 
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
