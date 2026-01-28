@@ -11,6 +11,7 @@ DeepCurrent is a Flask-based web application that aims to record user actions fo
 * MySQL
 * PyMySQL
 * python-dotenv
+* bcrypt
 
 ---
 
@@ -20,8 +21,16 @@ DeepCurrent is a Flask-based web application that aims to record user actions fo
 DeepCurrent-Project/
   app/
     __init__.py
+    app.py
     db_config.py
-    testdbconnect.py
+    services/
+      actions.py
+      auth.py
+      challenges.py
+      evidence.py
+      groups.py
+      stats.py
+      users.py
     templates/
       login.html
       register.html
@@ -45,6 +54,7 @@ pip install -r requirements.txt
 Contents of `requirements.txt`:
 
 ```txt
+bcrypt
 Cryptography
 Flask
 PyMySQL
@@ -59,6 +69,8 @@ Create a file named `secret.env` in the project root:
 (.gitignore already includes secret.env so you don't have to worry)
 
 ```
+FLASK_APP=DeepCurrent
+FLASK_SECRET_KEY=<FlaskSecretKey>
 MYSQL_HOST=<DatabaseIP>
 MYSQL_USER=<UserName>
 MYSQL_PASSWORD=<Password>

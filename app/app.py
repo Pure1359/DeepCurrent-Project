@@ -1,8 +1,23 @@
 # Import modules
-from flask import Flask, request, render_template, redirect, url_for
+from flask import request, render_template, redirect, url_for, Blueprint, session
+import bcrypt
+from datetime import datetime, timezone
 
-# Create an instance of a Flask Application
-app = Flask(__name__)
+# Import Database Functions from services/
+from services.users import create_user, create_account, update_last_active
+from services.auth import get_account_by_email_for_login, verify_password
+
+# Instance for application is created in __init__.py
+
+# Create Blueprint to allow for modularity
+app = Blueprint("app", __name__)
+
+# Helper function to handle login
+def require_login():
+    account_id = session.get("account_id")
+    if not account_id:
+        return None
+    return int(account_id)
 
 # Route for the home page
 @app.route("/")
@@ -12,43 +27,91 @@ def index():
 # Create a route to handle user registration
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        # Fetch data from registration form
-        first_name = request.form["first_name"]
-        last_name = request.form["last_name"]
-        email = request.form["email"]
-        dob = request.form["dob"]
-        user_type = request.form["user_type"]
-        password = request.form["password"]
-        repeat_password = request.form["repeat_password"]
-
-        # Display form data for debugging
-        print(first_name, last_name, email, dob, user_type, password, repeat_password)
-
-        # Take user to login page
-        return redirect(url_for("login"))
+    if request.method == "GET":
+        return render_template("register.html")
     
-    return render_template("register.html")
+    # Fetch data from registration form
+    first_name = request.form["first_name"]
+    last_name = request.form["last_name"]
+    email = request.form["email"]
+    dob = request.form["dob"]
+    user_type = request.form["user_type"]
+    password = request.form["password"]
+    repeat_password = request.form["repeat_password"]
+
+    if not all([first_name, last_name, email, dob, user_type, password, repeat_password]):
+        return render_template("register.html", error="Please fill in all fields.")
+
+    if password != repeat_password:
+        return render_template("register.html", error="Passwords do not match.")
+
+    # Display form data for debugging
+    print(first_name, last_name, email, dob, user_type, password, repeat_password)
+
+    # Hash password
+    password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt().decode("utf-8"))
+
+    # Input user into database
+    user_id = create_user(
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        dob=dob,
+        user_type=user_type,
+        password_hash=password_hash
+    )
+
+    now = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Input account into database (Currently not asking for username so we use email)
+    create_account(
+        user_id=user_id,
+        user_name=email,
+        password=password_hash,
+        date_created=now,
+        last_active=now
+    )
+
+    # Take user to login page
+    return redirect(url_for("login"))
 
 # Route to handle user login
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    # If request method is POST, process login
-    if request.method == "POST":
-        # Fetch login details from form
-        email = request.form["email"]
-        password = request.form["password"]
+    if request.method == "GET":
+        return render_template("login.html")
+    
+    # Fetch login details from form
+    email = request.form["email"]
+    password = request.form["password"]
 
-        print(email, password) # print login details for debugging
-        return redirect(url_for("dashboard")) # if login successful, redirect to dashboard
+    # Check if login details are valid
+    account = get_account_by_email_for_login(email)
+    if not account or not verify_password(password, account["password"]):
+        return render_template("login.html", error="Invalid email or password.")
+    
+    # Store account_id in session
+    session["account_id"] = account["account_id"]
 
-    # If request method is GET, display login.html
-    return render_template("login.html")
+    # Update Last Active
+    now = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S")
+    update_last_active(account["account_id"], now)
 
-@app.route("/dashboard")
+    print(email, password) # print login details for debugging
+    return redirect(url_for("dashboard")) # if login successful, redirect to dashboard
+
+# Route to handle dashboard
+@app.get("/dashboard")
 def dashboard():
+    # Ensure user is logged in before accessing dashboard
+    account_id = require_login()
+    if not account_id:
+        return redirect(url_for("login"))
+    
     return render_template("dashboard.html")
 
-# Run Flask App
-if __name__ == '__main__':
-    app.run(debug=True)
+# Route to handle logout
+@app.post("/logout")
+def logout():
+    session.pop("account_id", None)
+    return redirect(url_for("login"))

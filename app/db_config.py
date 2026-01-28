@@ -1,42 +1,43 @@
-from flask import Flask, request, jsonify
-import pymysql
 import os
-from dotenv import load_dotenv
+from contextlib import contextmanager
+import pymysql
+from flask import g
 
-DeepCurrent = os.getenv('FLASK_APP', 'DeepCurrent') # Sets the Flask app name from an environment variable to "DeepCurrent" - Uses os module to get environment variable
+# Sets the Flask app name from an environment variable to "DeepCurrent" - Uses os module to get environment variable
+DeepCurrent = os.getenv('FLASK_APP', 'DeepCurrent') 
 
-app = Flask(DeepCurrent) # Replace all of the placeholders with actual values (Denoted by __e.g.__)
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
-app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
-connection = pymysql.connect(host=app.config['MYSQL_HOST'],
-                            user=app.config['MYSQL_USER'],
-                            password=app.config['MYSQL_PASSWORD'],
-                            db=app.config['MYSQL_DB'])
-cursor = connection.cursor() # Establishes a cursor for database operations - needed for getters and setters
+# Creates one connection per request to the database
+def get_connection():
+    if "db_connection" not in g:
+        g.db_connection = pymysql.connect(
+            host=os.getenv('MYSQL_HOST'),
+            user=os.getenv('MYSQL_USER'),
+            password=os.getenv('MYSQL_PASSWORD'),
+            db=os.getenv('MYSQL_DB'),
+            cursorclass=pymysql.cursors.DictCursor,
+            autocommit=False
+        )
+    
+    return g.db_connection
 
-def Database_Overview():
-    cursor.execute("SHOW TABLES")
-    tables = cursor.fetchall()
-    print(f"table list is {tables}")
+# Closes the database connection
+def close_connection():
+    connection = g.pop("db_connection", None)
+    if connection is not None:
+        connection.close()
 
-def closeConnection():
-    connection.close()
+# Create the cursor and establish connection
+@contextmanager
+def db_cursor():
+    connection = get_connection()
+    cursor = connection.cursor()
 
-@app.route('/data', methods=['GET']) # Handles GET requests to retrieve data as a "getter"
-def get_data():
-    cursor.execute("SELECT * FROM yourtable")
-    data = cursor.fetchall()
-    return jsonify(data)
-
-@app.route('/data', methods=['POST']) # Handles POST requests to add new data as a "setter"
-def set_data():
-    new_data = request.json
-    cursor.execute("INSERT INTO __yourtable__ (__column1__, __column2__) VALUES (%s, %s)", (new_data['__column1__'], new_data['__column2__'])) # Insert the actual column and table names into the placeholders
-    connection.commit()
-    return jsonify({'message': 'Data added successfully!'}), 201
-
-
-if __name__ == "__main__":
-    app.run(host="localhost", port=5000, debug=True)
+    # Automaticallty commit changes to the database
+    try: # Try to commit
+        yield connection, cursor
+        connection.commit()
+    except Exception: # If error occurs, rollback changes, raise error
+        connection.rollback()
+        raise
+    finally: # Close connection
+        cursor.close()
