@@ -5,6 +5,9 @@ from .db_config import close_connection
 from .app import bp
 from .moderator import moderator_bp
 from .user import user_bp
+from dotenv import load_dotenv
+load_dotenv("secret.env")
+
 
 def create_app():
     # Load templates from templates/

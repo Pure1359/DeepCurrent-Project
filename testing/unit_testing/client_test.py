@@ -26,30 +26,35 @@ def app():
 def new_client(app):
     return app.test_client()
 
-def test_register(new_client):
-    print("hi")
-    with captured_template(new_client.application) as recorded_template:
-        response = new_client.get("/register", follow_redirects = True)
-        assert len(recorded_template) == 1
-        template, context = recorded_template[0]
-        assert template.name == "register.html"
-        assert response.request.path == "/register"
-    
-        response = new_client.post("/register", data = {
-            "first_name" : "john",
-            "last_name" : "doe",
-            "email" : "jd123@exeter.ac.uk",
-            "dob" : "2000-07-09",
-            "user_type" : "normal",
-            "password" : "jd123tv",
-            "repeat_password" : "JD123tv"
-        }, follow_redirects = True)
+@pytest.fixture()
+def recorded_template(app):
+    with captured_template(app) as recorder:
+        yield recorder
 
-        assert len(recorded_template) == 2
-        template,context = recorded_template[1]
-        assert response.request.path == "/register"
-        assert template.name == "register.html"
-        assert context['error'] == "Passwords do not match."
+def test_get_register(new_client, recorded_template):
+    response = new_client.get("/register", follow_redirects = True)
+    assert len(recorded_template) == 1
+    template, context = recorded_template[0]
+    assert template.name == "register.html"
+    assert response.request.path == "/register"
+
+
+def test_register_wrongpassword(new_client, recorded_template):
+    response = new_client.post("/register", data = {
+        "first_name" : "john",
+        "last_name" : "doe",
+        "email" : "jd123@exeter.ac.uk",
+        "dob" : "2000-07-09",
+        "user_type" : "normal",
+        "password" : "jd123tv",
+        "repeat_password" : "jd123tv"
+    }, follow_redirects = True)
+    
+    assert len(recorded_template) == 1
+    template,context = recorded_template[0]
+    assert response.request.path == "/register"
+    assert template.name == "register.html"
+    assert context['error'] == "Passwords do not match."
 
 
 
