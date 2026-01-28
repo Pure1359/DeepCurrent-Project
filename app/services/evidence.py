@@ -1,5 +1,5 @@
 from app.db_config import db_cursor
-
+from auth import required_role
 # Placeholder for now
 # Create functions that have to do with evidence
 # Follow templates in users.py and auth.py
@@ -8,3 +8,21 @@ from app.db_config import db_cursor
 # create_decision (admin deciding to approve or not)
 # list_pending_evidence (list evidence that is awaiting admin approval)
 # get_evidence_decisions
+
+
+#Required Role : Who can approve or disapprove evidence? ->Parameter : Role -> {Admin, Group Locally Leader, etc}
+#Return Boolean? : Approve -> True, Disapprove -> False
+@required_role 
+def create_decision(role):
+    pass
+
+#Does it need to required login? perhaps the route URL of page that contain submit button, already validate it?
+def submit_evidence(some_param):
+    pass
+
+def list_pending_evidnce():
+    pass
+#Something to do with fetching database
+def get_evidence_decision():
+    pass
+
