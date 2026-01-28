@@ -13,7 +13,6 @@ from auth import required_role;
 #Required role : Who can create the challenge? Parameter : Role -> {Admin, Locally Group Leader , etc}
 @required_role
 def create_challenge(role):
-    #insert challenge to database
     pass
 
 def join_challenge_individual():
