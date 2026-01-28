@@ -1,8 +1,8 @@
 import os
 from flask import Flask
 
-from db_config import close_connection
-from app import bp
+from .db_config import close_connection
+from .app import bp
 
 def create_app():
     # Load templates from templates/

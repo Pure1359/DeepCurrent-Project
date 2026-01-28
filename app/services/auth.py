@@ -1,5 +1,5 @@
 import bcrypt
-from db_config import db_cursor
+from app.db_config import db_cursor
 
 # Check if account exists via email
 def get_account_by_email_for_login(email):

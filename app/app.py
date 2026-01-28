@@ -4,13 +4,13 @@ import bcrypt
 from datetime import datetime, timezone
 
 # Import Database Functions from services/
-from services.users import create_user, create_account, update_last_active
-from services.auth import get_account_by_email_for_login, verify_password
+from app.services.users import create_user, create_account, update_last_active
+from app.services.auth import get_account_by_email_for_login, verify_password
 
 # Instance for application is created in __init__.py
 
 # Create Blueprint to allow for modularity
-app = Blueprint("app", __name__)
+bp = Blueprint("app", __name__)
 
 # Helper function to handle login
 def require_login():
@@ -20,12 +20,12 @@ def require_login():
     return int(account_id)
 
 # Route for the home page
-@app.route("/")
+@bp.route("/")
 def index():
     return render_template("register.html") # display register.html by default
 
 # Create a route to handle user registration
-@app.route("/register", methods=["GET", "POST"])
+@bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
         return render_template("register.html")
@@ -73,10 +73,10 @@ def register():
     )
 
     # Take user to login page
-    return redirect(url_for("login"))
+    return redirect(url_for("app.login"))
 
 # Route to handle user login
-@app.route("/login", methods=["GET", "POST"])
+@bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         return render_template("login.html")
@@ -98,20 +98,20 @@ def login():
     update_last_active(account["account_id"], now)
 
     print(email, password) # print login details for debugging
-    return redirect(url_for("dashboard")) # if login successful, redirect to dashboard
+    return redirect(url_for("app.dashboard")) # if login successful, redirect to dashboard
 
 # Route to handle dashboard
-@app.get("/dashboard")
+@bp.get("/dashboard")
 def dashboard():
     # Ensure user is logged in before accessing dashboard
     account_id = require_login()
     if not account_id:
-        return redirect(url_for("login"))
+        return redirect(url_for("app.login"))
     
     return render_template("dashboard.html")
 
 # Route to handle logout
-@app.post("/logout")
+@bp.post("/logout")
 def logout():
     session.pop("account_id", None)
-    return redirect(url_for("login"))
+    return redirect(url_for("app.login"))

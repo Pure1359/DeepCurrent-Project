@@ -1,4 +1,4 @@
-from db_config import db_cursor
+from app.db_config import db_cursor
 
 # Placeholder for now
 # Create functions that have to do with evidence
