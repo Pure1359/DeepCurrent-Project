@@ -10,10 +10,9 @@ from auth import required_role
 # get_evidence_decisions
 
 
-#Required Role : Who can approve or disapprove evidence? ->Parameter : Role -> {Admin, Group Locally Leader, etc}
+
 #Return Boolean? : Approve -> True, Disapprove -> False
-@required_role 
-def create_decision(role):
+def create_decision():
     pass
 
 #Does it need to required login? perhaps the route URL of page that contain submit button, already validate it?
