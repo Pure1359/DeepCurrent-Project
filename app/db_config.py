@@ -3,8 +3,6 @@ import pymysql
 import os
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="DeepCurrent-Project\secret.env")
-
 DeepCurrent = os.getenv('FLASK_APP', 'DeepCurrent') # Sets the Flask app name from an environment variable to "DeepCurrent" - Uses os module to get environment variable
 
 app = Flask(DeepCurrent) # Replace all of the placeholders with actual values (Denoted by __e.g.__)
