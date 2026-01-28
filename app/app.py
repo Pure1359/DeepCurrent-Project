@@ -49,7 +49,7 @@ def register():
     print(first_name, last_name, email, dob, user_type, password, repeat_password)
 
     # Hash password
-    password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt().decode("utf-8"))
+    password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
     # Input user into database
     user_id = create_user(
@@ -57,16 +57,15 @@ def register():
         last_name=last_name,
         email=email,
         dob=dob,
-        user_type=user_type,
-        password_hash=password_hash
+        user_type=user_type
     )
 
-    now = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
     # Input account into database (Currently not asking for username so we use email)
     create_account(
         user_id=user_id,
-        user_name=email,
+        username=email,
         password=password_hash,
         date_created=now,
         last_active=now
@@ -94,7 +93,7 @@ def login():
     session["account_id"] = account["account_id"]
 
     # Update Last Active
-    now = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     update_last_active(account["account_id"], now)
 
     print(email, password) # print login details for debugging

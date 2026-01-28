@@ -10,8 +10,8 @@ def get_account_by_email_for_login(email):
         WHERE u.email = %s
         """
     
-    with db_cursor() as cursor:
-        cursor.execute(sql, (email))
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (email,))
         return cursor.fetchone()
 
 # Check if password is correct

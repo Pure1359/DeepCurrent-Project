@@ -4,7 +4,7 @@ from app.db_config import db_cursor
 def create_user(first_name, last_name, email, dob, user_type, course=None, department=None):
     sql = "INSERT INTO user (first_name, last_name, email, dob, user_type, course, department) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
-    with db_cursor() as cursor:
+    with db_cursor() as (connection, cursor):
         cursor.execute(sql, (first_name, last_name, email, dob, user_type, course, department))
         return cursor.lastrowid # Return user_id
 
@@ -12,7 +12,7 @@ def create_user(first_name, last_name, email, dob, user_type, course=None, depar
 def create_account(user_id, username, password, date_created, last_active):
     sql = "INSERT INTO account (user_id, username, password, date_created, last_active) VALUES (%s, %s, %s, %s, %s)"
 
-    with db_cursor() as cursor:
+    with db_cursor() as (connection, cursor):
         cursor.execute(sql, (user_id, username, password, date_created, last_active))
         return cursor.lastrowid # Return account_id
 
@@ -20,5 +20,5 @@ def create_account(user_id, username, password, date_created, last_active):
 def update_last_active(account_id, last_active):
     sql = "UPDATE account SET last_active = %s WHERE account_id = %s"
 
-    with db_cursor() as cursor:
+    with db_cursor() as (connection, cursor):
         cursor.execute(sql, (last_active, account_id))
