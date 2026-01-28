@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    width: 448px;        
+    height: 160px;         
+    border: 2px solid #153A39; 
+    border-radius: 16px;
+    display: flex;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title h3 {
+    width: 232px;
+    height: 18px;  
+    font: Heading/Font Family;
+}
+
+
+
+.card-icon img {
+    width: 52px;      
+    height: 40px;
+    object-fit: contain;
+}
+
+.add-button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
