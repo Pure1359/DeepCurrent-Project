@@ -39,13 +39,13 @@ def test_get_register(new_client, recorded_template):
     assert response.request.path == "/register"
 
 @pytest.mark.skip(reason = "Need database to be setup")
-def test_register_correctpassword(new_client, recorded_template):
+def test_register_normal(new_client, recorded_template):
     response = new_client.post("/register", data = {
         "first_name" : "john",
         "last_name" : "doe",
         "email" : "jd123@exeter.ac.uk",
         "dob" : "2000-07-09",
-        "user_type" : "normal",
+        "user_type" : "student",
         "password" : "jd123tv",
         "repeat_password" : "jd123tv"
     }, follow_redirects = True)
@@ -62,7 +62,7 @@ def test_register_wrongpassword(new_client, recorded_template):
         "last_name" : "doe",
         "email" : "jd123@exeter.ac.uk",
         "dob" : "2000-07-09",
-        "user_type" : "normal",
+        "user_type" : "student",
         "password" : "jd123tv",
         "repeat_password" : "JD123tv"
     }, follow_redirects = True)
@@ -72,6 +72,10 @@ def test_register_wrongpassword(new_client, recorded_template):
     assert response.request.path == "/register"
     assert template.name == "register.html"
     assert context['error'] == "Passwords do not match."
+
+
+
+
 
 
 

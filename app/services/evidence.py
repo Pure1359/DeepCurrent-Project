@@ -1,5 +1,5 @@
 from app.db_config import db_cursor
-from auth import required_role
+
 # Placeholder for now
 # Create functions that have to do with evidence
 # Follow templates in users.py and auth.py

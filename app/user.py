@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from app.services.users import create_user, create_account, update_last_active
 from app.services.auth import get_account_by_email_for_login, verify_password
 
-
+#need to do required login 
 user_bp = Blueprint("user", __name__)
 
 
