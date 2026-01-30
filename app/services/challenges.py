@@ -1,5 +1,4 @@
 from app.db_config import db_cursor
-from auth import required_role;
 # Placeholder for now
 # Create functions that have to do with challenges
 # Follow templates in users.py and auth.py
@@ -11,7 +10,6 @@ from auth import required_role;
 # challenge_leaderboard_group
 
 #Required role : Who can create the challenge? Parameter : Role -> {Admin, Locally Group Leader , etc}
-@required_role
 def create_challenge(role):
     pass
 

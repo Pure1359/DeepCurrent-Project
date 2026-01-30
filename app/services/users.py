@@ -22,3 +22,10 @@ def update_last_active(account_id, last_active):
 
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (last_active, account_id))
+
+def get_user_role(user_id):
+    sql = "SELECT user_type FROM USER WHERE user_id = %s"
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql,user_id)
+        return cursor.fetchone()

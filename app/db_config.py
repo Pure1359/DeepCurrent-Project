@@ -41,3 +41,5 @@ def db_cursor():
         raise
     finally: # Close connection
         cursor.close()
+
+
