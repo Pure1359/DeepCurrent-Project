@@ -205,3 +205,48 @@ body {
     font-weight: bold;
     font-size: 16px;
 }
+
+.challenge-card {
+    width: 760px;
+    border-radius: 0.8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 13px;
+    box-sizing: border-box;
+}
+
+.challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: #C0E4E6;
+    border-radius: 12px 12px 0 0;
+}
+
+.challenge-header h2 {
+    margin : 0;
+    font-weight: bold;
+}
+
+
+.challenge-table {
+    width: 100%;
+    border-collapse: collapse;
+    counter-reset: row; 
+    margin: 0;
+    background: #FCFBFC;
+    border-spacing: 0;
+}
+
+.challenge-table th,
+.challenge-table td {
+    padding: 8px 16px;
+}
+
+.challenge-table thead th{
+    text-align: left;
+    padding: 10px 16px;
+    background: #FCFBFC;
+}
