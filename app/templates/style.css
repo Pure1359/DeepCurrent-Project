@@ -13,18 +13,28 @@ body {
     border: 2px solid #153A39; 
     border-radius: 16px;
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    box-sizing: border-box;
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-title {
+    display: flex;
     align-items: center;
+    gap: 10px; 
 }
 
 .card-title h3 {
     width: 232px;
     height: 18px;  
-    font: Heading/Font Family;
+    margin: 0;    
 }
 
 
@@ -32,13 +42,132 @@ body {
 .card-icon img {
     width: 52px;      
     height: 40px;
-    object-fit: contain;
+    display: block;
+}
+
+.card-menu {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #153A39;
+}
+
+.card-body {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 260px
+}
+
+.card-metrics {
+    display: flex;
+    margin-bottom: 12px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.card-metrics span {
+    font-size: 16px;
+    color: #333;
+}
+
+
+.card-metrics div {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+.trend-updown::before {
+    content: "↑ %";
+    color: #7BC96F;
+    font-size: 16px;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
 }
 
 .add-button {
     width: 44px;
     height: 44px;
+    border-radius: 50%;
+    font-size: 24px;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+}
+
+
+
+.rank-card {
+    width: 448px;
+    height: 266px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    box-sizing: border-box;
+    background: #f0f2f5;
+}
+
+
+
+.rank-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 24px;
+    background: #C1D9FF;
+    border-radius: 12px 12px 0 0;
+}
+
+.rank-header h1 {
+    margin : 0;
+    font-weight: bold;
+}
+
+.profile-icon {
+    font-size: 24px;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+.rank-table {
+    width: 100%;
+    border-collapse: collapse;
+    counter-reset: row; 
+    background: white;
+}
+
+.rank-table th,
+.rank-table td {
+    padding: 14px 20px;
+}
+
+.rank-table thead th{
+    text-align: left;
+    padding: 19px;
+    background: #FCFBFC;
+}
+
+.rank-table tbody tr {
+    counter-increment: row;
+  }
+
+.rank-table tbody tr td:first-child::before {
+    content: counter(row);
+    margin-right: 12px;
+    font-weight: bold;
+
 }
