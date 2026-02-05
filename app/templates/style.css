@@ -1,3 +1,4 @@
+@import url(navbar.css);
 html,
 body {
   height: 100%;
@@ -7,6 +8,7 @@ body {
 body {
   font-family: Arial, sans-serif;
   overflow: hidden;
+  position: relative;
 }
 
 /* Background image */
@@ -18,8 +20,10 @@ body::before {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  opacity: 0.2;
-  z-index: -2;
+  opacity: 0.05;
+  filter: blur(1px);
+  /* z-index: 0; */
+  pointer-events: none;
 }
 
 /* Overlay (controls opacity & blend) */
@@ -27,9 +31,9 @@ body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(243, 242, 240, 0.2); /* opacity here */
-  mix-blend-mode: multiply;
+  background: #f3f2f0; /* opacity here */
   z-index: -1;
+  pointer-events: none;
 }
 
 /* Boday content decoration */
@@ -49,17 +53,30 @@ body::after {
   width: 100%;
   /* background-color: turquoise; */
 }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  /* width: 100%; */
+  max-width: 920px;
+}
 .card {
   width: 448px;
   height: 160px;
   border: 2px solid #153a39;
+  background-color: #fcfbfc;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 16px;
-  margin-left: 10px;
   box-sizing: border-box;
+  background-image: url("Resource/eco.svg");
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  background-size: 120px;
+  background-blend-mode: color-dodge;
 }
 
 .card-header {
@@ -80,16 +97,18 @@ body::after {
   margin: 0;
 }
 
+/* Css shadow for all Icons in the cards*/
 .card-icon img {
   width: 52px;
   height: 40px;
   display: block;
+  filter: drop-shadow(0 1px 0.5px rgba(0, 0, 0, 0.3));
 }
 
 .card-menu {
   background: transparent;
   border: none;
-  font-size: 20px;
+  font-size: 28px;
   cursor: pointer;
   color: #153a39;
 }
@@ -97,24 +116,23 @@ body::after {
 .card-structure {
   display: flex;
   flex-direction: row;
-  width: 100%;
-  gap: auto;
+  gap: 16;
   margin-left: 66px;
   align-items: end;
 }
 
 .card-body {
-  /* margin-top: 12px; */
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 260px;
+  width: 100%;
 }
 
 .card-metrics {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: fill-available;
 }
 
 .card-metrics span {
@@ -127,6 +145,10 @@ body::after {
   font-weight: 600;
   width: 60px;
   color: #000;
+}
+.trend-updown {
+  width: 60px;
+  align-items: center;
 }
 
 .trend-updown::before {

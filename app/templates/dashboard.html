@@ -8,6 +8,46 @@
   </head>
 
   <body>
+    <div class="sidebar">
+      <nav class="navbar">
+        <div class="nav-item">
+          <img class="icon" src="Resource/home.svg" alt="Today's Plan" />
+          <span class="label">Home</span>
+        </div>
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/chalange.svg" alt="Challenges" />
+          <span class="label">Challenges</span>
+        </div>
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/group.svg" alt="Group" />
+          <span class="label">Group</span>
+        </div>
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/eco.svg" alt="Read" />
+          <span class="label">Read</span>
+        </div>
+      </nav>
+
+      <button class="toggle-btn" id="toggleBtn">❯</button>
+    </div>
+
+    <script>
+      const toggle = document.getElementById("toggleBtn");
+      const navbar = document.getElementsByClassName("navbar")[0];
+      const nav_item = document.getElementsByClassName("nav-item");
+
+      toggle.addEventListener("click", () => {
+        navbar.classList.toggle("closed");
+        if (navbar.classList.contains("closed")) {
+          navbar.style.width = "60px";
+        } else {
+          navbar.style.width = "200px";
+        }
+      });
+    </script>
     <div class="body-frame">
       <div class="dashboard-card">
         <header class="dashboard-header">
@@ -31,37 +71,129 @@
         </div>
       </div>
       <div class="spacer"></div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">
-            <div class="card-icon">
-              <img
-                src="/workspaces/DeepCurrent-Project/app/templates/travel_luggage_and_bags_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg"
-                alt="icon"
-              />
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <img src="Resource/Travel.svg" alt="icon" />
+              </div>
+              <h3>Travel</h3>
             </div>
-            <h3>Travel</h3>
+            <button class="card-menu">⋮</button>
           </div>
-          <button class="card-menu">⋮</button>
+          <div class="card-structure">
+            <div class="card-body">
+              <div class="card-metrics">
+                <span>Weekly</span>
+                <div class="weekly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Monthly</span>
+                <div class="monthly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Total</span>
+                <div class="total-value">kg</div>
+              </div>
+            </div>
+            <div class="trend-updown"></div>
+            <div class="button-container">
+              <button class="add-button">+</button>
+            </div>
+          </div>
         </div>
-        <div class="card-structure">
-          <div class="card-body">
-            <div class="card-metrics">
-              <span>Weekly</span>
-              <div class="weekly-value">kg</div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <img src="Resource/Food.svg" alt="icon" />
+              </div>
+              <h3>Food</h3>
             </div>
-            <div class="card-metrics">
-              <span>Monthly</span>
-              <div class="monthly-value">kg</div>
+            <button class="card-menu">⋮</button>
+          </div>
+          <div class="card-structure">
+            <div class="card-body">
+              <div class="card-metrics">
+                <span>Weekly</span>
+                <div class="weekly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Monthly</span>
+                <div class="monthly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Total</span>
+                <div class="total-value">kg</div>
+              </div>
             </div>
-            <div class="card-metrics">
-              <span>Total</span>
-              <div class="total-value">kg</div>
+            <div class="trend-updown"></div>
+            <div class="button-container">
+              <button class="add-button">+</button>
             </div>
           </div>
-          <div class="trend-updown"></div>
-          <div class="button-container">
-            <button class="add-button">+</button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <img src="Resource/Energy.svg" alt="icon" />
+              </div>
+              <h3>Energy</h3>
+            </div>
+            <button class="card-menu">⋮</button>
+          </div>
+          <div class="card-structure">
+            <div class="card-body">
+              <div class="card-metrics">
+                <span>Weekly</span>
+                <div class="weekly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Monthly</span>
+                <div class="monthly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Total</span>
+                <div class="total-value">kg</div>
+              </div>
+            </div>
+            <div class="trend-updown"></div>
+            <div class="button-container">
+              <button class="add-button">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <img src="Resource/Waste.svg" alt="icon" />
+              </div>
+              <h3>Waste</h3>
+            </div>
+            <button class="card-menu">⋮</button>
+          </div>
+          <div class="card-structure">
+            <div class="card-body">
+              <div class="card-metrics">
+                <span>Weekly</span>
+                <div class="weekly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Monthly</span>
+                <div class="monthly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Total</span>
+                <div class="total-value">kg</div>
+              </div>
+            </div>
+            <div class="trend-updown"></div>
+            <div class="button-container">
+              <button class="add-button">+</button>
+            </div>
           </div>
         </div>
       </div>

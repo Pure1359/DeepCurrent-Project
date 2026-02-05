@@ -19,6 +19,7 @@
   flex-direction: column;
 
   background: transparent;
+  z-index: 10;
 }
 
 /* Navbar (Frame 1) */
