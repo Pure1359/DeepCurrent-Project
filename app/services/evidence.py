@@ -13,7 +13,7 @@ from app.db_config import db_cursor
 
 #Return Boolean? : Approve -> True, Disapprove -> False
 def create_decision():
-    pass
+    
 
 #Does it need to required login? perhaps the route URL of page that contain submit button, already validate it?
 def submit_evidence(some_param):
