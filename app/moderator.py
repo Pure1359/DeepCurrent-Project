@@ -58,6 +58,17 @@ def make_submission_decision(evidence_id, decision, reason):
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (evidence_id, reviewer_id, decision, now, reason))
     
+@moderator_bp.route("/create_challenge", methods = ["GET", "POST"])
+def moderator_make_challenge():
+    created_by = session.get("account_id")
+    challenge_type = request.form['challenge_type']
+    is_official = True
+    title = request.form['title']
+    start_date = request.form['start_date']
+    end_date = request.form['end_date']
 
+    create_challenge(created_by, challenge_type, is_official, title, start_date, end_date)
+
+    
 
 
