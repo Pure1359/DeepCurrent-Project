@@ -29,3 +29,4 @@ def get_user_role(user_id):
     with db_cursor() as (connection, cursor):
         cursor.execute(sql,user_id)
         return cursor.fetchone()
+    

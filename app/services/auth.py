@@ -27,4 +27,3 @@ def verify_session_role(unknown_session, known_session):
         return True
     else:
         return False
-

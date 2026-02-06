@@ -4,7 +4,7 @@ import bcrypt
 from datetime import datetime, timezone
 
 # Import Database Functions from services/
-from app.services.users import create_user, create_account, update_last_active, get_user_role
+from app.services.users_service import create_user, create_account, update_last_active, get_user_role
 from app.services.auth import get_account_by_email_for_login, verify_password
 
 # Instance for application is created in __init__.py
