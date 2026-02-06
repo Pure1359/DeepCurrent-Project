@@ -21,6 +21,7 @@ def submit_evidence(some_param):
 def list_pending_evidence(limit, offset):
     sql = """SELECT evidence_id, evidence_type, evidence_url, evidence_date
              FROM Evidence
+             WHERE 
              ORDER BY evidence_date DESC
              LIMIT %s
              OFFSET %s

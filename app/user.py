@@ -4,7 +4,7 @@ import bcrypt
 from datetime import datetime, timezone
 
 # Import Database Functions from services/
-from app.services.users import create_user, create_account, update_last_active
+from app.services.users_service import create_user, create_account, update_last_active
 from app.services.auth import get_account_by_email_for_login, verify_password, verify_session_role
 from app.db_config import db_cursor
 
@@ -21,6 +21,11 @@ def is_login():
         abort(404)
     else:
         pass
+
+#have to find some link between action log and challenge, as it should contain the status of the decision
+@user_bp.route("/get_action_history", methods = "POST")
+def get_action_history():
+    pass
 
     
 

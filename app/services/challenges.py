@@ -15,7 +15,7 @@ def create_challenge(created_by, challenge_type, is_official, title, start_date,
     if verify_session_role(session_role, "moderator"):
         sql = """INSERT INTO Challenge (created_by, challenge_type, is_official, title, start_date, end_date, rules) 
               VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-        with db_cursor as (connection, cursor):
+        with db_cursor() as (connection, cursor):
             cursor.execute(sql, (created_by, challenge_type, is_official, title, start_date, end_date, rules))
     else:
         abort(404)
