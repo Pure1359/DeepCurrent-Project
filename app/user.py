@@ -18,13 +18,21 @@ def is_login():
     is_moderator = verify_session_role(session.get("role"), "moderator")
 
     if (not(is_user) and not(is_moderator)):
-        abort(404)
+        redirect(url_for("login"))
     else:
         pass
 
 #have to find some link between action log and challenge, as it should contain the status of the decision
 @user_bp.route("/get_action_history", methods = "POST")
 def get_action_history():
+    pass
+
+#The app.service.actions already implement automatic challenge distribution
+def submit_action():
+    pass
+
+
+def join_challenge():
     pass
 
     

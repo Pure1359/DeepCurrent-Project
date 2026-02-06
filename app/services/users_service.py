@@ -1,4 +1,6 @@
 from app.db_config import db_cursor
+from app.services.challenges import join_challenge_individual
+from custom_error.Challenge_Exception import *
 
 # Create a user in the database
 def create_user(first_name, last_name, email, dob, user_type, course=None, department=None):
@@ -29,4 +31,10 @@ def get_user_role(user_id):
     with db_cursor() as (connection, cursor):
         cursor.execute(sql,user_id)
         return cursor.fetchone()
+
+
+
+
+
+
     

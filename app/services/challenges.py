@@ -39,8 +39,8 @@ def join_challenge_individual(challenge_id, account_id):
         if (check_challenge_result is None):
             raise ChallengeIdNotFound(f"The Challenge with ID: {challenge_id} does not exists in database" )
         elif(check_challenge_result is not None):
-            start_date = check_challenge_result[0]
-            end_date = check_challenge_result[1]
+            start_date = check_challenge_result["start_date"]
+            end_date = check_challenge_result["end_date"]
 
             if (start_date > current_time or end_date < current_time):
                 raise InvalidChallengeDate("The challenge is currently not active")

@@ -39,7 +39,7 @@ def log_action(name, category, quantity, evidence_url = None):
         if return_record is None:
             raise ValueError(f"Action type does not exists: {name}, {category}")
         
-        actionType_id = return_record[0]
+        actionType_id = return_record["actionType_id"]
         cursor.execute(sqlActionLog, (account_id, actionType_id, current_time, quantity, co2e_saved))
         action_log_id = cursor.lastrowid
 
@@ -58,7 +58,7 @@ def apply_to_challenge(cursor:DictCursor, account_id, name, category, action_log
     cursor.execute(sql, (account_id, name, category, current_time, current_time))
     #Even if there is no challenge eligible we still want the user to have evidence recorded in the database, so we can give them point separately from the challenge
     for challenge_id_tuple in cursor.fetchall():
-        challenge_id = challenge_id_tuple[0]
+        challenge_id = challenge_id_tuple["challenge_id"]
 
         insertion = """INSERT INTO ChallengeAction(challenge_id, group_id, log_id, points_awarded) VALUES (%s, %s, %s, %s)"""
 
