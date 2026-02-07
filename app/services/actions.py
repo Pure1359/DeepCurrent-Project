@@ -31,7 +31,6 @@ def log_action(name, category, quantity, evidence_url = None):
                     """
 
     sqlActionLog = """INSERT INTO ActionLog(submitted_by, actionType_id, log_date, quantity, co2e_saved) VALUES (%s, %s, %s, %s, %s)"""
-
     with db_cursor() as (connection, cursor):
         cursor.execute(sqlActionType, (name, category))
         return_record = cursor.fetchone()
@@ -41,12 +40,25 @@ def log_action(name, category, quantity, evidence_url = None):
         actionType_id = return_record["actionType_id"]
         cursor.execute(sqlActionLog, (account_id, actionType_id, current_time, quantity, co2e_saved))
         action_log_id = cursor.lastrowid
-
+    
         if evidence_url is not None:
-            insert_evidence = """INSERT INTO Evidence(action_log_id, evidence_type, evidence_url, evidence_date) VALUES (%s, %s, %s, %s)"""
-            cursor.execute(insert_evidence, (action_log_id, None, evidence_url, current_time))
+            inserted_evidence_id = insert_evidence_record(cursor, action_log_id, None, evidence_url, current_time)
+            inserted_decision_id = insert_decision_record(cursor,inserted_evidence_id, None, "pending", None, None)
             apply_to_challenge(cursor, account_id, name, category, action_log_id,current_time)
         return action_log_id
+    
+
+def insert_evidence_record(cursor:DictCursor, action_log_id, evidence_type, evidence_url, evidence_date):
+    insert_evidence = """INSERT INTO Evidence(action_log_id, evidence_type, evidence_url, evidence_date) VALUES (%s, %s, %s, %s)"""
+    cursor.execute(insert_evidence, (action_log_id, evidence_type, evidence_url, evidence_date))
+
+    return cursor.lastrowid
+
+def insert_decision_record(cursor:DictCursor, evidence_id, reviewer_id, decision_status, decision_date, reason):
+    insert_decision = """INSERT Decision(evidence_id, reviewer_id, decision_status, decision_date, reason) VALUES(%s, %s, %s, %s, %s)"""
+    cursor.execute(insert_decision, (evidence_id, reviewer_id, decision_status, decision_date, reason))
+    return cursor.lastrowid
+
 
 #Find the challenge that is eligible to be applied to
 def apply_to_challenge(cursor:DictCursor, account_id, name, category, action_log_id, current_time):
@@ -69,9 +81,10 @@ def apply_to_challenge(cursor:DictCursor, account_id, name, category, action_log
 
         cursor.execute(insertion, (challenge_id, None, action_log_id, points_awarded))
 
-   
 
 
+        
+    
     
 
 
