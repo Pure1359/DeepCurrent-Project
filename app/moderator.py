@@ -31,15 +31,17 @@ def view_submission_list():
 
     return list_pending_evidence(limit, offset)
 
-@moderator_bp.route("/approve_submission<evidence_id><decision><reason>/")
-def make_submission_decision(evidence_id, decision, reason):
-    sql = """INSERT INTO Decision(evidence_id, reviewer_id, status, timestamp, reason) VALUES (%s, %s, %s, %s, %s)"""
-
+@moderator_bp.route("/approve_submission/")
+def make_submission_decision(decision, result ,reason):
+    evidence_id = request.args.get("evidence_id")
+    decision_result = request.args.get("result")
+    reason = request.args.get("reason")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     reviewer_id = session.get("account_id")
 
-    with db_cursor() as (connection, cursor):
-        cursor.execute(sql, (evidence_id, reviewer_id, decision, now, reason))
+    create_decision(reviewer_id, decision_result, now, reason, evidence_id)
+
+    
     
 @moderator_bp.route("/create_challenge", methods = ["GET", "POST"])
 def moderator_make_challenge():

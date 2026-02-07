@@ -22,7 +22,6 @@ def log_action(name, category, quantity, evidence_url = None):
     if not account_id:
         abort(400, description = "User is not login")
 
-
     #implement this later
     co2e_saved = 0
  

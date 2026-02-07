@@ -12,34 +12,42 @@ from flask import jsonify
 
 
 #Return Boolean? : Approve -> True, Disapprove -> False
-def create_decision():
-    pass
-#Does it need to required login? perhaps the route URL of page that contain submit button, already validate it?
+def create_decision(reviewer_id, status, date, reason, evidence_id):
+    sql = """UPDATE Decision SET reviewer_id = %s ,decision_status = %s, decision_date = %s, decision_reason = %s WHERE evidence_id = %s"""
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (reviewer_id, status, date, reason, evidence_id))
+
+#Ignore this function for now
 def submit_evidence(some_param):
     pass
 
-def list_pending_evidence(limit, offset):
-    sql = """SELECT evidence_id, evidence_type, evidence_url, evidence_date
-             FROM Evidence
-             WHERE 
-             ORDER BY evidence_date DESC
-             LIMIT %s
-             OFFSET %s
-          """
+def list_pending_decision(limit, offset):
+    sql = """SELECT 
+                actionName,
+                category,
+                quantity,
+                evidence_url,
+                evidence_type,
+                evidence_date,
+                unit
+            FROM Decision
+            JOIN Evidence 
+                ON Decision.evidence_id = Evidence.evidence_id
+            JOIN ActionLog 
+                ON Evidence.log_id = ActionLog.log_id
+            JOIN ActionType 
+                ON ActionType.actionType_id = ActionLog.actionType_id
+            ORDER BY evidence_date DESC
+            LIMIT %s OFFSET %s
+         """
     
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (limit, offset))
         submission_list = cursor.fetchall()
-
-        json_list = []
-        for record_tuple in submission_list:
-            new_dict = {"evidence_id" : record_tuple[0], "evidence_type" : record_tuple[1], "evidence_url" : record_tuple[2], "evidence_date" : record_tuple[3]}
-            json_list.append(new_dict)
-        
-        return jsonify(json_list)
+        return jsonify(submission_list)
     
     
 #Something to do with fetching database
 def get_evidence_decision():
     pass
-
