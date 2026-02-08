@@ -31,7 +31,7 @@ def view_submission_list():
 
     return list_pending_decision(limit, offset)
 
-@moderator_bp.route("/approve_submission/")
+@moderator_bp.route("/approve_submission/", methods = ["GET","POST"])
 def make_submission_decision(decision, result ,reason):
     evidence_id = request.args.get("evidence_id")
     decision_result = request.args.get("result")
@@ -40,6 +40,8 @@ def make_submission_decision(decision, result ,reason):
     reviewer_id = session.get("account_id")
 
     create_decision(reviewer_id, decision_result, now, reason, evidence_id)
+
+    return {"success": True, "message" : "Sucessfully create the decision"}, 200
 
     
 @moderator_bp.route("/create_challenge", methods = ["GET", "POST"])
@@ -50,12 +52,5 @@ def moderator_make_challenge():
     title = request.form['title']
     start_date = request.form['start_date']
     end_date = request.form['end_date']
-
-    create_challenge(created_by, challenge_type, is_official, title, start_date, end_date)
-
-
-
-
-
-
-
+    rule = request.form['rule']
+    create_challenge(created_by, challenge_type, is_official, title, start_date, end_date, rule)

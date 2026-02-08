@@ -70,7 +70,7 @@ def submit_action():
 
 @user_bp.route("/join_challenge")
 def join_challenge():
-    account_id = session.get(account_id)
+    account_id = session.get("account_id")
     challenge_id = request.args.get("challenge_id")
     try:
         join_challenge_individual(challenge_id, account_id)
