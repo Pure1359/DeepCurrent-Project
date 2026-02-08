@@ -13,15 +13,11 @@ from pymysql.cursors import DictCursor
 # get_account_totals
 
 #Log action into database
-def log_action(name, category, quantity, evidence_url = None):
+def log_action(account_id, name, category, quantity, evidence_url = None):
     current_time = datetime.now()
     if not name or not category or quantity is None:
         raise ValueError("name, category and quantity is required")
     
-    account_id = session.get("account_id")
-    if not account_id:
-        abort(400, description = "User is not login")
-
     #implement this later
     co2e_saved = 0
  
@@ -51,7 +47,6 @@ def log_action(name, category, quantity, evidence_url = None):
 def insert_evidence_record(cursor:DictCursor, action_log_id, evidence_type, evidence_url, evidence_date):
     insert_evidence = """INSERT INTO Evidence(action_log_id, evidence_type, evidence_url, evidence_date) VALUES (%s, %s, %s, %s)"""
     cursor.execute(insert_evidence, (action_log_id, evidence_type, evidence_url, evidence_date))
-
     return cursor.lastrowid
 
 def insert_decision_record(cursor:DictCursor, evidence_id, reviewer_id, decision_status, decision_date, reason):
@@ -80,6 +75,11 @@ def apply_to_challenge(cursor:DictCursor, account_id, name, category, action_log
         group_id = None
 
         cursor.execute(insertion, (challenge_id, None, action_log_id, points_awarded))
+
+def get_action_history(account_id, limit, offset):
+    sql = """SELECT action history and what not"""
+    
+
 
 
 

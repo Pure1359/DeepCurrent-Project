@@ -31,6 +31,8 @@ def is_login():
 def get_action_history():
     offset = request.get("offset")
     limit = request.get("limit")
+
+
     
 
 #The app.service.actions already implement automatic challenge distribution
@@ -43,6 +45,11 @@ def submit_action():
     quantity = data.get("quantity")
     #if user don't submit evidence then data.get("evidence") return None
     evidence_url = data.get("evidence_url")
+
+    #abort with message telling user is not logged in
+    account_id = session.get("account_id")
+    if not account_id:
+        abort(400, description = "User is not logged in")
 
     if action_name not in permitted_action_name:
         error_message = f"Action name : {action_name} is not recognized as a valid action name"
@@ -58,7 +65,7 @@ def submit_action():
 
     #if we pass all check
     #then we log an action
-    log_action(action_name, category, quantity, evidence_url)
+    log_action(account_id, action_name, category, quantity, evidence_url)
     
 
 @user_bp.route("/join_challenge")
