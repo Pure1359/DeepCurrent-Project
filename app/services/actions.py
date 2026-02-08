@@ -1,5 +1,5 @@
 from app.db_config import db_cursor
-from flask import session
+from flask import Response, jsonify, session
 from datetime import datetime
 from flask import abort
 from pymysql.cursors import DictCursor
@@ -15,9 +15,6 @@ from pymysql.cursors import DictCursor
 #Log action into database
 def log_action(account_id, name, category, quantity, evidence_url = None):
     current_time = datetime.now()
-    if not name or not category or quantity is None:
-        raise ValueError("name, category and quantity is required")
-    
     #implement this later
     co2e_saved = 0
  
@@ -77,7 +74,30 @@ def apply_to_challenge(cursor:DictCursor, account_id, name, category, action_log
         cursor.execute(insertion, (challenge_id, None, action_log_id, points_awarded))
 
 def get_action_history(account_id, limit, offset):
-    sql = """SELECT action history and what not"""
+    sql = """SELECT 
+                actionName,
+                category,
+                quantity,
+                evidence_url,
+                evidence_type,
+                evidence_date,
+                unit
+            FROM Decision
+            JOIN Evidence 
+                ON Decision.evidence_id = Evidence.evidence_id
+            JOIN ActionLog 
+                ON Evidence.log_id = ActionLog.log_id
+            JOIN ActionType 
+                ON ActionType.actionType_id = ActionLog.actionType_id
+            WHERE submitted_by = %s
+            ORDER BY evidence_date DESC
+            LIMIT %s OFFSET %s
+         """
+     
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id, limit, offset))
+        action_list = cursor.fetchall()
+        return jsonify(action_list)
     
 
 

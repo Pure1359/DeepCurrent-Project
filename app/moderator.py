@@ -29,10 +29,11 @@ def view_submission_list():
     except ValueError:
         abort(400, description = "offset or limit data type must be int")
 
-    return list_pending_decision(limit, offset)
+    response = list_pending_decision(limit, offset)
+    return response
 
 @moderator_bp.route("/approve_submission/", methods = ["GET","POST"])
-def make_submission_decision(decision, result ,reason):
+def make_submission_decision():
     evidence_id = request.args.get("evidence_id")
     decision_result = request.args.get("result")
     reason = request.args.get("reason")
@@ -54,3 +55,5 @@ def moderator_make_challenge():
     end_date = request.form['end_date']
     rule = request.form['rule']
     create_challenge(created_by, challenge_type, is_official, title, start_date, end_date, rule)
+
+    return {"success": True, "message" : "Successfully make a challenge"}, 200

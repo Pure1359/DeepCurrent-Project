@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 # Import Database Functions from services/
 from app.services.users_service import create_user, create_account, update_last_active, join_challenge_individual
-from app.services.actions import log_action
+from app.services.actions import *
 from app.services.auth import get_account_by_email_for_login, verify_password, verify_session_role
 from app.db_config import db_cursor
 from custom_error.Challenge_Exception import *
@@ -28,18 +28,17 @@ def is_login():
 
 #have to find some link between action log and challenge, as it should contain the status of the decision
 @user_bp.route("/get_action_history", methods = "POST")
-def get_action_history():
-    offset = request.get("offset")
-    limit = request.get("limit")
-
-
-    
+def list_action_history():
+    data = request.get_json()
+    offset = data.get("offset")
+    limit = data.get("limit")
+    account_id = session.get("account_id")
+    return get_action_history(account_id, limit, offset)
 
 #The app.service.actions already implement automatic challenge distribution
 @user_bp.route("/submit_action")
 def submit_action():
     data = request.get_json()
-
     action_name = data.get("data")
     category = data.get("category")
     quantity = data.get("quantity")
@@ -66,15 +65,19 @@ def submit_action():
     #if we pass all check
     #then we log an action
     log_action(account_id, action_name, category, quantity, evidence_url)
+
+    return {"success" :True, "message":"Successfully log an action"}, 200
     
 
 @user_bp.route("/join_challenge")
 def join_challenge():
     account_id = session.get("account_id")
-    challenge_id = request.args.get("challenge_id")
+    data = request.get_json()
+
+    challenge_id = data.get("challenge_id")
     try:
         join_challenge_individual(challenge_id, account_id)
-    
+        return {"success" :True, "message":f"Successfully added the user to challenge : {challenge_id}"}, 200
     except (UserAlreadyJoinChallenge, InvalidChallengeDate, ChallengeIdNotFound) as error:
         error_message =str(error)
         return make_response(jsonify(error = error_message), 400)
