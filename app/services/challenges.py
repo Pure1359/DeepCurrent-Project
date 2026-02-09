@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-from app.db_config import close_connection, db_cursor, get_connection
-=======
 from app.db_config import db_cursor
 from app.services.auth import verify_session_role
 from flask import abort
 from custom_error.Challenge_Exception import InvalidChallengeDate, ChallengeIdNotFound, UserAlreadyJoinChallenge
 from datetime import datetime
->>>>>>> 500d2cd58fc608a7c1d458aad53afca3020cfe74
 # Placeholder for now
 # Create functions that have to do with challenges
 # Follow templates in users.py and auth.py
@@ -16,23 +12,12 @@ from datetime import datetime
 # join_challenge_group
 # challenge_leaderboard_individual
 # challenge_leaderboard_group
-<<<<<<< HEAD
-    
-
-#Required role : Who can create the challenge? Parameter : Role -> {Admin, Locally Group Leader , etc}
-def create_challenge():
-    get_connection(challengeType, challengeTitle, challengeStartDate, challengeEndDate, challengeRules):
-    sql = "INSERT INTO Challenge challengeType AND challengeTitle AND challengeStartDate AND challengeEndDate AND challengeRules VALUES (%s)"
-
-    close_connection()
-=======
 #Required role : Who can create the challenge? Parameter : Role -> {Admin, Locally Group Leader , etc}
 def create_challenge(created_by, challenge_type, is_official, title, start_date, end_date, rules):
     sql = """INSERT INTO Challenge (created_by, challenge_type, is_official, title, start_date, end_date, rules) 
             VALUES (%s, %s, %s, %s, %s, %s, %s)"""
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (created_by, challenge_type, is_official, title, start_date, end_date, rules))
->>>>>>> 500d2cd58fc608a7c1d458aad53afca3020cfe74
 
 #Add user and challenge to the individualParticipation table
 def join_challenge_individual(challenge_id, account_id):

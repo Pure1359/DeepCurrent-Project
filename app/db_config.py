@@ -12,11 +12,11 @@ def get_connection():
         g.db_connection = pymysql.connect(
             host=os.getenv('MYSQL_HOST'),
             user=os.getenv('MYSQL_USER'),
-            password=os.getenv('MYSQL_PASSWORD'),
+            password=os.getenv('MYSQL_PASSWORD'), # type: ignore
             db=os.getenv('MYSQL_DB'),
             cursorclass=pymysql.cursors.DictCursor,
             autocommit=False
-        )
+        ) # type: ignore
     
     return g.db_connection
 
