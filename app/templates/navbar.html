@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="navbar.css">
+</head>
+<body>
+    <div class="sidebar">
+
+        <nav class="navbar">
+            <div class="nav-item">
+                <img class="icon" src="today's-plan.png" alt="Today's Plan">
+                <span class="label">Today's Plan</span>
+            </div>
+
+            <div class="nav-item">
+                <img class="icon" src="challenges.png" alt="Challenges">
+                <span class="label">Challenges</span>
+            </div>
+
+            <div class="nav-item">
+                <img class="icon" src="group.png" alt="Group">
+                <span class="label">Group</span>
+            </div>
+
+            <div class="nav-item">
+                <img class="icon" src="read.png" alt="Read">
+                <span class="label">Read</span>
+            </div>            
+        </nav>
+
+        <button class="toggle-btn" id="toggleBtn">❯</button>
+    </div>  
+
+    <script>
+        const toggle = document.getElementById("toggleBtn");
+        const navbar = document.getElementsByClassName("navbar")[0];
+        const nav_item = document.getElementsByClassName("nav-item")
+
+        toggle.addEventListener("click", () => {
+            navbar.classList.toggle("closed");
+            if (navbar.classList.contains("closed")) {
+                navbar.style.width = "60px";
+            } else {
+                navbar.style.width = "200px"
+            }
+        });
+    </script>
+</body>
+</html>

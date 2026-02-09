@@ -1,252 +1,311 @@
+@import url(navbar.css);
+html,
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  height: 100%;
+  width: 100%;
 }
 
+body {
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Background image */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("Resource/Planet.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  opacity: 0.05;
+  filter: blur(1px);
+  /* z-index: 0; */
+  pointer-events: none;
+}
+
+/* Overlay (controls opacity & blend) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: #f3f2f0; /* opacity here */
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Boday content decoration */
+.body-frame {
+  position: relative;
+  top: 60px;
+  display: flex;
+  flex-direction: column;
+  /* background: #fe0e0e; */
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+.spacer {
+  position: relative;
+  height: 18px;
+  width: 100%;
+  /* background-color: turquoise; */
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  /* width: 100%; */
+  max-width: 920px;
+}
 .card {
-    width: 448px;        
-    height: 160px;         
-    border: 2px solid #153A39; 
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 16px;
-    box-sizing: border-box;
+  width: 448px;
+  height: 160px;
+  border: 2px solid #153a39;
+  background-color: #fcfbfc;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  box-sizing: border-box;
+  background-image: url("Resource/eco.svg");
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  background-size: 120px;
+  background-blend-mode: color-dodge;
 }
 
 .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .card-title {
-    display: flex;
-    align-items: center;
-    gap: 10px; 
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .card-title h3 {
-    width: 232px;
-    height: 18px;  
-    margin: 0;    
+  width: 232px;
+  height: 18px;
+  margin: 0;
 }
 
-
-
+/* Css shadow for all Icons in the cards*/
 .card-icon img {
-    width: 52px;      
-    height: 40px;
-    display: block;
+  width: 52px;
+  height: 40px;
+  display: block;
+  filter: drop-shadow(0 1px 0.5px rgba(0, 0, 0, 0.3));
 }
 
 .card-menu {
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #153A39;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #153a39;
+}
+
+.card-structure {
+  display: flex;
+  flex-direction: row;
+  gap: 16;
+  margin-left: 66px;
+  align-items: end;
 }
 
 .card-body {
-    margin-top: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 260px
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
 }
 
 .card-metrics {
-    display: flex;
-    margin-bottom: 12px;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: fill-available;
 }
-
 
 .card-metrics span {
-    font-size: 16px;
-    color: #333;
+  font-size: 16px;
+  color: #333;
 }
 
-
 .card-metrics div {
-    font-size: 16px;
-    font-weight: 600;
-    color: #000;
+  font-size: 16px;
+  font-weight: 600;
+  width: 60px;
+  color: #000;
+}
+.trend-updown {
+  width: 60px;
+  align-items: center;
 }
 
 .trend-updown::before {
-    content: "↑ %";
-    color: #7BC96F;
-    font-size: 16px;
+  content: "↑ %";
+  color: #7bc96f;
+  font-size: 16px;
 }
 
-.card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16px;
+.button-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
 }
-
 .add-button {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-
 
 .rank-card {
-    width: 448px;
-    height: 266px;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 16px;
-    box-sizing: border-box;
+  width: 448px;
+  height: 266px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
-
-
 .rank-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 13px 24px;
-    background: #C1D9FF;
-    border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 24px;
+  background: #c1d9ff;
+  border-radius: 12px 12px 0 0;
 }
 
 .rank-header h1 {
-    margin : 0;
-    font-weight: bold;
+  margin: 0;
+  font-weight: bold;
 }
 
 .profile-icon {
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding:19px;
-  }
-
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 19px;
+}
 
 .rank-table {
-    width: 100%;
-    border-collapse: collapse;
-    counter-reset: row; 
-    background: #FCFBFC;
+  width: 100%;
+  border-collapse: collapse;
+  counter-reset: row;
+  background: #fcfbfc;
 }
 
 .rank-table th,
 .rank-table td {
-    padding: 14px 20px;
+  padding: 14px 20px;
 }
 
-.rank-table thead th{
-    text-align: left;
-    padding: 19px;
-    background: #FCFBFC;
+.rank-table thead th {
+  text-align: left;
+  padding: 19px;
+  background: #fcfbfc;
 }
 
 .rank-table tbody tr {
-    counter-increment: row;
-  }
-
-.rank-table tbody tr td:first-child::before {
-    content: counter(row);
-    margin-right: 12px;
-    font-weight: bold;
-
+  counter-increment: row;
 }
 
+.rank-table tbody tr td:first-child::before {
+  content: counter(row);
+  margin-right: 12px;
+  font-weight: bold;
+}
 
 .dashboard-card {
-    display:flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 1440px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
 }
 
 .dashboard-header {
-    font-size: 48px;
-    width: 828px;
-    height: 58px;
-    align-items: centre;
-    display:flex;
-    justify-content: space-between;
-
+  font-size: 48px;
+  width: 828px;
+  height: 58px;
+  align-items: centre;
+  display: flex;
+  justify-content: space-between;
 }
 
 #co2e-message {
-    font-size:48px;
-    margin:0;
+  font-size: 48px;
+  margin: 0;
 }
 
 .header-right .profile-icon {
-    cursor: pointer;
-    width: 38px;
-    height: 38px;
-
+  cursor: pointer;
+  width: 38px;
+  height: 38px;
 }
 
-.link a{
-    font-weight: bold;
-    font-size: 16px;
+.link a {
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .challenge-card {
-    width: 760px;
-    border-radius: 0.8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 13px;
-    box-sizing: border-box;
+  width: 760px;
+  border-radius: 0.8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 13px;
+  box-sizing: border-box;
 }
 
 .challenge-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 24px;
-    background: #C0E4E6;
-    border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #c0e4e6;
+  border-radius: 12px 12px 0 0;
 }
 
 .challenge-header h2 {
-    margin : 0;
-    font-weight: bold;
+  margin: 0;
+  font-weight: bold;
 }
 
-
 .challenge-table {
-    width: 100%;
-    border-collapse: collapse;
-    counter-reset: row; 
-    margin: 0;
-    background: #FCFBFC;
-    border-spacing: 0;
+  width: 100%;
+  border-collapse: collapse;
+  counter-reset: row;
+  margin: 0;
+  background: #fcfbfc;
+  border-spacing: 0;
 }
 
 .challenge-table th,
 .challenge-table td {
-    padding: 8px 16px;
+  padding: 8px 16px;
 }
 
-.challenge-table thead th{
-    text-align: left;
-    padding: 10px 16px;
-    background: #FCFBFC;
+.challenge-table thead th {
+  text-align: left;
+  padding: 10px 16px;
+  background: #fcfbfc;
 }

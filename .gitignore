@@ -1,5 +1,6 @@
 # Secrets
 secret.env
+mydb.sqlite
 
 # Python cache
 __pycache__/

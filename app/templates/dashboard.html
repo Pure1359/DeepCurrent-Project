@@ -1,32 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-
-<div class="dashboard-card">
-    <header class="dashboard-header">
-        <div class = "header-left">
-            <p id = "co2e-message"> You saved _ kg CO2e this month</p>
-            
+  <body>
+    <div class="sidebar">
+      <nav class="navbar">
+        <div class="nav-item">
+          <img class="icon" src="Resource/home.svg" alt="Today's Plan" />
+          <span class="label">Home</span>
         </div>
-        <div class ="header-right">
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/chalange.svg" alt="Challenges" />
+          <span class="label">Challenges</span>
+        </div>
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/group.svg" alt="Group" />
+          <span class="label">Group</span>
+        </div>
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/eco.svg" alt="Read" />
+          <span class="label">Read</span>
+        </div>
+      </nav>
+
+      <button class="toggle-btn" id="toggleBtn">❯</button>
+    </div>
+
+    <script>
+      const toggle = document.getElementById("toggleBtn");
+      const navbar = document.getElementsByClassName("navbar")[0];
+      const nav_item = document.getElementsByClassName("nav-item");
+
+      toggle.addEventListener("click", () => {
+        navbar.classList.toggle("closed");
+        if (navbar.classList.contains("closed")) {
+          navbar.style.width = "60px";
+        } else {
+          navbar.style.width = "200px";
+        }
+      });
+    </script>
+    <div class="body-frame">
+      <div class="dashboard-card">
+        <header class="dashboard-header">
+          <div class="header-left">
+            <p id="co2e-message">You saved _ kg CO2e this month</p>
+          </div>
+          <div class="header-right">
             <button class="profile-icon">👤</button>
+          </div>
+        </header>
+
+        <div class="badge-message">
+          <p>
+            Congratulations! You've earned a new badge:
+            <strong>Eco Advocate</strong>
+          </p>
         </div>
-    </header>
-    
-    <div class = "badge-message">
-        <p>Congratulations! You've earned a new badge: <strong>Eco Advocate</strong></p>
+
+        <div class="link">
+          <a href="#" id="social-link">Click to share on social media! →</a>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <img src="Resource/Travel.svg" alt="icon" />
+              </div>
+              <h3>Travel</h3>
+            </div>
+            <button class="card-menu">⋮</button>
+          </div>
+          <div class="card-structure">
+            <div class="card-body">
+              <div class="card-metrics">
+                <span>Weekly</span>
+                <div class="weekly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Monthly</span>
+                <div class="monthly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Total</span>
+                <div class="total-value">kg</div>
+              </div>
+            </div>
+            <div class="trend-updown"></div>
+            <div class="button-container">
+              <button class="add-button">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <img src="Resource/Food.svg" alt="icon" />
+              </div>
+              <h3>Food</h3>
+            </div>
+            <button class="card-menu">⋮</button>
+          </div>
+          <div class="card-structure">
+            <div class="card-body">
+              <div class="card-metrics">
+                <span>Weekly</span>
+                <div class="weekly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Monthly</span>
+                <div class="monthly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Total</span>
+                <div class="total-value">kg</div>
+              </div>
+            </div>
+            <div class="trend-updown"></div>
+            <div class="button-container">
+              <button class="add-button">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <img src="Resource/Energy.svg" alt="icon" />
+              </div>
+              <h3>Energy</h3>
+            </div>
+            <button class="card-menu">⋮</button>
+          </div>
+          <div class="card-structure">
+            <div class="card-body">
+              <div class="card-metrics">
+                <span>Weekly</span>
+                <div class="weekly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Monthly</span>
+                <div class="monthly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Total</span>
+                <div class="total-value">kg</div>
+              </div>
+            </div>
+            <div class="trend-updown"></div>
+            <div class="button-container">
+              <button class="add-button">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <img src="Resource/Waste.svg" alt="icon" />
+              </div>
+              <h3>Waste</h3>
+            </div>
+            <button class="card-menu">⋮</button>
+          </div>
+          <div class="card-structure">
+            <div class="card-body">
+              <div class="card-metrics">
+                <span>Weekly</span>
+                <div class="weekly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Monthly</span>
+                <div class="monthly-value">kg</div>
+              </div>
+              <div class="card-metrics">
+                <span>Total</span>
+                <div class="total-value">kg</div>
+              </div>
+            </div>
+            <div class="trend-updown"></div>
+            <div class="button-container">
+              <button class="add-button">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    
-    <div class = "link">
-        <a href="#" id="social-link">Click to share on social media! →</a>
-    </div>
-</div>
-</body>
+  </body>
 </html>

@@ -22,4 +22,8 @@ def verify_password(plain_password, stored_password):
     # Hash password and check against stored password
     return bcrypt.checkpw(plain_password.encode("utf-8"), stored_password.encode("utf-8"))
 
-
+def verify_session_role(unknown_session, known_session):
+    if (unknown_session == known_session):
+        return True
+    else:
+        return False
