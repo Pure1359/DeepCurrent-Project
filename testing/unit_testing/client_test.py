@@ -13,7 +13,7 @@ def captured_template(app):
     try:
         yield recorded_template
     finally:
-        template_rendered.disconnect(recorded_template, app)
+        template_rendered.disconnect(record_template, app)
 
 
 @pytest.fixture()

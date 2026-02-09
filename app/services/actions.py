@@ -13,7 +13,7 @@ from pymysql.cursors import DictCursor
 # get_account_totals
 
 #Log action into database
-def log_action(account_id, name, category, quantity, evidence_url = None):
+def log_action(account_id, name, category, quantity, challenge_id, evidence_url = None):
     current_time = datetime.now()
     #implement this later
     co2e_saved = 0
@@ -37,9 +37,9 @@ def log_action(account_id, name, category, quantity, evidence_url = None):
         if evidence_url is not None:
             inserted_evidence_id = insert_evidence_record(cursor, action_log_id, None, evidence_url, current_time)
             inserted_decision_id = insert_decision_record(cursor,inserted_evidence_id, None, "pending", None, None)
-            apply_to_challenge(cursor, account_id, name, category, action_log_id,current_time)
+            apply_to_challenge(cursor, challenge_id, action_log_id)
         return action_log_id
-    
+        
 
 def insert_evidence_record(cursor:DictCursor, action_log_id, evidence_type, evidence_url, evidence_date):
     insert_evidence = """INSERT INTO Evidence(action_log_id, evidence_type, evidence_url, evidence_date) VALUES (%s, %s, %s, %s)"""
@@ -53,25 +53,16 @@ def insert_decision_record(cursor:DictCursor, evidence_id, reviewer_id, decision
 
 
 #Find the challenge that is eligible to be applied to
-def apply_to_challenge(cursor:DictCursor, account_id, name, category, action_log_id, current_time):
+def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id):
 
-    #Search the challenge that the user is participating
-    sql = """SELECT challenge_id FROM IndividualParticipation JOIN Challenge ON IndividualParticipation.challenge_id = Challenge.challenge_id WHERE account_id = %s AND name = %s AND category = %s AND start_date <= %s AND end_date >= %s"""
+    insertion = """INSERT INTO ChallengeAction(challenge_id, group_id, log_id, points_awarded) VALUES (%s, %s, %s, %s)"""
 
-    cursor.execute(sql, (account_id, name, category, current_time, current_time))
-    #Even if there is no challenge eligible we still want the user to have evidence recorded in the database, so we can give them point separately from the challenge
-    for challenge_id_tuple in cursor.fetchall():
-        challenge_id = challenge_id_tuple["challenge_id"]
+    points_awarded = 0
+    
+    #Prototype support individual only no need for group now
+    group_id = None
 
-        insertion = """INSERT INTO ChallengeAction(challenge_id, group_id, log_id, points_awarded) VALUES (%s, %s, %s, %s)"""
-
-        #implement this later
-        points_awarded = 0
-        
-        #Prototype support individual only no need for group now
-        group_id = None
-
-        cursor.execute(insertion, (challenge_id, None, action_log_id, points_awarded))
+    cursor.execute(insertion, (challenge_id, group_id, action_log_id, points_awarded))
 
 def get_action_history(account_id, limit, offset):
     sql = """SELECT 

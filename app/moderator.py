@@ -11,7 +11,7 @@ from app.services.auth import verify_session_role
 moderator_bp = Blueprint("moderator", __name__)
 
 #before any request within /moderator bp check if client is moderator or not
-@moderator_bp.before_app_request
+@moderator_bp.before_request
 def is_moderator():
     if (verify_session_role(session.get("role"), "moderator")):
         pass

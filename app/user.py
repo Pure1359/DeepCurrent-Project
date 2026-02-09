@@ -13,21 +13,20 @@ from custom_error.Challenge_Exception import *
 #need to do required login 
 user_bp = Blueprint("user", __name__)
 
-permitted_action_name = ["car, walking, bus, train, cycling"]
-permitted_category_name = ["travel, food, energy, waste"]
+permitted_action_name = ["car", "walking", "bus", "train", "cycling"]
+permitted_category_name = ["travel", "food", "energy", "waste"]
 
-@user_bp.before_app_request
+@user_bp.before_request
 def is_login():
     is_user = verify_session_role(session.get("role"), "user")
     is_moderator = verify_session_role(session.get("role"), "moderator")
-
     if (not(is_user) and not(is_moderator)):
         redirect(url_for("login"))
     else:
         pass
 
 #have to find some link between action log and challenge, as it should contain the status of the decision
-@user_bp.route("/get_action_history", methods = "POST")
+@user_bp.route("/get_action_history", methods = ["POST"])
 def list_action_history():
     data = request.get_json()
     offset = data.get("offset")
@@ -36,10 +35,10 @@ def list_action_history():
     return get_action_history(account_id, limit, offset)
 
 #The app.service.actions already implement automatic challenge distribution
-@user_bp.route("/submit_action")
+@user_bp.route("/submit_action",  methods = ["POST"])
 def submit_action():
     data = request.get_json()
-    action_name = data.get("data")
+    action_name = data.get("action_name")
     category = data.get("category")
     quantity = data.get("quantity")
     #if user don't submit evidence then data.get("evidence") return None
@@ -53,7 +52,7 @@ def submit_action():
     if action_name not in permitted_action_name:
         error_message = f"Action name : {action_name} is not recognized as a valid action name"
         return make_response(jsonify(error = error_message), 400)
-
+    
     if category not in permitted_category_name:
         error_message = f"Category name : {category} is not recognized as a valid category name"
         return make_response(jsonify(error = error_message), 400)
@@ -69,7 +68,7 @@ def submit_action():
     return {"success" :True, "message":"Successfully log an action"}, 200
     
 
-@user_bp.route("/join_challenge")
+@user_bp.route("/join_challenge",  methods = ["POST"])
 def join_challenge():
     account_id = session.get("account_id")
     data = request.get_json()
@@ -81,6 +80,18 @@ def join_challenge():
     except (UserAlreadyJoinChallenge, InvalidChallengeDate, ChallengeIdNotFound) as error:
         error_message =str(error)
         return make_response(jsonify(error = error_message), 400)
+    
+@user_bp.route("/get_challenge_for_user", methods = ["POST"])
+def get_challenge_for_user():
+    account_id = session.get("account_id")
+    get_challenge = """SELECT challenge_id FROM IndividualParticipation WHERE account_id = %s"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(get_challenge, (account_id,))
+        challenge_result = cursor.fetchall()    
+        response = jsonify(challenge_result)
+        return response
+
+
 
 
 
