@@ -1,0 +1,73 @@
+body {
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    position: relative;
+    background-color: black;
+}
+
+.moderating-list-card {
+    width: 540px;
+    height: 222px;
+    border-radius: 0.5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    box-sizing: border-box;
+    background-color: #FCFBFC;
+}
+
+.moderating-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: #c0e4e6;
+    border-radius: 12px 12px 0 0;
+}
+  
+.moderating-list-header h2 {
+    margin: 0;
+    font-weight: bold;
+}
+
+.moderating-list-table tr {
+    counter-increment: row;
+}
+
+.action {
+    font-size: 16px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    vertical-align: middle;
+}
+
+.approved {
+    width: 138px;
+    height: 24px;
+    border-radius: 16px;
+
+    padding-top: 8px;
+    padding-right: 32px;
+    padding-bottom: 9px;
+    padding-left: 32px;
+
+    background-color: #CCE88C;
+
+    align-items: center;
+}
+
+.rejected {
+    width: 138px;
+    height: 24px;
+    border-radius: 16px;
+
+    padding-top: 8px;
+    padding-right: 32px;
+    padding-bottom: 9px;
+    padding-left: 32px;
+
+    background-color: #FF383C;
+
+    align-items: center;
+}
