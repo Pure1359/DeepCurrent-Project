@@ -4,7 +4,7 @@ import bcrypt
 from datetime import datetime, timezone
 
 # Import Database Functions from services/
-from app.services.users_service import create_user, create_account, update_last_active, join_challenge_individual
+from app.services.users_service import create_user, create_account, update_last_active, join_challenge_individual, get_monthly_saved, get_weekly_saved, get_yearly_saved
 from app.services.actions import *
 from app.services.auth import get_account_by_email_for_login, verify_password, verify_session_role
 from app.db_config import db_cursor
@@ -90,9 +90,24 @@ def get_challenge_for_user():
         challenge_result = cursor.fetchall()    
         response = jsonify(challenge_result)
         return response
+    
+@user_bp.route("/get_weekly_co2e_saving", methods = ["POST"])
+def get_user_weekly_saving():
+    account_id = session.get("account_id")
+    result = get_weekly_saved(account_id)
+    return jsonify({"total_saving":result})
 
+@user_bp.route("/get_monthly_co2e_saving", methods = ["POST"])
+def get_user_monthly_saving():
+    account_id = session.get("account_id")
+    result = get_monthly_saved(account_id)
+    return jsonify({"total_saving":result})
 
-
+@user_bp.route("/get_yearly_co2e_saving", methods = ["POST"])
+def get_user_yearly_saving():
+    account_id = session.get("account_id")
+    result = get_yearly_saved(account_id)
+    return jsonify({"total_saving":result})
 
 
     
