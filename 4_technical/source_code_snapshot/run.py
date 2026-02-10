@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from app import create_app
 import os
 # Load environment variables from .env file
-load_dotenv("DeepCurrent-Project\secret.env")
+load_dotenv("4_technical/source_code_snapshot/secret.env")
 
 app = create_app()
 
