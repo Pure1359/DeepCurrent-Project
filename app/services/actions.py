@@ -73,6 +73,7 @@ def get_action_history(account_id, limit, offset):
                 evidence_url,
                 evidence_type,
                 evidence_date,
+                decision_status,
                 unit
             FROM Decision
             JOIN Evidence 
