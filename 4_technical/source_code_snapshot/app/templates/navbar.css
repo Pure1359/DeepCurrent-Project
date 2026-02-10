@@ -19,7 +19,7 @@
   flex-direction: column;
 
   background: transparent;
-  z-index: 10;
+  z-index: 1;
 }
 
 /* Navbar (Frame 1) */
@@ -53,6 +53,10 @@
 
   width: stretch;
   cursor: pointer;
+}
+
+.nav-item:hover {
+  background: #f0f0f0;
 }
 
 /* Top border for all but first item */

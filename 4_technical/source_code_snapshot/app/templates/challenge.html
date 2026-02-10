@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="JavaScript.js"></script>
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <nav class="navbar">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'">
+          <img class="icon" src="Resource/home.svg" alt="Home" />
+          <span class="label">Home</span>
+        </div>
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/chalange.svg" alt="Challenges" />
+          <span class="label">Challenges</span>
+        </div>
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/group.svg" alt="Group" />
+          <span class="label">Group</span>
+        </div>
+
+        <div class="nav-item">
+          <img class="icon" src="Resource/eco.svg" alt="Read" />
+          <span class="label">Read</span>
+        </div>
+      </nav>
+
+      <button class="toggle-btn" id="toggleBtn">❯</button>
+    </div>
+    <script>
+      const toggle = document.getElementById("toggleBtn");
+      const navbar = document.getElementsByClassName("navbar")[0];
+      const nav_item = document.getElementsByClassName("nav-item");
+
+      toggle.addEventListener("click", () => {
+        navbar.classList.toggle("closed");
+        if (navbar.classList.contains("closed")) {
+          navbar.style.width = "60px";
+        } else {
+          navbar.style.width = "200px";
+        }
+      });
+    </script>
+    <div class="body-frame">
+      <div class="dashboard-card">
+        <header class="dashboard-header">
+          <div class="header-left">
+            <h1 id="co2e-message">Challenges & Groups</h1>
+          </div>
+          <div class="header-right">
+            <button class="profile-icon">👤</button>
+          </div>
+        </header>
+
+        <div class="badge-message">
+          <p>Select based on the categories</p>
+        </div>
+
+        <div class="horisental-bar-wrapper">
+          <div class="horisental-bar">
+            <div class="bar-item active">All</div>
+            <div class="bar-item">Current</div>
+            <div class="bar-item">History</div>
+            <div class="bar-item">Personal</div>
+            <div class="bar-item">Group</div>
+          </div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="card-grid">
+        <h1>plaseholder</h1>
+        <h1>placeholder</h1>
+      </div>
+    </div>
+  </body>
+</html>
