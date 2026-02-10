@@ -5,9 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="JavaScript.js"></script>
   </head>
 
   <body>
+    <div id="dashboard-overlay" class="overlay-wrapper">
+      <div class="action_log_card">
+        <form class="travel_form">
+          <div class="form-row">
+            <label>Type of Travel</label>
+            <select>
+              <option>Train</option>
+              <option>Bus</option>
+              <option>Car</option>
+              <option>Bike</option>
+              <option>Walk</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Distance</label>
+            <div class="distance-input">
+              <input type="number" placeholder="0.0" />
+              <span>KM</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Upload Evidence</label>
+            <label class="upload-box">
+              <input type="file" hidden />
+              <span>📤</span>
+            </label>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
+      </div>
+    </div>
     <div class="sidebar">
       <nav class="navbar">
         <div class="nav-item">
@@ -99,8 +134,23 @@
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
-              <button class="add-button">+</button>
+              <button id="action_log_button" class="add-button">+</button>
             </div>
+            <script>
+              const addButton = document.querySelector("#action_log_button");
+              const actionLogOverlay =
+                document.getElementById("dashboard-overlay");
+
+              addButton.addEventListener("click", () => {
+                actionLogOverlay.style.display = "flex";
+              });
+
+              actionLogOverlay.addEventListener("click", (event) => {
+                if (event.target === actionLogOverlay) {
+                  actionLogOverlay.style.display = "none";
+                }
+              });
+            </script>
           </div>
         </div>
         <div class="card">
