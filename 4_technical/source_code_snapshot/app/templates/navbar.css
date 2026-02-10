@@ -55,6 +55,10 @@
   cursor: pointer;
 }
 
+.nav-item:hover {
+  background: #f0f0f0;
+}
+
 /* Top border for all but first item */
 .nav-item:not(:first-child) {
   border-top: 1px solid #e6e6e6;

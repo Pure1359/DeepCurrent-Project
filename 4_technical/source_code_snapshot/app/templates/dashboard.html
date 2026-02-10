@@ -46,11 +46,11 @@
     <div class="sidebar">
       <nav class="navbar">
         <div class="nav-item">
-          <img class="icon" src="Resource/home.svg" alt="Today's Plan" />
+          <img class="icon" src="Resource/home.svg" alt="home" />
           <span class="label">Home</span>
         </div>
 
-        <div class="nav-item">
+        <div class="nav-item" onclick="window.location.href='challenge.html'">
           <img class="icon" src="Resource/chalange.svg" alt="Challenges" />
           <span class="label">Challenges</span>
         </div>
@@ -68,7 +68,6 @@
 
       <button class="toggle-btn" id="toggleBtn">❯</button>
     </div>
-
     <script>
       const toggle = document.getElementById("toggleBtn");
       const navbar = document.getElementsByClassName("navbar")[0];
