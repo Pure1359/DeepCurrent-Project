@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Log</title>
+  <link rel="stylesheet" href="add_action_card.css">
+</head>
+<body>
+
+<div class="action_log_card">
+  <form class="travel_form">
+
+    <div class="form-row">
+      <label>Type of Travel</label>
+      <select>
+        <option>Train</option>
+        <option>Bus</option>
+        <option>Car</option>
+        <option>Bike</option>
+        <option>Walk</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Distance</label>
+      <div class="distance-input">
+        <input type="number" placeholder="0.0">
+        <span>KM</span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Upload Evidence</label>
+      <label class="upload-box">
+        <input type="file" hidden>
+        <span>📤</span>
+      </label>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit</button>
+
+  </form>
+</div>
+
+</body>
+</html>
