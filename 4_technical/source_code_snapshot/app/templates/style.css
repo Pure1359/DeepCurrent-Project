@@ -1,5 +1,6 @@
 @import url(navbar.css);
 @import url(add_action_card.css);
+@import url(challenges.css);
 html,
 body {
   height: 100%;

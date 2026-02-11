@@ -1,0 +1,257 @@
+:root {
+  --Background: #f2f3f0;
+  --Surface: #fcfbfc;
+  --Variant-Blue-light: #c0e4e6;
+  --Variant-Pink: #f8c3e2;
+  --Primary-Variant: #214f4d;
+  --Text-Stroke: #153a39;
+  --Action-Light: #afafaf;
+}
+/* Tab Navigation */
+.tabs-container {
+  width: min-content;
+  padding: 0 40px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 0;
+}
+
+.tab {
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: "Roboto", sans-serif;
+  letter-spacing: 0.15px;
+  color: rgba(0, 0, 0, 0.7);
+  transition: color 0.2s;
+  border-bottom: 3px solid transparent;
+  position: relative;
+  bottom: -2px;
+}
+
+.tab:hover {
+  color: #000;
+}
+
+.tab.active {
+  color: #000;
+  border-bottom-color: #000;
+}
+
+.tab {
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+/* Content Sections */
+.content-sections {
+  padding: 0 40px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 928px;
+}
+
+.section {
+  background-color: var(--Surface);
+  border: 0.5px solid var(--Text-Stroke);
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 32px 13px 24px;
+  border-radius: 4px 4px 26px 4px;
+  border: 0.8px solid var(--Text-Stroke);
+  height: 60px;
+}
+
+.section-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 120%;
+  letter-spacing: -0.48px;
+  font-family: "Inter", sans-serif;
+}
+
+.your-groups-header {
+  background-color: var(--Variant-Blue-light);
+}
+
+.moderating-header {
+  background-color: #e0e0e0;
+}
+
+.other-groups-header {
+  background-color: var(--Variant-Pink);
+}
+
+.section-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Table Styles */
+.table-container {
+  padding: 16px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #000;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  line-height: 18px;
+}
+
+.table-header div {
+  flex: 1;
+  width: 104px;
+}
+
+.table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 0.5px solid #000;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 120%;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row div {
+  flex: 1;
+  width: 104px;
+}
+
+/* Moderating List */
+.moderating-content {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.list-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.list-item {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 120%;
+}
+
+.list-divider {
+  width: 140px;
+  height: 0.5px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.list-right {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+}
+
+.status-badge {
+  padding: 8px 32px 9px 32px;
+  border-radius: 16px;
+  background-color: #afafaf;
+  color: white;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 120%;
+  text-align: center;
+  box-shadow: 0 4px 4.5px rgba(0, 0, 0, 0.25);
+  border: none;
+  cursor: default;
+}
+
+/* Other Groups */
+.other-groups-content {
+  padding: 16px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.join-button {
+  padding: 8px 32px 9px 32px;
+  border-radius: 16px;
+  background-color: var(--Primary-Variant);
+  color: white;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 120%;
+  border: 1px solid var(--Text-Stroke);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.join-button:hover {
+  background-color: #1a3a39;
+}
+
+/* Table Styles */
+.table-container {
+  padding: 16px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #000;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  line-height: 18px;
+}
+
+.table-header div {
+  flex: 1;
+  width: 104px;
+}
+
+.table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 0.5px solid #000;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 120%;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row div {
+  flex: 1;
+  width: 104px;
+}
