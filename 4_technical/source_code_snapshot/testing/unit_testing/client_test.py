@@ -86,7 +86,17 @@ def test_login_normal(new_client_module, recorded_template_module, module_scope_
     with new_client_module.session_transaction() as session:
         # set a user id without going through the login route
         assert session.get("account_role") == "student"
-    
+
+def test_login_wrong(new_client_function, recorded_template):
+    response = new_client_function.post("/login", data = {
+        "email" : "jd123@exeter.ac.uk",
+        "password" : "jd12tv"
+    }, follow_redirects = True)
+    assert len(recorded_template) == 1
+    template, context = recorded_template[-1]
+    assert context['error'] == "Invalid email or password."
+    assert template.name == "login.html"
+
 
 
 def test_register_incorrect_credential(new_client_function, recorded_template):
