@@ -20,8 +20,9 @@ def is_moderator():
 
 @moderator_bp.route("/view_submission_list", methods = ["GET", "POST"])
 def view_submission_list():
-    offset = request.args.get("offset", 0)
-    limit = request.args.get("limit", 10)
+    data = request.get_json()
+    offset = data.get("offset", 0)
+    limit = data.get("limit", 10)
     #validate data type in url parameter
     try:
         offset = int(offset)
@@ -34,9 +35,10 @@ def view_submission_list():
 
 @moderator_bp.route("/approve_submission/", methods = ["GET","POST"])
 def make_submission_decision():
-    evidence_id = request.args.get("evidence_id")
-    decision_result = request.args.get("result")
-    reason = request.args.get("reason")
+    data = request.get_json()
+    evidence_id = data.get("evidence_id")
+    decision_result = data.get("result")
+    reason = data.get("reason")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     reviewer_id = session.get("account_id")
 

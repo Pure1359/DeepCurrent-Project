@@ -31,7 +31,7 @@ def get_user_role(user_id):
     sql = "SELECT user_type FROM Users WHERE user_id = %s"
 
     with db_cursor() as (connection, cursor):
-        cursor.execute(sql,user_id)
+        cursor.execute(sql, (user_id,))
         return cursor.fetchone()
 
 def get_weekly_saved(account_id):

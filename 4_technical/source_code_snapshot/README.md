@@ -59,6 +59,7 @@ Cryptography
 Flask
 PyMySQL
 python-dotenv
+pytest
 ```
 
 ---
@@ -69,12 +70,21 @@ Create a file named `secret.env` in the project root:
 (.gitignore already includes secret.env so you don't have to worry)
 
 ```
+# Flask
 FLASK_APP=DeepCurrent
 FLASK_SECRET_KEY=<FlaskSecretKey>
+
+# Database Engine Selector (mysql for deployment, sqlite for testing)
+DB_ENGINE=mysql
+
+# MySQL Configuration
 MYSQL_HOST=<DatabaseIP>
 MYSQL_USER=<UserName>
 MYSQL_PASSWORD=<Password>
 MYSQL_DB=<Database>
+
+# SQLite Configuration
+SQLITE_PATH=<SQLite Database Path>
 ```
 
 Replace variables in `<>` with the according information provided

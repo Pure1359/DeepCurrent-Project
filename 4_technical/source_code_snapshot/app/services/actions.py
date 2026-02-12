@@ -92,7 +92,49 @@ def get_action_history(account_id, limit, offset):
         action_list = cursor.fetchall()
         return jsonify(action_list)
     
+def personal_dashboard(account_id):
+    totals_sql = """
+        SELECT
+            COALESCE(SUM(ca.point_awarded), 0) AS total_points,
+            COALESCE(SUM(al.co2e_saved), 0) AS total_co2e_saved,
+            COUNT(al.log_id) AS actions_count
+        FROM ActionLog al
+        LEFT JOIN ChallengeAction ca ON ca.log_id = al.log_id
+        WHERE al.submitted_by = %s
+    """
+    recent_sql = """
+        SELECT al.log_id, at.actionName, at.category, al.quantity, at.unit, al.co2e_saved, al.log_date
+        FROM ActionLog al
+        JOIN ActionType at ON at.actionType_id = al.actionType_id
+        WHERE al.submitted_by = %s
+        ORDER BY al.log_date DESC
+        LIMIT 10
+    """
+    with db_cursor() as (connection, cursor):
+        cursor.execute(totals_sql, (account_id,))
+        totals = cursor.fetchone() or {"total_points": 0, "total_co2e_saved": 0, "actions_count": 0}
+        cursor.execute(recent_sql, (account_id,))
+        recent = cursor.fetchall()
+    return {"totals": totals, "recent_actions": recent}
 
+def leaderboard(limit):
+    sql = """
+        SELECT
+            a.account_id,
+            u.first_name,
+            u.last_name,
+            COALESCE(SUM(ca.point_awarded), 0) AS points
+        FROM Accounts a
+        JOIN Users u ON u.user_id = a.user_id
+        LEFT JOIN ActionLog al ON al.submitted_by = a.account_id
+        LEFT JOIN ChallengeAction ca ON ca.log_id = al.log_id
+        GROUP BY a.account_id, u.first_name, u.last_name
+        ORDER BY points DESC
+        LIMIT %s
+    """
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (limit,))
+        return cursor.fetchall()
 
 
 

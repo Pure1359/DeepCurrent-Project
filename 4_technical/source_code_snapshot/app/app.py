@@ -1,5 +1,5 @@
 # Import modules
-from flask import request, render_template, redirect, url_for, Blueprint, session
+from flask import abort, request, render_template, redirect, url_for, Blueprint, session
 import bcrypt
 from datetime import datetime, timezone
 
@@ -90,9 +90,13 @@ def login():
         return render_template("login.html", error="Invalid email or password.")
     
     # Store account_id and role in session
-    account_role = get_user_role(account[1])
-    session["account_id"] = account[0]
-    session["account_role"] = account_role
+    account_role = get_user_role(account["user_id"])
+    session["account_id"] = account["account_id"]
+    if account_role is not None:
+        session["account_role"] = account_role['user_type']
+    else:
+        abort(404, error = "Something bad happen")
+
 
     # Update Last Active
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")

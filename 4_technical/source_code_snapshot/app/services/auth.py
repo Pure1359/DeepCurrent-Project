@@ -5,8 +5,8 @@ from flask import session
 def get_account_by_email_for_login(email):
     sql = """
         SELECT a.account_id, a.user_id, a.username, a.password, u.email
-        FROM account a
-        JOIN user u ON a.user_id = u.user_id
+        FROM Accounts a
+        JOIN Users u ON a.user_id = u.user_id
         WHERE u.email = %s
         """
     
@@ -19,11 +19,25 @@ def verify_password(plain_password, stored_password):
     if stored_password is None:
         return False
     
-    # Hash password and check against stored password
-    return bcrypt.checkpw(plain_password.encode("utf-8"), stored_password.encode("utf-8"))
+    # stored_password may be bytes for MySQL or string for SQLite
+    if isinstance(stored_password, bytes):
+        stored_password = stored_password
+        return bcrypt.checkpw(plain_password.encode("utf-8"), stored_password) 
+    else:
+        stored_bytes = str(stored_password).encode("utf-8")
+        return bcrypt.checkpw(plain_password.encode("utf-8"), stored_bytes)    
 
 def verify_session_role(unknown_session, known_session):
     if (unknown_session == known_session):
         return True
     else:
         return False
+    
+# Return "moderator" or "user" based on account flags
+def derive_role(account_row):
+    try:
+        if int(account_row.get("is_moderator") or 0) == 1:
+            return "moderator"
+    except Exception:
+        pass
+    return "user"
