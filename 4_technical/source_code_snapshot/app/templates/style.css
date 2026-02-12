@@ -326,3 +326,58 @@ body::after {
   padding: 10px 16px;
   background: #fcfbfc;
 }
+
+
+.challenge-start {
+  width: 448px;
+  border-radius: 16px;
+  border: 2px solid #214d4b;
+  background: white;
+  overflow: hidden;
+}
+
+.challenge-start-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #C0E4E6;
+}
+
+.challenge-start-header h2 {
+  margin: 0;
+}
+
+.challenge-start-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  border-bottom: 1px solid #ccc;
+}
+
+.challenge-start-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  border-bottom: 1px solid #ccc;
+}
+
+.challenge-start-row:last-child {
+  border-bottom: none;
+}
+
+
+.challenge-start-row button {
+  background: #214d4b;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 24px;
+  cursor: pointer;
+}
+
+.leaf {
+  font-size: 24px;
+}
