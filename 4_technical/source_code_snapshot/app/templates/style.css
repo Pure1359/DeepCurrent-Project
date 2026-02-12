@@ -381,3 +381,75 @@ body::after {
 .leaf {
   font-size: 24px;
 }
+
+.impact-wrapper {
+  display:flex;
+  justify-content:center;
+  margin-top:60px;
+}
+
+.impact-card {
+  width:800px;
+  background:white;
+  border-radius:30px;
+  padding:32px;
+  position:relative;
+}
+
+.back {
+  position:absolute;
+  width:24px;
+  height:24px;
+  cursor:pointer;
+}
+
+.distance {
+  font-size:16px;
+  font-weight:bold;
+}
+
+.compare {
+  display:flex;
+  justify-content:space-between;
+  margin:40px 0;
+}
+
+.green {
+  font-size:26px;
+  font-weight:bold;
+}
+
+.yellow {
+  font-size:26px;
+  color:#f5d76e;
+  font-weight:bold;
+}
+
+.question {
+  margin-top:40px;
+}
+
+select {
+  width:140px;
+  font-size:20px;
+  border-bottom:0.5px solid #153A39;
+  outline:none;
+  margin-top:10px;
+}
+
+.hint {
+  margin-top:40px;
+  color:gray;
+}
+
+
+.submit {
+  margin-top:20px;
+  background:#214F4D;
+  color:white;
+  border:none;
+  padding:10px 40px;
+  border-radius:30px;
+  font-size:20px;
+  cursor:pointer;
+}
