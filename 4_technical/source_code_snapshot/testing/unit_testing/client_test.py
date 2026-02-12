@@ -37,8 +37,6 @@ def test_get_register(new_client, recorded_template):
     template, context = recorded_template[0]
     assert template.name == "register.html"
     assert response.request.path == "/register"
-
-@pytest.mark.skip(reason = "Need database to be setup")
 def test_register_normal(new_client, recorded_template):
     response = new_client.post("/register", data = {
         "first_name" : "john",
