@@ -19,7 +19,7 @@ for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
 
   matrix.appendChild(day);
 
-  // 👉 Only label months when inside the target year
+  // Only label months when inside the target year
   if (d.getFullYear() === year && d.getMonth() !== currentMonth) {
     currentMonth = d.getMonth();
 
