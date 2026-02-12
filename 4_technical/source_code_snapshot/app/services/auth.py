@@ -5,8 +5,8 @@ from flask import session
 def get_account_by_email_for_login(email):
     sql = """
         SELECT a.account_id, a.user_id, a.username, a.password, u.email
-        FROM account a
-        JOIN user u ON a.user_id = u.user_id
+        FROM Accounts a
+        JOIN Users u ON a.user_id = u.user_id
         WHERE u.email = %s
         """
     
@@ -22,11 +22,10 @@ def verify_password(plain_password, stored_password):
     # stored_password may be bytes for MySQL or string for SQLite
     if isinstance(stored_password, bytes):
         stored_password = stored_password
+        return bcrypt.checkpw(plain_password.encode("utf-8"), stored_password) 
     else:
         stored_bytes = str(stored_password).encode("utf-8")
-    
-    # Hash password and check against stored password
-    return bcrypt.checkpw(plain_password.encode("utf-8"), stored_bytes) 
+        return bcrypt.checkpw(plain_password.encode("utf-8"), stored_bytes)    
 
 def verify_session_role(unknown_session, known_session):
     if (unknown_session == known_session):
