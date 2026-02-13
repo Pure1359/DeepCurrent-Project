@@ -108,8 +108,9 @@ def api_leaderboard():
 def api_pending_decisions():
     require_login()
     require_role("moderator")
-    limit = int(request.args.get("limit", 20))
-    offset = int(request.args.get("offset", 0))
+    data = request.get_json()
+    offset = data.get("offset", 0)
+    limit = data.get("limit", 10)
     return jsonify({"pending": list_pending_decision(limit, offset)})
 
 @api_bp.post("moderation/decision")

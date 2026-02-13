@@ -13,11 +13,11 @@ def create_user(first_name, last_name, email, dob, user_type, course=None, depar
         return cursor.lastrowid # Return user_id
 
 # Create an account in the database
-def create_account(user_id, username, password, date_created, last_active):
-    sql = "INSERT INTO Accounts (user_id, username, password, date_created, last_active) VALUES (%s, %s, %s, %s, %s)"
+def create_account(user_id, username, password, date_created, last_active, is_moderator=0):
+    sql = "INSERT INTO Accounts (user_id, username, password, date_created, last_active, is_moderator) VALUES (%s, %s, %s, %s, %s, %s)"
 
     with db_cursor() as (connection, cursor):
-        cursor.execute(sql, (user_id, username, password, date_created, last_active))
+        cursor.execute(sql, (user_id, username, password, date_created, last_active, is_moderator))
         return cursor.lastrowid # Return account_id
 
 # Update Last Active

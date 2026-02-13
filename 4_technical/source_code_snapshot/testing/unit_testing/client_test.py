@@ -1,53 +1,6 @@
 import pytest
-from flask import template_rendered, session
-from contextlib import contextmanager
-from database_fixture import function_scope_database, module_scope_database
-from app import create_app
+from database_fixture import *
 
-#check for rendering template
-@contextmanager
-def captured_template(app):
-    recorded_template = []
-    def record_template(sender, template, context, **extra):
-        recorded_template.append((template, context))
-    template_rendered.connect(record_template, app)
-    try:
-        yield recorded_template
-    finally:
-        template_rendered.disconnect(record_template, app)
-
-
-@pytest.fixture()
-def app():
-    app = create_app()
-    app.config.update({"TESTING" : True})
-    yield app
-
-@pytest.fixture(scope = "module")
-def app_module():
-    app = create_app()
-    app.config.update({"TESTING" : True})
-    yield app
-
-@pytest.fixture()
-def new_client_function(app):
-    return app.test_client()
-
-
-@pytest.fixture(scope="module")
-def new_client_module(app_module):
-    return app_module.test_client()
-
-@pytest.fixture()
-def recorded_template(app):
-    with captured_template(app) as recorder:
-        yield recorder
-
-@pytest.fixture(scope = "module")
-def recorded_template_module(app_module):
-    with captured_template(app_module) as recorder:
-        yield recorder
-    
 
 def test_get_register(new_client_function, recorded_template):
     response = new_client_function.get("/register", follow_redirects = True)
@@ -85,9 +38,23 @@ def test_login_normal(new_client_module, recorded_template_module, module_scope_
 
     with new_client_module.session_transaction() as session:
         # set a user id without going through the login route
-        assert session.get("account_role") == "student"
+        assert session.get("account_role") == "user"
 
-def test_login_wrong(new_client_function, recorded_template):
+def test_login_moderator(new_client_function, recorded_template, module_scope_database):
+    response = new_client_function.post("/login", data = {
+        "email" : "j.miller@exeter.ac.uk",
+        "password" : "moderator456" 
+    }, follow_redirects = True)
+
+    assert len(recorded_template) == 1
+    template, context = recorded_template[-1]
+    assert response.request.path == "/dashboard"
+    assert template.name == "dashboard.html"
+
+    with new_client_function.session_transaction() as session:
+        assert session.get("account_role") == "moderator"
+
+def test_login_wrong(new_client_function, recorded_template, module_scope_database):
     response = new_client_function.post("/login", data = {
         "email" : "jd123@exeter.ac.uk",
         "password" : "jd12tv"
@@ -96,8 +63,6 @@ def test_login_wrong(new_client_function, recorded_template):
     template, context = recorded_template[-1]
     assert context['error'] == "Invalid email or password."
     assert template.name == "login.html"
-
-
 
 def test_register_incorrect_credential(new_client_function, recorded_template):
     response = new_client_function.post("/register", data = {

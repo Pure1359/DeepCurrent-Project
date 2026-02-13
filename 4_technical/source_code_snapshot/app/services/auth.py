@@ -4,7 +4,7 @@ from flask import session
 # Check if account exists via email
 def get_account_by_email_for_login(email):
     sql = """
-        SELECT a.account_id, a.user_id, a.username, a.password, u.email
+        SELECT a.account_id, a.user_id, a.username, a.password, a.is_moderator, u.email
         FROM Accounts a
         JOIN Users u ON a.user_id = u.user_id
         WHERE u.email = %s
@@ -35,6 +35,7 @@ def verify_session_role(unknown_session, known_session):
     
 # Return "moderator" or "user" based on account flags
 def derive_role(account_row):
+    print(f"derive_role is {account_row}")
     try:
         if int(account_row.get("is_moderator") or 0) == 1:
             return "moderator"

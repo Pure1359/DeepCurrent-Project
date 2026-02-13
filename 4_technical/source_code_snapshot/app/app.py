@@ -91,10 +91,14 @@ def login():
         return render_template("login.html", error="Invalid email or password.")
     
     role = derive_role(account)
+    print(f"role is {role}")
     if role is not None:
         session["account_role"] = role
+        session["account_id"] = account["account_id"]
     else:
         abort(404, error = "Something bad happen")
+
+    
 
     # Update Last Active
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
