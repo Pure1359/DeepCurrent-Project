@@ -66,6 +66,7 @@ body::after {
   justify-content: center;
   gap: 24px;
   height: max-content;
+  backdrop-filter: hue-rotate();
 }
 .spacer {
   position: relative;
