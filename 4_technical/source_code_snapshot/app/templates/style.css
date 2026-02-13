@@ -5,12 +5,18 @@ html,
 body {
   height: 100%;
   width: 100%;
+  color: rgb(0, 0, 0, 0.9);
 }
 
 body {
   font-family: Arial, sans-serif;
+  margin-top: 60px;
   overflow: hidden;
-  /* position: relative; */
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  justify-items: self-start;
+  min-height: 100vh;
 }
 
 /* Background image */
@@ -52,20 +58,48 @@ body::after {
 
 /* Boday content decoration */
 .body-frame {
-  position: fixed;
   top: 60px;
   display: flex;
   flex-direction: column;
-  /* background: #fe0e0e; */
   align-items: center;
   justify-content: center;
   gap: 24px;
+  height: max-content;
 }
 .spacer {
   position: relative;
   height: 18px;
   width: 100%;
   /* background-color: turquoise; */
+}
+
+.dashboard-graphs-wrraper {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  height: fit-content;
+}
+.dashboard-graph-left {
+  background-color: #7bc96f;
+  display: grid;
+  gap: 24px;
+}
+#graph-container {
+  display: inline-grid;
+  /* flex-direction: revert-layer; */
+  justify-content: center;
+  justify-items: center;
+  gap: 24px;
+}
+.dashboard-graph-right {
+  background-color: #c9756f;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+#graph-container,
+#progress-message span {
+  font-weight: bold;
 }
 
 .card-grid {
@@ -327,7 +361,6 @@ body::after {
   background: #fcfbfc;
 }
 
-
 .challenge-start {
   width: 448px;
   border-radius: 16px;
@@ -341,7 +374,7 @@ body::after {
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: #C0E4E6;
+  background: #c0e4e6;
 }
 
 .challenge-start-header h2 {
@@ -368,7 +401,6 @@ body::after {
   border-bottom: none;
 }
 
-
 .challenge-start-row button {
   background: #214d4b;
   color: white;
@@ -383,73 +415,72 @@ body::after {
 }
 
 .impact-wrapper {
-  display:flex;
-  justify-content:center;
-  margin-top:60px;
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
 }
 
 .impact-card {
-  width:800px;
-  background:white;
-  border-radius:30px;
-  padding:32px;
-  position:relative;
+  width: 800px;
+  background: white;
+  border-radius: 30px;
+  padding: 32px;
+  position: relative;
 }
 
 .back {
-  position:absolute;
-  width:24px;
-  height:24px;
-  cursor:pointer;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 }
 
 .distance {
-  font-size:16px;
-  font-weight:bold;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .compare {
-  display:flex;
-  justify-content:space-between;
-  margin:40px 0;
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 0;
 }
 
 .green {
-  font-size:26px;
-  font-weight:bold;
+  font-size: 26px;
+  font-weight: bold;
 }
 
 .yellow {
-  font-size:26px;
-  color:#f5d76e;
-  font-weight:bold;
+  font-size: 26px;
+  color: #f5d76e;
+  font-weight: bold;
 }
 
 .question {
-  margin-top:40px;
+  margin-top: 40px;
 }
 
 select {
-  width:140px;
-  font-size:20px;
-  border-bottom:0.5px solid #153A39;
-  outline:none;
-  margin-top:10px;
+  width: 140px;
+  font-size: 20px;
+  border-bottom: 0.5px solid #153a39;
+  outline: none;
+  margin-top: 10px;
 }
 
 .hint {
-  margin-top:40px;
-  color:gray;
+  margin-top: 40px;
+  color: gray;
 }
 
-
 .submit {
-  margin-top:20px;
-  background:#214F4D;
-  color:white;
-  border:none;
-  padding:10px 40px;
-  border-radius:30px;
-  font-size:20px;
-  cursor:pointer;
+  margin-top: 20px;
+  background: #214f4d;
+  color: white;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 30px;
+  font-size: 20px;
+  cursor: pointer;
 }
