@@ -13,11 +13,12 @@ from datetime import datetime
 # challenge_leaderboard_individual
 # challenge_leaderboard_group
 #Required role : Who can create the challenge? Parameter : Role -> {Admin, Locally Group Leader , etc}
-def create_challenge(created_by, challenge_type, is_official, title, start_date, end_date, rules):
-    sql = """INSERT INTO Challenge (created_by, challenge_type, is_official, title, start_date, end_date, rules) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+def create_challenge(created_by, challenge_type, title, start_date, end_date, rules):
+    sql = """INSERT INTO Challenge (created_by, challenge_type, title, start_date, end_date, rules) 
+            VALUES (%s, %s, %s, %s, %s, %s)"""
     with db_cursor() as (connection, cursor):
-        cursor.execute(sql, (created_by, challenge_type, is_official, title, start_date, end_date, rules))
+        cursor.execute(sql, (created_by, challenge_type, title, start_date, end_date, rules))
+        return cursor.lastrowid
 
 #Add user and challenge to the individualParticipation table
 def join_challenge_individual(challenge_id, account_id):

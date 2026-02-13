@@ -71,7 +71,13 @@ def api_log_action():
     except ValueError as e:
         abort(400, description = str(e))
 
-    return jsonify({"message": "Action logged successfully", "action_id": result})
+    action_id = result["action_log_id"]
+    decision_id = result["decision_id"]
+    evidence_id = result["evidence_id"]
+    challenge_id = result["challenge_id"]
+
+
+    return jsonify({"message": "Action logged successfully", "action_id": action_id, "decision_id" : decision_id, "evidence_id" : evidence_id, "challenge_id" : challenge_id})
 
 @api_bp.post("/challenges/join")
 def api_join_challenge():

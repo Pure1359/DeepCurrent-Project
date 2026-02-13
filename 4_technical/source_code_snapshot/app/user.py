@@ -37,17 +37,18 @@ def list_action_history():
 #The app.service.actions already implement automatic challenge distribution
 @user_bp.route("/submit_action",  methods = ["POST"])
 def submit_action():
-    data = request.get_json()
-    action_name = data.get("action_name")
-    category = data.get("category")
-    quantity = data.get("quantity")
-    #if user don't submit evidence then data.get("evidence") return None
-    evidence_url = data.get("evidence_url")
-
     #abort with message telling user is not logged in
     account_id = session.get("account_id")
     if not account_id:
         abort(400, description = "User is not logged in")
+    
+    data = request.get_json()
+    action_name = data.get("action_name")
+    category = data.get("category")
+    quantity = data.get("quantity")
+    challenge_id = data.get("challenge_id")
+    #if user don't submit evidence then data.get("evidence") return None
+    evidence_url = data.get("evidence_url")
 
     if action_name not in permitted_action_name:
         error_message = f"Action name : {action_name} is not recognized as a valid action name"
@@ -63,9 +64,14 @@ def submit_action():
 
     #if we pass all check
     #then we log an action
-    log_action(account_id, action_name, category, quantity, evidence_url)
+    response = log_action(account_id, action_name, category, quantity, evidence_url)
 
-    return {"success" :True, "message":"Successfully log an action"}, 200
+    action_log_id = response["action_log_id"]
+    evidence_id = response["evidence_id"]
+    decision_id = response["decision_id"]
+    challenge_id = response["challenge_id"]
+
+    return {"success" :True, "message":"Successfully log an action", "action_log_id" : action_log_id, "evidence_id" : evidence_id, "decision_id" : decision_id, "challenge_id" : challenge_id}, 200
     
 
 @user_bp.route("/join_challenge",  methods = ["POST"])
