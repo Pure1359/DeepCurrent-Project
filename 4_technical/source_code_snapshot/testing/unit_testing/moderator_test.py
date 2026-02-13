@@ -108,13 +108,13 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         assert result[0]["submitted_by"] == 1
         assert result[0]["actionType_id"] == 1
         assert result[0]["quantity"] == 2
-        assert result[0]["co2e_saved"] == 0
+        assert result[0]["co2e_saved"] == 1.4
 
         assert result[1]["log_id"] == 2
         assert result[1]["submitted_by"] == 1
         assert result[1]["actionType_id"] == 2
         assert result[1]["quantity"] == 4
-        assert result[1]["co2e_saved"] == 0
+        assert result[1]["co2e_saved"] == 3.6
 
         # Check Evidence
         cursor.execute(sqlEvidence)
@@ -160,12 +160,12 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         assert result[0]["challenge_id"] == 1
         assert result[0]["group_id"] is None
         assert result[0]["log_id"] == 1
-        assert result[0]["point_awarded"] == 0
+        assert result[0]["point_awarded"] == 1.4
 
         assert result[1]["challenge_id"] == 1
         assert result[1]["group_id"] is None
         assert result[1]["log_id"] == 2
-        assert result[1]["point_awarded"] == 0
+        assert result[1]["point_awarded"] == 3.6
 
     
     

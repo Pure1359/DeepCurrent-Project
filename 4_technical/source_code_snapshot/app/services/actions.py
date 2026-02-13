@@ -43,7 +43,7 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
         if challenge_id is not None:
             challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved)
 
-        return {"action_log_id" : action_log_id, "evidence_id" : insert_evidence_record, "decision_id" : insert_decision_record, "challenge_id" : challenge_id}
+        return {"action_log_id" : action_log_id, "evidence_id" : insert_evidence_record, "decision_id" : insert_decision_record, "challenge_id" : challenge_id, "co2e_factor" : co2e_factor, "co2e_saved" : co2e_saved}
     
         
 
