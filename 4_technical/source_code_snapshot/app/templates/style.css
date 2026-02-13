@@ -59,6 +59,7 @@ body::after {
 /* Boday content decoration */
 .body-frame {
   top: 60px;
+  bottom: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -70,36 +71,42 @@ body::after {
   position: relative;
   height: 18px;
   width: 100%;
-  /* background-color: turquoise; */
 }
 
 .dashboard-graphs-wrraper {
   display: flex;
   gap: 24px;
-  width: 100%;
+  width: min-content;
   height: fit-content;
 }
 .dashboard-graph-left {
-  background-color: #7bc96f;
   display: grid;
   gap: 24px;
 }
 #graph-container {
   display: inline-grid;
-  /* flex-direction: revert-layer; */
   justify-content: center;
   justify-items: center;
   gap: 24px;
 }
+
+#matrix-wrrapper {
+  display: inline-grid;
+  justify-content: center;
+  justify-items: left;
+}
+#matrix-caption {
+  font-weight: bold;
+}
 .dashboard-graph-right {
-  background-color: #c9756f;
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
+  display: grid;
 }
 #graph-container,
 #progress-message span {
   font-weight: bold;
+}
+#matrix-caption-leftside {
+  width: fit-content;
 }
 
 .card-grid {
