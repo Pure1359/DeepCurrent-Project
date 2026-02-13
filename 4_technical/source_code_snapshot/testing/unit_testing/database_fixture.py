@@ -95,6 +95,7 @@ def default_actionType_data():
 
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, ("walk", "travel", "KM", 0.7))
+        cursor.execute(sql, ("bus", "travel", "KM", 0.9))
 
 
 def default_challenge_list():
@@ -105,6 +106,7 @@ def default_challenge_list():
 
 def default_action_list():
     log_action(1, "walk", "travel", 2, 1, "url1")
+    log_action(1, "bus", "travel", 4, 1, "url2")
     
 
 #check for rendering template

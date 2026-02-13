@@ -52,6 +52,126 @@ def test_moderator_view_pending_evidence(new_client_module, recorded_template_mo
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
-    assert len(response) == 1
+    assert len(response) == 2
+
+    print(response)
     
+def test_moderator_accept_pending_evidence(new_client_module, recorded_template_module, module_scope_database):
+    response = new_client_module.post("/moderator_access/approve_submission", json = {
+        "evidence_id" : 1,
+        "result" : "Accepted",
+        "reason" : "Evidence is accepted"
+    }, follow_redirects = True)
+
+    response = response.get_json()
+    decision_list = response["decision_list"]
+    assert len(decision_list) == 1
+    
+    sql = """SELECT * FROM Decision WHERE decision_id = %s"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (decision_list[-1],))
+        result = cursor.fetchall()
+        print("\n")
+        print(result)
+
+def test_moderator_reject_pending_evidence(new_client_module, recorded_template_module, module_scope_database):
+    response = new_client_module.post("/moderator_access/approve_submission", json = {
+        "evidence_id" : 2,
+        "result" : "Rejected",
+        "reason" : "Wrong Challenge"
+    }, follow_redirects = True)
+
+    response = response.get_json()
+    decision_list = response["decision_list"]
+    assert len(decision_list) == 1
+    
+    sql = """SELECT * FROM Decision WHERE decision_id = %s"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (decision_list[-1],))
+        result = cursor.fetchall()
+        print("\n")
+        print(result)
+
+def test_check_db_after(new_client_module, recorded_template_module, module_scope_database):
+    #check if evidence record and decision record is generated when in case of evidence is submitted by user
+    sqlActionLog = """SELECT * FROM ActionLog"""
+    sqlEvidence = """SELECT * FROM Evidence"""
+    sqlDecision = """SELECT * FROM Decision"""
+    sqlChallengeAction = """SELECT * FROM ChallengeAction"""
+    with db_cursor() as (connection, cursor):
+        # Check ActionLog
+        cursor.execute(sqlActionLog)
+        result = cursor.fetchall()
+
+        assert len(result) == 2
+        assert result[0]["log_id"] == 1
+        assert result[0]["submitted_by"] == 1
+        assert result[0]["actionType_id"] == 1
+        assert result[0]["quantity"] == 2
+        assert result[0]["co2e_saved"] == 0
+
+        assert result[1]["log_id"] == 2
+        assert result[1]["submitted_by"] == 1
+        assert result[1]["actionType_id"] == 2
+        assert result[1]["quantity"] == 4
+        assert result[1]["co2e_saved"] == 0
+
+        # Check Evidence
+        cursor.execute(sqlEvidence)
+        result = cursor.fetchall()
+
+        assert len(result) == 2
+        assert result[0]["evidence_id"] == 1
+        assert result[0]["log_id"] == 1
+        assert result[0]["evidence_type"] is None
+        assert result[0]["evidence_url"] == "url1"
+        
+        assert result[1]["evidence_id"] == 2
+        assert result[1]["log_id"] == 2
+        assert result[1]["evidence_type"] is None
+        assert result[1]["evidence_url"] == "url2"
+
+        # Check Decision
+        cursor.execute(sqlDecision)
+        result = cursor.fetchall()
+
+        assert len(result) == 2
+        # First decision (Accepted)
+        assert result[0]["decision_id"] == 1
+        assert result[0]["evidence_id"] == 1
+        assert result[0]["reviewer_id"] == 2  # James (moderator)
+        assert result[0]["decision_status"] == "Accepted"
+        assert result[0]["reason"] == "Evidence is accepted"
+        assert result[0]["decision_date"] is not None
+        
+        # Second decision (Rejected)
+        assert result[1]["decision_id"] == 2
+        assert result[1]["evidence_id"] == 2
+        assert result[1]["reviewer_id"] == 2  # James (moderator)
+        assert result[1]["decision_status"] == "Rejected"
+        assert result[1]["reason"] == "Wrong Challenge"
+        assert result[1]["decision_date"] is not None
+
+        # Check ChallengeAction
+        cursor.execute(sqlChallengeAction)
+        result = cursor.fetchall()
+
+        assert len(result) == 2
+        assert result[0]["challenge_id"] == 1
+        assert result[0]["group_id"] is None
+        assert result[0]["log_id"] == 1
+        assert result[0]["point_awarded"] == 0
+
+        assert result[1]["challenge_id"] == 1
+        assert result[1]["group_id"] is None
+        assert result[1]["log_id"] == 2
+        assert result[1]["point_awarded"] == 0
+
+    
+    
+
+        
+        
+
+
 

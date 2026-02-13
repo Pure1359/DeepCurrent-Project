@@ -13,10 +13,18 @@ from flask import jsonify
 
 #Return Boolean? : Approve -> True, Disapprove -> False
 def create_decision(reviewer_id, status, date, reason, evidence_id):
-    sql = """UPDATE Decision SET reviewer_id = %s ,decision_status = %s, decision_date = %s, decision_reason = %s WHERE evidence_id = %s"""
+    sql = """UPDATE Decision SET reviewer_id = %s ,decision_status = %s, decision_date = %s, reason = %s WHERE evidence_id = %s"""
+
+    sql_select = """SELECT decision_id FROM Decision WHERE evidence_id = %s"""
 
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (reviewer_id, status, date, reason, evidence_id))
+        cursor.execute(sql_select, (evidence_id,))
+        id_list = []
+        for result in cursor.fetchall():
+            id_list.append(result["decision_id"])
+    
+    return id_list
 
 #Ignore this function for now
 def submit_evidence(some_param):

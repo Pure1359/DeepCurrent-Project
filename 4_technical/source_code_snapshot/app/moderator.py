@@ -42,9 +42,9 @@ def make_submission_decision():
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     reviewer_id = session.get("account_id")
 
-    create_decision(reviewer_id, decision_result, now, reason, evidence_id)
+    result_list  = create_decision(reviewer_id, decision_result, now, reason, evidence_id)
 
-    return {"success": True, "message" : "Sucessfully create the decision"}, 200
+    return jsonify({"success": True, "message" : "Sucessfully create the decision", "decision_list" : result_list}), 200
 
     
 @moderator_bp.route("/create_challenge", methods = ["GET", "POST"])
