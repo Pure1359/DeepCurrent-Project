@@ -1,0 +1,15 @@
+<svg width="260" height="260" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g style="mix-blend-mode:saturation">
+<mask id="mask0_173_190" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="260" height="260">
+<circle cx="130" cy="130" r="118" stroke="black" stroke-width="24"/>
+</mask>
+<g mask="url(#mask0_173_190)">
+<g style="mix-blend-mode:color-dodge">
+<rect width="130" height="130" fill="#F8C3E2"/>
+<rect x="130" width="130" height="130" fill="#C0E4E6"/>
+<rect y="130" width="130" height="130" fill="#FADF7D"/>
+<rect x="130" y="130" width="130" height="130" fill="#C1D9FF"/>
+</g>
+</g>
+</g>
+</svg>
