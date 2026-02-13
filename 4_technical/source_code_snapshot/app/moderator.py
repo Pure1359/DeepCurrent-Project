@@ -51,11 +51,10 @@ def make_submission_decision():
 def moderator_make_challenge():
     created_by = session.get("account_id")
     challenge_type = request.form['challenge_type']
-    is_official = True
     title = request.form['title']
     start_date = request.form['start_date']
     end_date = request.form['end_date']
     rule = request.form['rule']
-    create_challenge(created_by, challenge_type, is_official, title, start_date, end_date, rule)
+    challenge_id = create_challenge(created_by, challenge_type, title, start_date, end_date, rule)
 
-    return {"success": True, "message" : "Successfully make a challenge"}, 200
+    return jsonify({"success": True, "message" : "Successfully make a challenge", "challenge_id" : challenge_id}), 200

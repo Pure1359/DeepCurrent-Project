@@ -13,7 +13,7 @@ from pymysql.cursors import DictCursor
 # get_account_totals
 
 #Log action into database
-def log_action(account_id, name, category, quantity, challenge_id, evidence_url = None):
+def log_action(account_id, name, category, quantity, challenge_id = None, evidence_url = None):
     current_time = datetime.now()
     #implement this later
     co2e_saved = 0
@@ -38,8 +38,11 @@ def log_action(account_id, name, category, quantity, challenge_id, evidence_url 
             inserted_evidence_id = insert_evidence_record(cursor, action_log_id, None, evidence_url, current_time)
             inserted_decision_id = insert_decision_record(cursor,inserted_evidence_id, None, "pending", None, None)
         #For prototype only, in the final project the apply_to_challenge() will only be called when there is evidence_url
-        apply_to_challenge(cursor, challenge_id, action_log_id)
-        return action_log_id
+        if challenge_id is not None:
+            challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id)
+
+        return {"action_log_id" : action_log_id, "evidence_id" : insert_evidence_record, "decision_id" : insert_decision_record, "challenge_id" : challenge_id}
+    
         
 
 def insert_evidence_record(cursor:DictCursor, action_log_id, evidence_type, evidence_url, evidence_date):
@@ -64,6 +67,7 @@ def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id):
     group_id = None
 
     cursor.execute(insertion, (challenge_id, group_id, action_log_id, points_awarded))
+    return cursor.lastrowid
 
 def get_action_history(account_id, limit, offset):
     sql = """SELECT 
