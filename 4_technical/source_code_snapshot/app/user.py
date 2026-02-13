@@ -18,8 +18,8 @@ permitted_category_name = ["travel", "food", "energy", "waste"]
 
 @user_bp.before_request
 def is_login():
-    is_user = verify_session_role(session.get("role"), "user")
-    is_moderator = verify_session_role(session.get("role"), "moderator")
+    is_user = verify_session_role(session.get("account_role"), "user")
+    is_moderator = verify_session_role(session.get("account_role"), "moderator")
     if (not(is_user) and not(is_moderator)):
         redirect(url_for("login"))
     else:

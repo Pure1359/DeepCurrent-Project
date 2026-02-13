@@ -27,13 +27,6 @@ def update_last_active(account_id, last_active):
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (last_active, account_id))
 
-def get_user_role(user_id):
-    sql = "SELECT user_type FROM Users WHERE user_id = %s"
-
-    with db_cursor() as (connection, cursor):
-        cursor.execute(sql, (user_id,))
-        return cursor.fetchone()
-
 def get_weekly_saved(account_id):
     today = datetime.now()
     start_of_week = today - timedelta(days = today.weekday()) #Monday

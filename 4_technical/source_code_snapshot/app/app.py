@@ -4,8 +4,9 @@ import bcrypt
 from datetime import datetime, timezone
 
 # Import Database Functions from services/
-from app.services.users_service import create_user, create_account, update_last_active, get_user_role
+from app.services.users_service import create_user, create_account, update_last_active
 from app.services.auth import get_account_by_email_for_login, verify_password
+from app.services.auth import derive_role
 
 # Instance for application is created in __init__.py
 
@@ -89,14 +90,11 @@ def login():
     if not account or not verify_password(password, account["password"]):
         return render_template("login.html", error="Invalid email or password.")
     
-    # Store account_id and role in session
-    account_role = get_user_role(account["user_id"])
-    session["account_id"] = account["account_id"]
-    if account_role is not None:
-        session["account_role"] = account_role['user_type']
+    role = derive_role(account)
+    if role is not None:
+        session["account_role"] = role
     else:
         abort(404, error = "Something bad happen")
-
 
     # Update Last Active
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
