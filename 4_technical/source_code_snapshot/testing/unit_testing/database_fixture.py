@@ -4,7 +4,11 @@ from flask import template_rendered
 import pytest
 import sqlite3
 from app.services.users_service import create_account, create_user
+from app.services.challenges import create_challenge
+from app.services.actions import log_action
 from app import create_app
+from app.db_config import db_cursor
+from datetime import datetime, timedelta
 
 @pytest.fixture()
 def function_scope_database():
@@ -15,7 +19,12 @@ def function_scope_database():
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+
     defaultDatabase()
+    default_actionType_data()
+    default_challenge_list()
+    default_action_list()
+
     yield
     #turn off the foreign key to make dropping table easier and get all table name
     cursor.execute("PRAGMA foreign_keys = OFF")
@@ -43,7 +52,9 @@ def module_scope_database():
     cursor = conn.cursor()
 
     defaultDatabase()
-
+    default_actionType_data()
+    default_challenge_list()
+    default_action_list()
     yield
     #turn off the foreign key to make dropping table easier and get all table name
     cursor.execute("PRAGMA foreign_keys = OFF")
@@ -78,6 +89,23 @@ def defaultDatabase():
     create_account(sarah_id, 'schen', password3, '2024-09-10 16:00:00', '2026-02-12 20:30:00')
 
     print(f"Created users: Emma (ID: {emma_id}), James (ID: {james_id}), Sarah (ID: {sarah_id})")
+
+def default_actionType_data():
+    sql = """INSERT INTO ActionType(actionName, category, unit, co2e_factor) VALUES (%s, %s, %s, %s)"""
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, ("walk", "travel", "KM", 0.7))
+
+
+def default_challenge_list():
+    start_date = datetime.now()
+    end_date = start_date + timedelta(days = 30)
+    create_challenge(2, "travel", "let walk", start_date, end_date, "walk as much as you can")
+    create_challenge(2, "food", "Green Eat", start_date, end_date, "Eat vegetarian food")
+
+def default_action_list():
+    log_action(1, "walk", "travel", 2, 1, "url1")
+    
 
 #check for rendering template
 @contextmanager
@@ -121,5 +149,3 @@ def recorded_template(app):
 def recorded_template_module(app_module):
     with captured_template(app_module) as recorder:
         yield recorder
-
-    

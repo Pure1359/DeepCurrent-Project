@@ -20,7 +20,7 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
  
     #Get what type an action being logged is. e.g. Is it (cycle, travel)?
     sqlActionType = """SELECT actionType_id FROM ActionTYPE
-                       WHERE name = %s AND category = %s
+                       WHERE actionName = %s AND category = %s
                     """
 
     sqlActionLog = """INSERT INTO ActionLog(submitted_by, actionType_id, log_date, quantity, co2e_saved) VALUES (%s, %s, %s, %s, %s)"""
@@ -46,12 +46,12 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
         
 
 def insert_evidence_record(cursor:DictCursor, action_log_id, evidence_type, evidence_url, evidence_date):
-    insert_evidence = """INSERT INTO Evidence(action_log_id, evidence_type, evidence_url, evidence_date) VALUES (%s, %s, %s, %s)"""
+    insert_evidence = """INSERT INTO Evidence(log_id, evidence_type, evidence_url, evidence_date) VALUES (%s, %s, %s, %s)"""
     cursor.execute(insert_evidence, (action_log_id, evidence_type, evidence_url, evidence_date))
     return cursor.lastrowid
 
 def insert_decision_record(cursor:DictCursor, evidence_id, reviewer_id, decision_status, decision_date, reason):
-    insert_decision = """INSERT Decision(evidence_id, reviewer_id, decision_status, decision_date, reason) VALUES(%s, %s, %s, %s, %s)"""
+    insert_decision = """INSERT INTO Decision(evidence_id, reviewer_id, decision_status, decision_date, reason) VALUES(%s, %s, %s, %s, %s)"""
     cursor.execute(insert_decision, (evidence_id, reviewer_id, decision_status, decision_date, reason))
     return cursor.lastrowid
 
@@ -59,7 +59,7 @@ def insert_decision_record(cursor:DictCursor, evidence_id, reviewer_id, decision
 #Find the challenge that is eligible to be applied to
 def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id):
 
-    insertion = """INSERT INTO ChallengeAction(challenge_id, group_id, log_id, points_awarded) VALUES (%s, %s, %s, %s)"""
+    insertion = """INSERT INTO ChallengeAction(challenge_id, group_id, log_id, point_awarded) VALUES (%s, %s, %s, %s)"""
 
     points_awarded = 0
     
