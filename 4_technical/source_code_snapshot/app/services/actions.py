@@ -19,7 +19,7 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
     co2e_saved = 0
  
     #Get what type an action being logged is. e.g. Is it (cycle, travel)?
-    sqlActionType = """SELECT actionType_id FROM ActionTYPE
+    sqlActionType = """SELECT * FROM ActionTYPE
                        WHERE actionName = %s AND category = %s
                     """
 
@@ -31,6 +31,8 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
             raise ValueError(f"Action type does not exists: {name}, {category}")
         
         actionType_id = return_record["actionType_id"]
+        co2e_factor = return_record["co2e_factor"]
+        co2e_saved = co2e_factor * quantity
         cursor.execute(sqlActionLog, (account_id, actionType_id, current_time, quantity, co2e_saved))
         action_log_id = cursor.lastrowid
     
@@ -39,7 +41,7 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
             inserted_decision_id = insert_decision_record(cursor,inserted_evidence_id, None, "pending", None, None)
         #For prototype only, in the final project the apply_to_challenge() will only be called when there is evidence_url
         if challenge_id is not None:
-            challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id)
+            challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved)
 
         return {"action_log_id" : action_log_id, "evidence_id" : insert_evidence_record, "decision_id" : insert_decision_record, "challenge_id" : challenge_id}
     
@@ -57,11 +59,11 @@ def insert_decision_record(cursor:DictCursor, evidence_id, reviewer_id, decision
 
 
 #Find the challenge that is eligible to be applied to
-def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id):
+def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id, co2e_saved):
 
     insertion = """INSERT INTO ChallengeAction(challenge_id, group_id, log_id, point_awarded) VALUES (%s, %s, %s, %s)"""
 
-    points_awarded = 0
+    points_awarded = co2e_saved
     
     #Prototype support individual only no need for group now
     group_id = None

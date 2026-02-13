@@ -107,7 +107,25 @@ def default_challenge_list():
 def default_action_list():
     log_action(1, "walk", "travel", 2, 1, "url1")
     log_action(1, "bus", "travel", 4, 1, "url2")
+    log_action(1, "walk", "travel", 10, 1, "url3")
+    log_action(1, "bus", "travel", 15, 1, "url4")
+    log_action(1, "walk", "travel", 5, 2, "url5")
+    log_action(1, "walk", "travel", 8, None, None)
+    log_action(1, "bus", "travel", 12, None, None)
+    log_action(1, "walk", "travel", 3, None, None)
     
+    log_action(3, "walk", "travel", 20, 1, "url6")
+    log_action(3, "bus", "travel", 25, 1, "url7")
+    log_action(3, "walk", "travel", 6, None, None)
+    log_action(3, "bus", "travel", 9, None, None)
+    
+    log_action(1, "walk", "travel", 7, 1, None)
+    log_action(3, "bus", "travel", 11, 2, None)
+    
+    log_action(1, "walk", "travel", 4, None, None)
+    log_action(1, "bus", "travel", 18, None, None)
+    log_action(3, "walk", "travel", 13, None, None)
+    log_action(3, "bus", "travel", 22, None, None)
 
 #check for rendering template
 @contextmanager

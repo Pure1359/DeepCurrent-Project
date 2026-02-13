@@ -52,7 +52,7 @@ def test_moderator_view_pending_evidence(new_client_module, recorded_template_mo
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
-    assert len(response) == 2
+    assert len(response) == 7
 
     print(response)
     
@@ -103,7 +103,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlActionLog)
         result = cursor.fetchall()
 
-        assert len(result) == 2
+        assert len(result) == 18
         assert result[0]["log_id"] == 1
         assert result[0]["submitted_by"] == 1
         assert result[0]["actionType_id"] == 1
@@ -120,7 +120,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlEvidence)
         result = cursor.fetchall()
 
-        assert len(result) == 2
+        assert len(result) == 7
         assert result[0]["evidence_id"] == 1
         assert result[0]["log_id"] == 1
         assert result[0]["evidence_type"] is None
@@ -135,7 +135,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlDecision)
         result = cursor.fetchall()
 
-        assert len(result) == 2
+        assert len(result) == 7
         # First decision (Accepted)
         assert result[0]["decision_id"] == 1
         assert result[0]["evidence_id"] == 1
@@ -156,7 +156,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlChallengeAction)
         result = cursor.fetchall()
 
-        assert len(result) == 2
+        assert len(result) == 9
         assert result[0]["challenge_id"] == 1
         assert result[0]["group_id"] is None
         assert result[0]["log_id"] == 1

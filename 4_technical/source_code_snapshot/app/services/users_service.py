@@ -60,7 +60,7 @@ def get_monthly_saved(account_id):
 def get_yearly_saved(account_id):
     temp_today = datetime.now()
     start_of_year = temp_today.replace(day = 1, month=1)
-    end_of_year = datetime(day = 31 , month=12, year = temp_today.year)
+    end_of_year = datetime(day = 31, month=12, year = temp_today.year)
 
     sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND log_date BETWEEN %s AND %s"""
 
