@@ -120,6 +120,19 @@ def dashboard():
 def challenge():
     return render_template("challenge.html")
 
+# Routes for moderating files
+@bp.route("/moderator-list")
+def moderator_list():
+    return render_template("moderating_list.html")
+
+@bp.route("/moderator-request")
+def moderator_request():
+    return render_template("moderator-request.html")
+
+@bp.route("/moderator-history")
+def moderator_history():
+    return render_template("modhistory.html")
+
 # Route to handle logout
 @bp.post("/logout")
 def logout():
