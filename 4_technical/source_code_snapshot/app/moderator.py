@@ -23,6 +23,8 @@ def view_submission_list():
     data = request.get_json()
     offset = data.get("offset", 0)
     limit = data.get("limit", 60)
+    offset = 0
+    limit = 100
     #validate data type in url parameter
     try:
         offset = int(offset)
@@ -37,6 +39,8 @@ def view_all_submission():
     data = request.get_json()
     offset = data.get("offset", 0)
     limit = data.get("limit", 60)
+    offset = 0
+    limit = 100
 
     try:
         offset = int(offset)

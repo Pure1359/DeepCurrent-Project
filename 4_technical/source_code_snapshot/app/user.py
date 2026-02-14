@@ -27,8 +27,11 @@ def is_login():
 #have to find some link between action log and challenge, as it should contain the status of the decision
 @user_bp.route("/get_action_history", methods = ["POST"])
 def list_action_history():
+    
     data = request.get_json()
     offset = data.get("offset", 0)
+    offset = 0
+    limit = 100
     limit = data.get("limit", 30)
     account_id = session.get("account_id")
     return get_action_history(account_id, limit, offset)
