@@ -57,7 +57,7 @@ def test_moderator_view_pending_evidence(new_client_module, recorded_template_mo
     print(response)
     
 def test_moderator_accept_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
-    response = new_client_module.post("/moderator_access/approve_submission", json = {
+    response = new_client_module.post("/moderator_access/make_decision", json = {
         "evidence_id" : 1,
         "result" : "accepted",
         "reason" : "Evidence is accepted"
@@ -75,7 +75,7 @@ def test_moderator_accept_pending_evidence(new_client_module, recorded_template_
 
 
 def test_moderator_reject_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
-    response = new_client_module.post("/moderator_access/approve_submission", json = {
+    response = new_client_module.post("/moderator_access/make_decision", json = {
         "evidence_id" : 2,
         "result" : "rejected",
         "reason" : "Wrong Challenge"
@@ -98,6 +98,17 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
 
     response = response.get_json()
     assert len(response) == 5
+
+def test_moderator_view_all_submission_again(new_client_module, recorded_template_module, module_scope_database, populated_database):
+    response = new_client_module.post("/moderator_access/view_all_submission", json = {
+        "offset" : 0,
+        "limit" : 100
+    }, follow_redirects = True)
+    response = response.get_json()
+    assert len(response) == 7
+
+
+
 
 def test_check_db_after(new_client_module, recorded_template_module, module_scope_database, populated_database):
     #check if evidence record and decision record is generated when in case of evidence is submitted by user

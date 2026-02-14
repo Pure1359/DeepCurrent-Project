@@ -47,7 +47,7 @@ def view_all_submission():
     response = list_all_evidence_submission(limit, offset)
     return response
 
-@moderator_bp.route("/approve_submission/", methods = ["GET","POST"])
+@moderator_bp.route("/make_decision/", methods = ["GET","POST"])
 def make_submission_decision():
     data = request.get_json()
     evidence_id = data.get("evidence_id")
