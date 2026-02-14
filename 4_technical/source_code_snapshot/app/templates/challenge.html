@@ -4,33 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link
-      rel="stylesheet"
-      href="/4_technical/source_code_snapshot/app/static/style.css"
-    />
-    <script src="/4_technical/source_code_snapshot/app/static/JavaScript.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='JavaScript.js') }}"></script>
+
   </head>
 
   <body>
     <div class="sidebar">
       <nav class="navbar">
-        <div class="nav-item" onclick="window.location.href='dashboard.html'">
-          <img class="icon" src="Resource/home.svg" alt="Home" />
+        <div class="nav-item">
+          <img class="icon" src="{{ url_for('static', filename='Resource/home.svg') }}" alt="home" />
           <span class="label">Home</span>
         </div>
 
-        <div class="nav-item">
-          <img class="icon" src="Resource/chalange.svg" alt="Challenges" />
+        <div class="nav-item" onclick="window.location.href='{{ url_for('app.challenge') }}'">
+          <img class="icon" src="{{ url_for('static', filename='Resource/chalange.svg') }}" alt="Challenges" />
           <span class="label">Challenges</span>
         </div>
 
         <div class="nav-item">
-          <img class="icon" src="Resource/group.svg" alt="Group" />
+          <img class="icon" src="{{ url_for('static', filename='Resource/group.svg') }}" alt="Group" />
           <span class="label">Group</span>
         </div>
 
         <div class="nav-item">
-          <img class="icon" src="Resource/eco.svg" alt="Read" />
+          <img class="icon" src="{{ url_for('static', filename='Resource/eco.svg') }}" alt="Read" />
           <span class="label">Read</span>
         </div>
       </nav>

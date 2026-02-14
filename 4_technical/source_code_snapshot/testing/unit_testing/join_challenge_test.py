@@ -5,8 +5,7 @@ from app.db_config import db_cursor
 from custom_error.Challenge_Exception import UserAlreadyJoinChallenge, InvalidChallengeDate, ChallengeIdNotFound
 
 def test_join_challenge_success(new_client_module, module_scope_database, populated_database):
-    """Test user successfully joins a challenge"""
-    # Logout and login as Sarah
+    #test user join challenge as sarah
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -31,19 +30,19 @@ def test_join_challenge_success(new_client_module, module_scope_database, popula
         assert result["challenge_id"] == 1
 
 def test_join_challenge_already_joined(new_client_module, module_scope_database, populated_database):
-    """Test error when user tries to join same challenge twice"""
-    # Login as Emma (already has actions in challenge 1 from populated_database)
+    #test error ,when the user join same challenge twice or more
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
         "password": "password123"
     }, follow_redirects=True)
     
-    # First join should work (if not already joined via populated_database)
-    # But if Emma already joined via actions, this should fail
+    #emma join challenge id = 1 
     response = new_client_module.post("/user_access/join_challenge", json={
         "challenge_id": 1
     })
+    data = response.get_json()
+    assert response.status_code == 200
     
     # Try to join challenge 1 again
     response2 = new_client_module.post("/user_access/join_challenge", json={
@@ -72,8 +71,7 @@ def test_join_challenge_not_found(new_client_module, module_scope_database, popu
     assert "error" in data
 
 def test_join_challenge_expired(new_client_module, module_scope_database, populated_database):
-    """Test error when trying to join expired challenge"""
-    # Logout and login as student
+    #error when joining challenge that already expired
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -90,8 +88,8 @@ def test_join_challenge_expired(new_client_module, module_scope_database, popula
     assert "The challenge is currently not active" in data["error"]
 
 def test_join_challenge_not_started(new_client_module, module_scope_database, populated_database):
-    """Test error when trying to join challenge that hasn't started"""
-    # Login as student
+    #error when join challenge that hasn't started"""
+
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -108,8 +106,7 @@ def test_join_challenge_not_started(new_client_module, module_scope_database, po
     assert "The challenge is currently not active" in data["error"]
 
 def test_join_multiple_challenges(new_client_module, module_scope_database, populated_database):
-    """Test user can join multiple different challenges"""
-    # Use Emma instead - she doesn't have challenge 2
+    #check to see if user can join many challenge
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
@@ -133,7 +130,6 @@ def test_join_multiple_challenges(new_client_module, module_scope_database, popu
     
 
 def test_join_challenge_without_login(new_client_module, module_scope_database):
-    """Test error when not logged in"""
     # Logout to ensure no session
     new_client_module.post("/logout")
     
@@ -146,7 +142,7 @@ def test_join_challenge_without_login(new_client_module, module_scope_database):
     assert response.status_code in [302, 400, 401, 403]
 
 def test_get_user_challenges(new_client_module, module_scope_database, populated_database):
-    """Test getting list of challenges user has joined"""
+    #Test getting list of challenges user has joined
     # Login as Sarah and join some challenges
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
