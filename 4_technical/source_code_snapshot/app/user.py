@@ -13,8 +13,7 @@ from custom_error.Challenge_Exception import *
 #need to do required login 
 user_bp = Blueprint("user", __name__)
 
-permitted_action_name = ["car", "walking", "bus", "train", "cycling"]
-permitted_category_name = ["travel", "food", "energy", "waste"]
+
 
 @user_bp.before_request
 def is_login():
@@ -29,8 +28,8 @@ def is_login():
 @user_bp.route("/get_action_history", methods = ["POST"])
 def list_action_history():
     data = request.get_json()
-    offset = data.get("offset")
-    limit = data.get("limit")
+    offset = data.get("offset", 0)
+    limit = data.get("limit", 30)
     account_id = session.get("account_id")
     return get_action_history(account_id, limit, offset)
 
@@ -50,13 +49,13 @@ def submit_action():
     #if user don't submit evidence then data.get("evidence") return None
     evidence_url = data.get("evidence_url")
 
-    if action_name not in permitted_action_name:
-        error_message = f"Action name : {action_name} is not recognized as a valid action name"
-        return make_response(jsonify(error = error_message), 400)
+    # if action_name not in permitted_action_name:
+    #     error_message = f"Action name : {action_name} is not recognized as a valid action name"
+    #     return make_response(jsonify(error = error_message), 400)
     
-    if category not in permitted_category_name:
-        error_message = f"Category name : {category} is not recognized as a valid category name"
-        return make_response(jsonify(error = error_message), 400)
+    # if category not in permitted_category_name:
+    #     error_message = f"Category name : {category} is not recognized as a valid category name"
+    #     return make_response(jsonify(error = error_message), 400)
     
     if quantity <= 0:
         error_message = "Quantity can not be 0 or have negative value"
@@ -64,14 +63,14 @@ def submit_action():
 
     #if we pass all check
     #then we log an action
-    response = log_action(account_id, action_name, category, quantity, evidence_url)
+    response = log_action(account_id, action_name, category, quantity, challenge_id, evidence_url)
 
     action_log_id = response["action_log_id"]
     evidence_id = response["evidence_id"]
     decision_id = response["decision_id"]
     challenge_id = response["challenge_id"]
 
-    return {"success" :True, "message":"Successfully log an action", "action_log_id" : action_log_id, "evidence_id" : evidence_id, "decision_id" : decision_id, "challenge_id" : challenge_id}, 200
+    return jsonify({"success" :True, "message":"Successfully log an action", "action_log_id" : action_log_id, "evidence_id" : evidence_id, "decision_id" : decision_id, "challenge_id" : challenge_id}), 200
     
 
 @user_bp.route("/join_challenge",  methods = ["POST"])

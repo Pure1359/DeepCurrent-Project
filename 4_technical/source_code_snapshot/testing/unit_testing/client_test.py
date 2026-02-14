@@ -9,6 +9,21 @@ def test_get_register(new_client_function, recorded_template):
     assert template.name == "register.html"
     assert response.request.path == "/register"
 
+def test_register_missing_field(new_client_function, recorded_template, module_scope_database):
+    response = new_client_function.post("/register", data = {
+        "first_name" : "john",
+        "email" : "jd123@exeter.ac.uk",
+        "dob" : "2000-07-09",
+        "user_type" : "student",
+        "password" : "jd123tv",
+        "repeat_password" : "jd123tv"
+    }, follow_redirects = True)
+    
+    assert len(recorded_template) == 1
+    template, context = recorded_template[-1]
+    assert context["error"] == "Please fill in all fields."
+    assert template.name == "register.html"
+
 def test_register_normal(new_client_module, recorded_template_module, module_scope_database):
     response = new_client_module.post("/register", data = {
         "first_name" : "john",

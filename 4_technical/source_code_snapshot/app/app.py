@@ -32,14 +32,13 @@ def register():
         return render_template("register.html")
     
     # Fetch data from registration form
-    first_name = request.form["first_name"]
-    last_name = request.form["last_name"]
-    email = request.form["email"]
-    dob = request.form["dob"]
-    user_type = request.form["user_type"]
-    password = request.form["password"]
-    repeat_password = request.form["repeat_password"]
-
+    first_name = request.form.get("first_name")
+    last_name = request.form.get("last_name")
+    email = request.form.get("email")
+    dob = request.form.get("dob")
+    user_type = request.form.get("user_type")
+    password = request.form.get("password")
+    repeat_password = request.form.get("repeat_password")
     if not all([first_name, last_name, email, dob, user_type, password, repeat_password]):
         return render_template("register.html", error="Please fill in all fields.")
 
@@ -82,8 +81,8 @@ def login():
         return render_template("login.html")
     
     # Fetch login details from form
-    email = request.form["email"]
-    password = request.form["password"]
+    email = request.form.get("email")
+    password = request.form.get("password")
 
     # Check if login details are valid
     account = get_account_by_email_for_login(email)
