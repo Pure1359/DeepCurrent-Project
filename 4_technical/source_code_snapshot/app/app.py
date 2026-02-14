@@ -116,6 +116,10 @@ def dashboard():
     
     return render_template("dashboard.html")
 
+@bp.route("/challenge")
+def challenge():
+    return render_template("challenge.html")
+
 # Route to handle logout
 @bp.post("/logout")
 def logout():
