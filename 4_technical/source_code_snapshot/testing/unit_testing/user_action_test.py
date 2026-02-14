@@ -5,7 +5,7 @@ from app.db_config import db_cursor
 from app.services.actions import log_action
 from app.services.users_service import get_weekly_saved, get_monthly_saved, get_yearly_saved
 
-def test_log_action_challenge(new_client_module, module_scope_database):
+def test_log_action_challenge(new_client_module, module_scope_database, populated_database):
     response = new_client_module.post("/login", data = {
         "email" : "e.watson@exeter.ac.uk",
         "password" : "password123"
@@ -51,7 +51,7 @@ def test_log_action_challenge(new_client_module, module_scope_database):
         assert challenge_action["challenge_id"] == 1
         assert challenge_action["point_awarded"] == 50 * 0.7
 
-def test_log_action_personal(module_scope_database):
+def test_log_action_personal(module_scope_database, populated_database):
     # Log a personal action (no challenge, no evidence)
     result = log_action(1, "bus", "travel", 30, None, None)
     
@@ -76,32 +76,84 @@ def test_log_action_personal(module_scope_database):
         challenge_action = cursor.fetchone()
         assert challenge_action is None
 
-def test_view_evidence_pending_list(new_client_module, module_scope_database):
+def test_view_evidence_pending_list(new_client_module, module_scope_database, populated_database):
 
     response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 30})
     response = response.get_json()
     assert len(response) == 6
 
 
-def test_get_weekly_action(module_scope_database):
-    weekly_saved_emma = get_weekly_saved(1)
-    assert weekly_saved_emma == 133.4
-    weekly_saved_sarah = get_weekly_saved(3)
-    assert weekly_saved_sarah == 87.6  
-    
-  
-
-def test_get_monthly_action(module_scope_database):
+def test_get_weekly_action(new_client_module, module_scope_database, populated_database):
    
-    monthly_saved_emma = get_monthly_saved(1)
-    assert monthly_saved_emma == 133.4
-    monthly_saved_sarah = get_monthly_saved(3)
-    assert monthly_saved_sarah == 87.6  
+    new_client_module.post("/logout")
     
-def test_get_yearly_action(module_scope_database):
-    yearly_saved_emma = get_yearly_saved(1)
-    assert yearly_saved_emma == 133.4
-    yearly_saved_sarah = get_yearly_saved(3)
-    assert yearly_saved_sarah == 87.6 
+    
+    new_client_module.post("/login", data={
+        "email": "e.watson@exeter.ac.uk",
+        "password": "password123"
+    }, follow_redirects=True)
+    
+    response = new_client_module.post("/user_access/get_weekly_co2e_saving", json={})
+    data = response.get_json()
+    assert data["total_saving"] == 133.4
+    
  
+    new_client_module.post("/logout")
+    new_client_module.post("/login", data={
+        "email": "s.chen@exeter.ac.uk",
+        "password": "student789"
+    }, follow_redirects=True)
+    
+    response = new_client_module.post("/user_access/get_weekly_co2e_saving", json={})
+    data = response.get_json()
+    assert data["total_saving"] == 87.6
+
+def test_get_monthly_action(new_client_module, module_scope_database, populated_database):
+    
+    new_client_module.post("/logout")
+    
+   
+    new_client_module.post("/login", data={
+        "email": "e.watson@exeter.ac.uk",
+        "password": "password123"
+    }, follow_redirects=True)
+    
+    response = new_client_module.post("/user_access/get_monthly_co2e_saving", json={})
+    data = response.get_json()
+    assert data["total_saving"] == 133.4
+    
+   
+    new_client_module.post("/logout")
+    new_client_module.post("/login", data={
+        "email": "s.chen@exeter.ac.uk",
+        "password": "student789"
+    }, follow_redirects=True)
+    
+    response = new_client_module.post("/user_access/get_monthly_co2e_saving", json={})
+    data = response.get_json()
+    assert data["total_saving"] == 87.6
+
+def test_get_yearly_action(new_client_module, module_scope_database, populated_database):
+    
+    new_client_module.post("/logout")
+    
   
+    new_client_module.post("/login", data={
+        "email": "e.watson@exeter.ac.uk",
+        "password": "password123"
+    }, follow_redirects=True)
+    
+    response = new_client_module.post("/user_access/get_yearly_co2e_saving", json={})
+    data = response.get_json()
+    assert data["total_saving"] == 133.4
+    
+    
+    new_client_module.post("/logout")
+    new_client_module.post("/login", data={
+        "email": "s.chen@exeter.ac.uk",
+        "password": "student789"
+    }, follow_redirects=True)
+    
+    response = new_client_module.post("/user_access/get_yearly_co2e_saving", json={})
+    data = response.get_json()
+    assert data["total_saving"] == 87.6

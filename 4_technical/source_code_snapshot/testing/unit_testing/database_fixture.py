@@ -22,9 +22,6 @@ def function_scope_database():
 
     defaultDatabase()
     default_actionType_data()
-    default_challenge_list()
-    default_action_list()
-
     yield
     #turn off the foreign key to make dropping table easier and get all table name
     cursor.execute("PRAGMA foreign_keys = OFF")
@@ -53,8 +50,6 @@ def module_scope_database():
 
     defaultDatabase()
     default_actionType_data()
-    default_challenge_list()
-    default_action_list()
     yield
     #turn off the foreign key to make dropping table easier and get all table name
     cursor.execute("PRAGMA foreign_keys = OFF")
@@ -98,34 +93,94 @@ def default_actionType_data():
         cursor.execute(sql, ("bus", "travel", "KM", 0.9))
 
 
-def default_challenge_list():
-    start_date = datetime.now()
-    end_date = start_date + timedelta(days = 30)
-    create_challenge(2, "travel", "let walk", start_date, end_date, "walk as much as you can")
-    create_challenge(2, "food", "Green Eat", start_date, end_date, "Eat vegetarian food")
-
-def default_action_list():
-    log_action(1, "walk", "travel", 2, 1, "url1")
-    log_action(1, "bus", "travel", 4, 1, "url2")
-    log_action(1, "walk", "travel", 10, 1, "url3")
-    log_action(1, "bus", "travel", 15, 1, "url4")
-    log_action(1, "walk", "travel", 5, 2, "url5")
-    log_action(1, "walk", "travel", 8, None, None)
-    log_action(1, "bus", "travel", 12, None, None)
-    log_action(1, "walk", "travel", 3, None, None)
+@pytest.fixture(scope="module")
+def populated_database(new_client_module, module_scope_database):
+    """Populates database and logs in as moderator for tests"""
     
-    log_action(3, "walk", "travel", 20, 1, "url6")
-    log_action(3, "bus", "travel", 25, 1, "url7")
-    log_action(3, "walk", "travel", 6, None, None)
-    log_action(3, "bus", "travel", 9, None, None)
+    # Login as moderator to create challenges
+    new_client_module.post("/login", data={
+        "email": "j.miller@exeter.ac.uk",
+        "password": "moderator456"
+    }, follow_redirects=True)
     
-    log_action(1, "walk", "travel", 7, 1, None)
-    log_action(3, "bus", "travel", 11, 2, None)
+    # Create challenges
+    start_date = datetime.now().strftime("%Y-%m-%d")
+    end_date = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
     
-    log_action(1, "walk", "travel", 4, None, None)
-    log_action(1, "bus", "travel", 18, None, None)
-    log_action(3, "walk", "travel", 13, None, None)
-    log_action(3, "bus", "travel", 22, None, None)
+    new_client_module.post("/moderator_access/create_challenge", data={
+        "challenge_type": "travel",
+        "title": "let walk",
+        "start_date": start_date,
+        "end_date": end_date,
+        "rule": "walk as much as you can"
+    })
+    
+    new_client_module.post("/moderator_access/create_challenge", data={
+        "challenge_type": "food",
+        "title": "Green Eat",
+        "start_date": start_date,
+        "end_date": end_date,
+        "rule": "Eat vegetarian food"
+    })
+    
+    # Logout
+    new_client_module.post("/logout")
+    
+    # Login as Emma to create actions
+    new_client_module.post("/login", data={
+        "email": "e.watson@exeter.ac.uk",
+        "password": "password123"
+    }, follow_redirects=True)
+    
+    # Emma's actions
+    actions_emma = [
+        {"action_name": "walk", "category": "travel", "quantity": 2, "challenge_id": 1, "evidence_url": "url1"},
+        {"action_name": "bus", "category": "travel", "quantity": 4, "challenge_id": 1, "evidence_url": "url2"},
+        {"action_name": "walk", "category": "travel", "quantity": 10, "challenge_id": 1, "evidence_url": "url3"},
+        {"action_name": "bus", "category": "travel", "quantity": 15, "challenge_id": 1, "evidence_url": "url4"},
+        {"action_name": "walk", "category": "travel", "quantity": 5, "challenge_id": 2, "evidence_url": "url5"},
+        {"action_name": "walk", "category": "travel", "quantity": 8, "challenge_id": None, "evidence_url": None},
+        {"action_name": "bus", "category": "travel", "quantity": 12, "challenge_id": None, "evidence_url": None},
+        {"action_name": "walk", "category": "travel", "quantity": 3, "challenge_id": None, "evidence_url": None},
+        {"action_name": "walk", "category": "travel", "quantity": 7, "challenge_id": 1, "evidence_url": None},
+        {"action_name": "walk", "category": "travel", "quantity": 4, "challenge_id": None, "evidence_url": None},
+        {"action_name": "bus", "category": "travel", "quantity": 18, "challenge_id": None, "evidence_url": None},
+    ]
+    
+    for action in actions_emma:
+        new_client_module.post("/user_access/submit_action", json=action)
+    
+    # Logout Emma
+    new_client_module.post("/logout")
+    
+    # Login as Sarah
+    new_client_module.post("/login", data={
+        "email": "s.chen@exeter.ac.uk",
+        "password": "student789"
+    }, follow_redirects=True)
+    
+    # Sarah's actions
+    actions_sarah = [
+        {"action_name": "walk", "category": "travel", "quantity": 20, "challenge_id": 1, "evidence_url": "url6"},
+        {"action_name": "bus", "category": "travel", "quantity": 25, "challenge_id": 1, "evidence_url": "url7"},
+        {"action_name": "walk", "category": "travel", "quantity": 6, "challenge_id": None, "evidence_url": None},
+        {"action_name": "bus", "category": "travel", "quantity": 9, "challenge_id": None, "evidence_url": None},
+        {"action_name": "bus", "category": "travel", "quantity": 11, "challenge_id": 2, "evidence_url": None},
+        {"action_name": "walk", "category": "travel", "quantity": 13, "challenge_id": None, "evidence_url": None},
+        {"action_name": "bus", "category": "travel", "quantity": 22, "challenge_id": None, "evidence_url": None},
+    ]
+    
+    for action in actions_sarah:
+        new_client_module.post("/user_access/submit_action", json=action)
+    
+    # Logout Sarah and login as moderator for tests
+    new_client_module.post("/logout")
+    new_client_module.post("/login", data={
+        "email": "j.miller@exeter.ac.uk",
+        "password": "moderator456"
+    }, follow_redirects=True)
+    
+    yield
 
 #check for rendering template
 @contextmanager

@@ -3,13 +3,13 @@ import pytest
 from database_fixture import *
 from app.db_config import db_cursor
 
-def test_login_moderator(new_client_module, recorded_template_module, module_scope_database):
+def test_login_moderator(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/login", data = {
         "email" : "j.miller@exeter.ac.uk",
         "password" : "moderator456" 
     }, follow_redirects = True)
 
-    assert len(recorded_template_module) == 1
+    assert len(recorded_template_module) >= 1
     template, context = recorded_template_module[-1]
     assert response.request.path == "/dashboard"
     assert template.name == "dashboard.html"
@@ -17,7 +17,7 @@ def test_login_moderator(new_client_module, recorded_template_module, module_sco
     with new_client_module.session_transaction() as session:
         assert session.get("account_role") == "moderator"
 
-def test_moderator_make_challenge(new_client_module, recorded_template_module, module_scope_database):
+def test_moderator_make_challenge(new_client_module, recorded_template_module, module_scope_database, populated_database):
     start_date = datetime.now()
     end_date = datetime.now() + timedelta(days = 30)
     response = new_client_module.post("/moderator_access/create_challenge", data = {
@@ -46,7 +46,7 @@ def test_moderator_make_challenge(new_client_module, recorded_template_module, m
         cursor.execute(sql)
         accounts = cursor.fetchall()
 
-def test_moderator_view_pending_evidence(new_client_module, recorded_template_module, module_scope_database):
+def test_moderator_view_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/view_submission_list", json = {
         "offset" : 0,
         "limit" : 100
@@ -56,7 +56,7 @@ def test_moderator_view_pending_evidence(new_client_module, recorded_template_mo
 
     print(response)
     
-def test_moderator_accept_pending_evidence(new_client_module, recorded_template_module, module_scope_database):
+def test_moderator_accept_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/approve_submission", json = {
         "evidence_id" : 1,
         "result" : "Accepted",
@@ -74,7 +74,7 @@ def test_moderator_accept_pending_evidence(new_client_module, recorded_template_
         print("\n")
         print(result)
 
-def test_moderator_reject_pending_evidence(new_client_module, recorded_template_module, module_scope_database):
+def test_moderator_reject_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/approve_submission", json = {
         "evidence_id" : 2,
         "result" : "Rejected",
@@ -91,7 +91,7 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
         result = cursor.fetchall()
         assert result[0]["decision_status"] == "Rejected"
 
-def test_check_db_after(new_client_module, recorded_template_module, module_scope_database):
+def test_check_db_after(new_client_module, recorded_template_module, module_scope_database, populated_database):
     #check if evidence record and decision record is generated when in case of evidence is submitted by user
     sqlActionLog = """SELECT * FROM ActionLog"""
     sqlEvidence = """SELECT * FROM Evidence"""
