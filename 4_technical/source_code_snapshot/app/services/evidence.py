@@ -46,6 +46,7 @@ def list_pending_decision(limit, offset):
                 ON Evidence.log_id = ActionLog.log_id
             JOIN ActionType 
                 ON ActionType.actionType_id = ActionLog.actionType_id
+            WHERE decision_status = 'pending'
             ORDER BY evidence_date DESC
             LIMIT %s OFFSET %s
          """
@@ -55,7 +56,27 @@ def list_pending_decision(limit, offset):
         submission_list = cursor.fetchall()
         return jsonify(submission_list)
     
+def list_all_evidence_submission(limit, offset):
+    sql = """SELECT 
+                actionName,
+                category,
+                quantity,
+                evidence_url,
+                evidence_type,
+                evidence_date,
+                unit
+            FROM Decision
+            JOIN Evidence 
+                ON Decision.evidence_id = Evidence.evidence_id
+            JOIN ActionLog 
+                ON Evidence.log_id = ActionLog.log_id
+            JOIN ActionType 
+                ON ActionType.actionType_id = ActionLog.actionType_id
+            ORDER BY evidence_date DESC
+            LIMIT %s OFFSET %s
+         """
     
-#Something to do with fetching database
-def get_evidence_decision():
-    pass
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (limit, offset))
+        submission_list = cursor.fetchall()
+        return jsonify(submission_list)
