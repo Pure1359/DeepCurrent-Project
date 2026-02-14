@@ -169,3 +169,6 @@ def recorded_template(app):
 def recorded_template_module(app_module):
     with captured_template(app_module) as recorder:
         yield recorder
+
+
+
