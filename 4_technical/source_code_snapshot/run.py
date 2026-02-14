@@ -13,4 +13,4 @@ default_actionType_data()
 
 if __name__ == '__main__':
     print(os.getenv("MYSQL_HOST"))
-    app.run(host="localhost", port=5000, debug=True)
+    app.run(host="localhost", port=5020, debug=True)
