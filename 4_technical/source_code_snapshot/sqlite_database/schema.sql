@@ -20,9 +20,6 @@ CREATE TABLE "Accounts" (
 );
 
 
-CREATE TABLE sqlite_sequence(name,seq)
-
-
 CREATE TABLE "ActionLog" (
         "log_id" INTEGER PRIMARY KEY AUTOINCREMENT,
         "submitted_by" INTEGER NULL  ,
