@@ -4,11 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link
-      rel="stylesheet"
-      href="/4_technical/source_code_snapshot/app/static/style.css"
-    />
-    <script src="/4_technical/source_code_snapshot/app/static/JavaScript.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="{{ url_for('static', filename='JavaScript.js') }}"></script>
   </head>
 
   <body>
@@ -17,27 +14,27 @@
         <form class="travel_form">
           <div class="form-row">
             <label>Type of Travel</label>
-            <select>
-              <option>Train</option>
-              <option>Bus</option>
-              <option>Car</option>
-              <option>Bike</option>
-              <option>Walk</option>
+            <select id="travel-type" required>
+              <option value="train">Train</option>
+              <option value="bus">Bus</option>
+              <option value="car">Car</option>
+              <option value="bike">Bike</option>
+              <option value="walk">Walk</option>
             </select>
           </div>
 
           <div class="form-row">
             <label>Distance</label>
             <div class="distance-input">
-              <input type="number" placeholder="0.0" />
+              <input type="number" id="distance" placeholder="0.0" step="0.1" min="0" required />
               <span>KM</span>
             </div>
           </div>
 
           <div class="form-row">
-            <label>Upload Evidence</label>
+            <label>Upload Evidence (Optional)</label>
             <label class="upload-box">
-              <input type="file" hidden />
+              <input type="file" id="evidence" accept="image/*" hidden />
               <span>📤</span>
             </label>
           </div>
@@ -49,38 +46,22 @@
     <div class="sidebar">
       <nav class="navbar">
         <div class="nav-item">
-          <img
-            class="icon"
-            src="{{ url_for('static', filename='Resource/home.svg') }}"
-            alt="home"
-          />
+          <img class="icon" src="{{ url_for('static', filename='Resource/home.svg') }}" alt="home" />
           <span class="label">Home</span>
         </div>
 
         <div class="nav-item" onclick="window.location.href='challenge.html'">
-          <img
-            class="icon"
-            src="{{ url_for('static', filename='Resource/chalange.svg') }}"
-            alt="Challenges"
-          />
+          <img class="icon" src="{{ url_for('static', filename='Resource/chalange.svg') }}" alt="Challenges" />
           <span class="label">Challenges</span>
         </div>
 
         <div class="nav-item">
-          <img
-            class="icon"
-            src="{{ url_for('static', filename='Resource/group.svg') }}"
-            alt="Group"
-          />
+          <img class="icon" src="{{ url_for('static', filename='Resource/group.svg') }}" alt="Group" />
           <span class="label">Group</span>
         </div>
 
         <div class="nav-item">
-          <img
-            class="icon"
-            src="{{ url_for('static', filename='Resource/eco.svg') }}"
-            alt="Read"
-          />
+          <img class="icon" src="{{ url_for('static', filename='Resource/eco.svg') }}" alt="Read" />
           <span class="label">Read</span>
         </div>
       </nav>
@@ -127,10 +108,7 @@
       <div id="progress-wrraper" class="dashboard-graphs-wrraper">
         <div class="dashboard-graph-left">
           <div id="graph-container">
-            <img
-              src="{{ url_for('static', filename='Resource/GroupProgress.svg') }}"
-              alt="graph"
-            />
+            <img src="{{ url_for('static', filename='Resource/GroupProgress.svg') }}" alt="graph" />
             <span id="graph-caption">Savings by Category</span>
           </div>
           <div id="progress-message">
@@ -145,18 +123,12 @@
           </div>
           <div id="matrix-wrrapper">
             <span id="matrix-caption">Estimated weekly CO₂e savings</span>
-            <img
-              src="{{ url_for('static', filename='Resource/matrixNoShadow.svg') }}"
-              alt="matrix"
-            />
+            <img src="{{ url_for('static', filename='Resource/matrixNoShadow.svg') }}" alt="matrix" />
           </div>
         </div>
         <div class="dashboard-graph-right">
           <div id="image-container-right">
-            <img
-              src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}"
-              alt="graph"
-            />
+            <img src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}" alt="graph" />
             <p id="matrix-caption-leftside">
               Colours show the total estimated carbon impact of your actions
               each week, based on reported activities and standard conversion
@@ -171,10 +143,7 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img
-                  src="{{ url_for('static', filename='Resource/Travel.svg') }}"
-                  alt="icon"
-                />
+                <img src="{{ url_for('static', filename='Resource/Travel.svg') }}" alt="icon" />
               </div>
               <h3>Travel</h3>
             </div>
@@ -184,46 +153,28 @@
             <div class="card-body">
               <div class="card-metrics">
                 <span>Weekly</span>
-                <div class="weekly-value">kg</div>
+                <div class="weekly-value">0 kg</div>
               </div>
               <div class="card-metrics">
                 <span>Monthly</span>
-                <div class="monthly-value">kg</div>
+                <div class="monthly-value">0 kg</div>
               </div>
               <div class="card-metrics">
                 <span>Total</span>
-                <div class="total-value">kg</div>
+                <div class="total-value">0 kg</div>
               </div>
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
               <button id="action_log_button" class="add-button">+</button>
             </div>
-            <script>
-              const addButton = document.querySelector("#action_log_button");
-              const actionLogOverlay =
-                document.getElementById("dashboard-overlay");
-
-              addButton.addEventListener("click", () => {
-                actionLogOverlay.style.display = "flex";
-              });
-
-              actionLogOverlay.addEventListener("click", (event) => {
-                if (event.target === actionLogOverlay) {
-                  actionLogOverlay.style.display = "none";
-                }
-              });
-            </script>
           </div>
         </div>
         <div class="card">
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img
-                  src="{{ url_for('static', filename='Resource/Food.svg') }}"
-                  alt="icon"
-                />
+                <img src="{{ url_for('static', filename='Resource/Food.svg') }}" alt="icon" />
               </div>
               <h3>Food</h3>
             </div>
@@ -233,15 +184,15 @@
             <div class="card-body">
               <div class="card-metrics">
                 <span>Weekly</span>
-                <div class="weekly-value">kg</div>
+                <div class="weekly-value">0 kg</div>
               </div>
               <div class="card-metrics">
                 <span>Monthly</span>
-                <div class="monthly-value">kg</div>
+                <div class="monthly-value">0 kg</div>
               </div>
               <div class="card-metrics">
                 <span>Total</span>
-                <div class="total-value">kg</div>
+                <div class="total-value">0 kg</div>
               </div>
             </div>
             <div class="trend-updown"></div>
@@ -254,10 +205,7 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img
-                  src="{{ url_for('static', filename='Resource/Energy.svg') }}"
-                  alt="icon"
-                />
+                <img src="{{ url_for('static', filename='Resource/Energy.svg') }}" alt="icon" />
               </div>
               <h3>Energy</h3>
             </div>
@@ -267,15 +215,15 @@
             <div class="card-body">
               <div class="card-metrics">
                 <span>Weekly</span>
-                <div class="weekly-value">kg</div>
+                <div class="weekly-value">0 kg</div>
               </div>
               <div class="card-metrics">
                 <span>Monthly</span>
-                <div class="monthly-value">kg</div>
+                <div class="monthly-value">0 kg</div>
               </div>
               <div class="card-metrics">
                 <span>Total</span>
-                <div class="total-value">kg</div>
+                <div class="total-value">0 kg</div>
               </div>
             </div>
             <div class="trend-updown"></div>
@@ -288,10 +236,7 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img
-                  src="{{ url_for('static', filename='Resource/Waste.svg') }}"
-                  alt="icon"
-                />
+                <img src="{{ url_for('static', filename='Resource/Waste.svg') }}" alt="icon" />
               </div>
               <h3>Waste</h3>
             </div>
@@ -301,15 +246,15 @@
             <div class="card-body">
               <div class="card-metrics">
                 <span>Weekly</span>
-                <div class="weekly-value">kg</div>
+                <div class="weekly-value">0 kg</div>
               </div>
               <div class="card-metrics">
                 <span>Monthly</span>
-                <div class="monthly-value">kg</div>
+                <div class="monthly-value">0 kg</div>
               </div>
               <div class="card-metrics">
                 <span>Total</span>
-                <div class="total-value">kg</div>
+                <div class="total-value">0 kg</div>
               </div>
             </div>
             <div class="trend-updown"></div>
@@ -321,5 +266,126 @@
       </div>
       <div class="spacer"></div>
     </div>
+
+    <script>
+      const addButton = document.querySelector("#action_log_button");
+      const actionLogOverlay = document.getElementById("dashboard-overlay");
+
+      addButton.addEventListener("click", () => {
+        actionLogOverlay.style.display = "flex";
+      });
+
+      actionLogOverlay.addEventListener("click", (event) => {
+        if (event.target === actionLogOverlay) {
+          actionLogOverlay.style.display = "none";
+        }
+      });
+
+      const travelForm = document.querySelector(".travel_form");
+
+      travelForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const travelType = document.getElementById("travel-type").value.toLowerCase();
+        const distance = parseFloat(document.getElementById("distance").value);
+        const evidenceFile = document.getElementById("evidence").files[0];
+        
+        if (!distance || distance <= 0) {
+          alert("Please enter a valid distance");
+          return;
+        }
+        
+        const actionNameMap = {
+          "train": "train",
+          "bus": "bus",
+          "car": "car",
+          "bike": "bike",
+          "walk": "walk"
+        };
+        
+        const action_name = actionNameMap[travelType] || "walk";
+        
+        const requestData = {
+          action_name: action_name,
+          category: "travel",
+          quantity: distance,
+          challenge_id: null,
+          evidence_url: null   
+        };
+        
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            const co2Factor = data.co2e_factor;
+            const quantity = data.quantity;
+
+            alert(data.message || "Action logged successfully!");
+
+            alert(`CO2e Saved = ${co2Factor} * ${quantity} = ${co2Factor * quantity}`)
+            
+            actionLogOverlay.style.display = "none";
+            
+            travelForm.reset();
+            
+            loadDashboardData();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
+      });
+
+      async function loadDashboardData() {
+        try {
+          const monthlyResponse = await fetch("/user_access/get_monthly_co2e_saving", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}
+          });
+          const monthlyData = await monthlyResponse.json();
+          
+          const progressValue = monthlyData.total_saving || 0;
+          document.getElementById("progress-value").textContent = progressValue.toFixed(1);
+          document.getElementById("co2e-message").textContent = 
+            `You saved ${progressValue.toFixed(1)} kg CO2e this month`;
+          
+          const weeklyResponse = await fetch("/user_access/get_weekly_co2e_saving", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}
+          });
+          const weeklyData = await weeklyResponse.json();
+          
+          const yearlyResponse = await fetch("/user_access/get_yearly_co2e_saving", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}
+          });
+          const yearlyData = await yearlyResponse.json();
+          
+          const travelCard = document.querySelectorAll(".card")[0];
+          const weeklyValue = travelCard.querySelector(".weekly-value");
+          const monthlyValue = travelCard.querySelector(".monthly-value");
+          const totalValue = travelCard.querySelector(".total-value");
+          
+          weeklyValue.textContent = `${(weeklyData.total_saving || 0).toFixed(1)} kg`;
+          monthlyValue.textContent = `${(monthlyData.total_saving || 0).toFixed(1)} kg`;
+          totalValue.textContent = `${(yearlyData.total_saving || 0).toFixed(1)} kg`;
+          
+        } catch (error) {
+          console.error("Failed to load dashboard data:", error);
+        }
+      }
+
+      window.addEventListener("load", loadDashboardData);
+    </script>
   </body>
 </html>

@@ -69,8 +69,9 @@ def submit_action():
     evidence_id = response["evidence_id"]
     decision_id = response["decision_id"]
     challenge_id = response["challenge_id"]
+    co2e_factor = response["co2e_factor"]
 
-    return jsonify({"success" :True, "message":"Successfully log an action", "action_log_id" : action_log_id, "evidence_id" : evidence_id, "decision_id" : decision_id, "challenge_id" : challenge_id}), 200
+    return jsonify({"success" :True, "message":"Successfully log an action", "action_log_id" : action_log_id, "evidence_id" : evidence_id, "decision_id" : decision_id, "challenge_id" : challenge_id, "co2e_factor" : co2e_factor, "quantity" : quantity}), 200
     
 
 @user_bp.route("/join_challenge",  methods = ["POST"])
