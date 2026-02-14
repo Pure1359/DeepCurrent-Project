@@ -76,13 +76,6 @@ def test_log_action_personal(module_scope_database, populated_database):
         challenge_action = cursor.fetchone()
         assert challenge_action is None
 
-def test_view_evidence_pending_list(new_client_module, module_scope_database, populated_database):
-
-    response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 30})
-    response = response.get_json()
-    assert len(response) == 6
-
-
 def test_get_weekly_action(new_client_module, module_scope_database, populated_database):
    
     new_client_module.post("/logout")
@@ -157,3 +150,20 @@ def test_get_yearly_action(new_client_module, module_scope_database, populated_d
     response = new_client_module.post("/user_access/get_yearly_co2e_saving", json={})
     data = response.get_json()
     assert data["total_saving"] == 87.6
+
+def test_get_action_history(new_client_module, module_scope_database, populated_database):
+    new_client_module.post("/logout")
+
+    new_client_module.post("/login", data = {
+        "email" : "e.watson@exeter.ac.uk",
+        "password" : "password123"
+    }, follow_redirects = True)
+
+    response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 100})
+
+    response = response.get_json()
+    #only count action with evidence for now
+    for record in response:
+        print(record)
+        print("\n")
+    assert len(response) == 13

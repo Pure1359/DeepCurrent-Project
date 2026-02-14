@@ -47,7 +47,7 @@ def test_moderator_make_challenge(new_client_module, recorded_template_module, m
         accounts = cursor.fetchall()
 
 def test_moderator_view_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
-    response = new_client_module.post("/moderator_access/view_submission_list", json = {
+    response = new_client_module.post("/moderator_access/view_pending_submission", json = {
         "offset" : 0,
         "limit" : 100
     }, follow_redirects = True)
@@ -59,7 +59,7 @@ def test_moderator_view_pending_evidence(new_client_module, recorded_template_mo
 def test_moderator_accept_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/approve_submission", json = {
         "evidence_id" : 1,
-        "result" : "Accepted",
+        "result" : "accepted",
         "reason" : "Evidence is accepted"
     }, follow_redirects = True)
 
@@ -71,13 +71,13 @@ def test_moderator_accept_pending_evidence(new_client_module, recorded_template_
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (decision_list[-1],))
         result = cursor.fetchall()
-        print("\n")
-        print(result)
+        assert result[0]["decision_status"] == "accepted"
+
 
 def test_moderator_reject_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/approve_submission", json = {
         "evidence_id" : 2,
-        "result" : "Rejected",
+        "result" : "rejected",
         "reason" : "Wrong Challenge"
     }, follow_redirects = True)
 
@@ -89,7 +89,15 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (decision_list[-1],))
         result = cursor.fetchall()
-        assert result[0]["decision_status"] == "Rejected"
+        assert result[0]["decision_status"] == "rejected"
+
+    response = new_client_module.post("/moderator_access/view_pending_submission", json = {
+        "offset" : 0,
+        "limit" : 100,
+    })
+
+    response = response.get_json()
+    assert len(response) == 5
 
 def test_check_db_after(new_client_module, recorded_template_module, module_scope_database, populated_database):
     #check if evidence record and decision record is generated when in case of evidence is submitted by user
@@ -139,7 +147,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         assert result[0]["decision_id"] == 1
         assert result[0]["evidence_id"] == 1
         assert result[0]["reviewer_id"] == 2  # James (moderator)
-        assert result[0]["decision_status"] == "Accepted"
+        assert result[0]["decision_status"] == "accepted"
         assert result[0]["reason"] == "Evidence is accepted"
         assert result[0]["decision_date"] is not None
         
@@ -147,7 +155,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         assert result[1]["decision_id"] == 2
         assert result[1]["evidence_id"] == 2
         assert result[1]["reviewer_id"] == 2  # James (moderator)
-        assert result[1]["decision_status"] == "Rejected"
+        assert result[1]["decision_status"] == "rejected"
         assert result[1]["reason"] == "Wrong Challenge"
         assert result[1]["decision_date"] is not None
 

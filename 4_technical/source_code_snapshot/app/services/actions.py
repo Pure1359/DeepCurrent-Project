@@ -86,12 +86,12 @@ def get_action_history(account_id, limit, offset):
                 evidence_date,
                 decision_status,
                 unit
-            FROM Decision
-            JOIN Evidence 
-                ON Decision.evidence_id = Evidence.evidence_id
-            JOIN ActionLog 
-                ON Evidence.log_id = ActionLog.log_id
-            JOIN ActionType 
+            FROM ActionLog
+            LEFT JOIN Evidence 
+                ON ActionLog.log_id = Evidence.log_id
+            LEFT JOIN Decision 
+                ON Evidence.evidence_id = Decision.evidence_id
+            LEFT JOIN ActionType 
                 ON ActionType.actionType_id = ActionLog.actionType_id
             WHERE submitted_by = %s
             ORDER BY evidence_date DESC

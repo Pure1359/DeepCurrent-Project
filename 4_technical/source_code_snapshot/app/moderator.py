@@ -18,11 +18,11 @@ def is_moderator():
     else:
         abort(404)
 
-@moderator_bp.route("/view_submission_list", methods = ["GET", "POST"])
+@moderator_bp.route("/view_pending_submission", methods = ["GET", "POST"])
 def view_submission_list():
     data = request.get_json()
     offset = data.get("offset", 0)
-    limit = data.get("limit", 10)
+    limit = data.get("limit", 60)
     #validate data type in url parameter
     try:
         offset = int(offset)
@@ -31,6 +31,20 @@ def view_submission_list():
         abort(400, description = "offset or limit data type must be int")
 
     response = list_pending_decision(limit, offset)
+    return response
+@moderator_bp.route("/view_all_submission", methods = ["GET", "POST"])
+def view_all_submission():
+    data = request.get_json()
+    offset = data.get("offset", 0)
+    limit = data.get("limit", 60)
+
+    try:
+        offset = int(offset)
+        limit = int(limit)
+    except ValueError:
+        return jsonify({"success" : False, "message" :  "Offset or limit should be integer"})
+    
+    response = list_all_evidence_submission(limit, offset)
     return response
 
 @moderator_bp.route("/approve_submission/", methods = ["GET","POST"])

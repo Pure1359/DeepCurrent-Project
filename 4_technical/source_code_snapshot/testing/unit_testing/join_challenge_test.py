@@ -121,14 +121,16 @@ def test_join_multiple_challenges(new_client_module, module_scope_database, popu
         "challenge_id": 2
     })
     assert response2.status_code == 200
+
+    response = new_client_module.post("/user_access/get_challenge_for_user")
+
+    response = response.get_json()
+
+    assert len(response) == 2
+    challenge_id = [each_response["challenge_id"] for each_response in response]
+    assert 1 in challenge_id
+    assert 2 in challenge_id
     
-    # Verify Emma has both challenges now
-    with db_cursor() as (connection, cursor):
-        cursor.execute("SELECT * FROM IndividualParticipation WHERE account_id = %s", (1,))
-        results = cursor.fetchall()
-        challenge_ids = [r["challenge_id"] for r in results]
-        assert 1 in challenge_ids
-        assert 2 in challenge_ids
 
 def test_join_challenge_without_login(new_client_module, module_scope_database):
     """Test error when not logged in"""
