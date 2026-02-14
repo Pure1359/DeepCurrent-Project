@@ -26,7 +26,7 @@ def join_challenge_individual(challenge_id, account_id):
     #check to see if the challenge is expired or not
     check_challenge = """SELECT start_date, end_date FROM Challenge WHERE challenge_id = %s"""
     check_duplicate_join = """SELECT challenge_id, account_id FROM IndividualParticipation WHERE challenge_id = %s AND account_id = %s"""
-    sql = """INSERT INTO IndividualParticipation (challenge_id, account_id, join_date) VALUES(%s, %s, %s)"""
+    sql = """INSERT INTO IndividualParticipation (challenge_id, account_id, joined_date) VALUES(%s, %s, %s)"""
 
     with db_cursor() as (connection, cursor):
         #check to see if the user already joined
@@ -41,6 +41,11 @@ def join_challenge_individual(challenge_id, account_id):
         elif(check_challenge_result is not None):
             start_date = check_challenge_result["start_date"]
             end_date = check_challenge_result["end_date"]
+
+            if isinstance(start_date, str):
+                start_date = datetime.strptime(start_date, "%Y-%m-%d")
+            if isinstance(end_date, str):
+                end_date = datetime.strptime(end_date, "%Y-%m-%d")
 
             if (start_date > current_time or end_date < current_time):
                 raise InvalidChallengeDate("The challenge is currently not active")

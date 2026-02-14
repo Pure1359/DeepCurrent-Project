@@ -119,5 +119,5 @@ def dashboard():
 # Route to handle logout
 @bp.post("/logout")
 def logout():
-    session.pop("account_id", None)
+    session.clear()
     return redirect(url_for("app.login"))

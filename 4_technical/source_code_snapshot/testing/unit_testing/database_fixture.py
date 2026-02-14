@@ -103,7 +103,7 @@ def populated_database(new_client_module, module_scope_database):
         "password": "moderator456"
     }, follow_redirects=True)
     
-    # Create challenges
+    # Create active challenges
     start_date = datetime.now().strftime("%Y-%m-%d")
     end_date = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
     
@@ -121,6 +121,30 @@ def populated_database(new_client_module, module_scope_database):
         "start_date": start_date,
         "end_date": end_date,
         "rule": "Eat vegetarian food"
+    })
+    
+    # Create expired challenge (challenge_id will be 3)
+    past_start = (datetime.now() - timedelta(days=60)).strftime("%Y-%m-%d")
+    past_end = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+    
+    new_client_module.post("/moderator_access/create_challenge", data={
+        "challenge_type": "travel",
+        "title": "Expired Challenge",
+        "start_date": past_start,
+        "end_date": past_end,
+        "rule": "This challenge has ended"
+    })
+    
+    # Create future challenge (challenge_id will be 4)
+    future_start = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
+    future_end = (datetime.now() + timedelta(days=60)).strftime("%Y-%m-%d")
+    
+    new_client_module.post("/moderator_access/create_challenge", data={
+        "challenge_type": "food",
+        "title": "Future Challenge",
+        "start_date": future_start,
+        "end_date": future_end,
+        "rule": "This challenge hasn't started yet"
     })
     
     # Logout
