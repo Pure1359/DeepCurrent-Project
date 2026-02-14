@@ -167,3 +167,40 @@ def test_get_action_history(new_client_module, module_scope_database, populated_
         print(record)
         print("\n")
     assert len(response) == 13
+
+    new_client_module.post("/logout")
+
+    new_client_module.post("/login")
+
+def test_user_view_submission_result(new_client_module, module_scope_database, populated_database):
+    new_client_module.post("/logout")
+    new_client_module.post("/login", data = {
+        "email" : "j.miller@exeter.ac.uk",
+        "password" : "moderator456" 
+    }, follow_redirects = True)
+
+    response = new_client_module.post("/moderator_access/make_decision", json = {
+        "evidence_id" : 1,
+        "result" : "accepted",
+        "reason" : "Evidence is accepted"
+    }, follow_redirects = True)
+
+    new_client_module.post("/logout")
+    new_client_module.post("/login", data = {
+        "email" : "e.watson@exeter.ac.uk",
+        "password" : "password123"
+    }, follow_redirects = True)
+
+    response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 100})
+    response = response.get_json()
+    
+    assert len(response) == 13
+    
+    result_list = []
+
+    for record in response:
+        result_list.append(record["decision_status"])
+
+    assert "accepted" in result_list
+
+    
