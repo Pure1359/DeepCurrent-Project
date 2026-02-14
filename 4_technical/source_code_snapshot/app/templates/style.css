@@ -202,34 +202,32 @@ body::after {
   width: 60px;
   color: #000;
 }
-.trend-updown {
-  width: 60px;
-  align-items: center;
+
+.increase-value {
+  color: #CCE88C;
+  font-weight: bold;
 }
 
-.trend-updown::before {
-  content: "↑ %";
-  color: #7bc96f;
-  font-size: 16px;
+.big-value {
+  font-size: 32px;
+  font-weight: bold;
 }
 
-.button-container {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  justify-content: center;
-}
+
 #add-button:active + .action_log_wrapper {
   display: flex;
 }
 .add-button {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
   font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border:none;
+  background: transparent;
+  padding: 0;
+  outline: none;
 }
 
 .rank-card {
