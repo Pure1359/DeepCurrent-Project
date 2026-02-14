@@ -52,7 +52,7 @@ def test_join_challenge_already_joined(new_client_module, module_scope_database,
     
     data = response2.get_json()
     assert response2.status_code == 400
-    assert "error" in data
+    assert "The user already participate in this challenge" in data["error"]
 
 def test_join_challenge_not_found(new_client_module, module_scope_database, populated_database):
     """Test error when challenge doesn't exist"""
@@ -87,7 +87,7 @@ def test_join_challenge_expired(new_client_module, module_scope_database, popula
     
     data = response.get_json()
     assert response.status_code == 400
-    assert "error" in data
+    assert "The challenge is currently not active" in data["error"]
 
 def test_join_challenge_not_started(new_client_module, module_scope_database, populated_database):
     """Test error when trying to join challenge that hasn't started"""
@@ -105,7 +105,7 @@ def test_join_challenge_not_started(new_client_module, module_scope_database, po
     
     data = response.get_json()
     assert response.status_code == 400
-    assert "error" in data
+    assert "The challenge is currently not active" in data["error"]
 
 def test_join_multiple_challenges(new_client_module, module_scope_database, populated_database):
     """Test user can join multiple different challenges"""
