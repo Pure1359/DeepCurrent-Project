@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="stylesheet" href="/4_technical/source_code_snapshot/app/static/style.css" />
+    <link
+      rel="stylesheet"
+      href="/4_technical/source_code_snapshot/app/static/style.css"
+    />
     <script src="/4_technical/source_code_snapshot/app/static/JavaScript.js"></script>
   </head>
 
@@ -46,22 +49,38 @@
     <div class="sidebar">
       <nav class="navbar">
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/home.svg') }}" alt="home" />
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/home.svg') }}"
+            alt="home"
+          />
           <span class="label">Home</span>
         </div>
 
         <div class="nav-item" onclick="window.location.href='challenge.html'">
-          <img class="icon" src="{{ url_for('static', filename='Resource/chalange.svg') }}" alt="Challenges" />
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/chalange.svg') }}"
+            alt="Challenges"
+          />
           <span class="label">Challenges</span>
         </div>
 
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/group.svg') }}" alt="Group" />
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/group.svg') }}"
+            alt="Group"
+          />
           <span class="label">Group</span>
         </div>
 
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/eco.svg') }}" alt="Read" />
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/eco.svg') }}"
+            alt="Read"
+          />
           <span class="label">Read</span>
         </div>
       </nav>
@@ -108,7 +127,10 @@
       <div id="progress-wrraper" class="dashboard-graphs-wrraper">
         <div class="dashboard-graph-left">
           <div id="graph-container">
-            <img src="{{ url_for('static', filename='Resource/GroupProgress.svg') }}" alt="graph" />
+            <img
+              src="{{ url_for('static', filename='Resource/GroupProgress.svg') }}"
+              alt="graph"
+            />
             <span id="graph-caption">Savings by Category</span>
           </div>
           <div id="progress-message">
@@ -123,12 +145,18 @@
           </div>
           <div id="matrix-wrrapper">
             <span id="matrix-caption">Estimated weekly CO₂e savings</span>
-            <img src="{{ url_for('static', filename='Resource/matrixNoShadow.svg') }}" alt="matrix" />
+            <img
+              src="{{ url_for('static', filename='Resource/matrixNoShadow.svg') }}"
+              alt="matrix"
+            />
           </div>
         </div>
         <div class="dashboard-graph-right">
           <div id="image-container-right">
-            <img src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}" alt="graph" />
+            <img
+              src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}"
+              alt="graph"
+            />
             <p id="matrix-caption-leftside">
               Colours show the total estimated carbon impact of your actions
               each week, based on reported activities and standard conversion
@@ -143,7 +171,10 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Travel.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Travel.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Travel</h3>
             </div>
@@ -189,7 +220,10 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Food.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Food.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Food</h3>
             </div>
@@ -220,7 +254,10 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Energy.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Energy.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Energy</h3>
             </div>
@@ -251,7 +288,10 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Waste.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Waste.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Waste</h3>
             </div>
