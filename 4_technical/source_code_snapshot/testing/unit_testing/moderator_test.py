@@ -89,8 +89,7 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (decision_list[-1],))
         result = cursor.fetchall()
-        print("\n")
-        print(result)
+        assert result[0]["decision_status"] == "Rejected"
 
 def test_check_db_after(new_client_module, recorded_template_module, module_scope_database):
     #check if evidence record and decision record is generated when in case of evidence is submitted by user

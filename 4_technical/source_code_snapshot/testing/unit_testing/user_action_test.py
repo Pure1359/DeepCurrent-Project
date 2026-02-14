@@ -5,9 +5,17 @@ from app.db_config import db_cursor
 from app.services.actions import log_action
 from app.services.users_service import get_weekly_saved, get_monthly_saved, get_yearly_saved
 
-def test_log_action_challenge(module_scope_database):
+def test_log_action_challenge(new_client_module, module_scope_database):
+    response = new_client_module.post("/login", data = {
+        "email" : "e.watson@exeter.ac.uk",
+        "password" : "password123"
+    }, follow_redirects = True)
+
+    result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "walk", "category" : "travel", "quantity" : 50, "challenge_id" : 1, "evidence_url" : "url_new_challenge"})
+    result = result.get_json()
+
+    print(result)
     # Log a new challenge action with evidence
-    result = log_action(1, "walk", "travel", 50, 1, "url_new_challenge")
     
     # Verify ActionLog is created
     with db_cursor() as (connection, cursor):
@@ -67,6 +75,13 @@ def test_log_action_personal(module_scope_database):
         cursor.execute("SELECT * FROM ChallengeAction WHERE log_id = %s", (result["action_log_id"],))
         challenge_action = cursor.fetchone()
         assert challenge_action is None
+
+def test_view_evidence_pending_list(new_client_module, module_scope_database):
+
+    response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 30})
+    response = response.get_json()
+    assert len(response) == 6
+
 
 def test_get_weekly_action(module_scope_database):
     weekly_saved_emma = get_weekly_saved(1)

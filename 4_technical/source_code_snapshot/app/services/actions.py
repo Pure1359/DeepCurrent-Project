@@ -33,8 +33,13 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
         actionType_id = return_record["actionType_id"]
         co2e_factor = return_record["co2e_factor"]
         co2e_saved = co2e_factor * quantity
+
         cursor.execute(sqlActionLog, (account_id, actionType_id, current_time, quantity, co2e_saved))
+
         action_log_id = cursor.lastrowid
+
+        inserted_decision_id = None
+        inserted_evidence_id = None
     
         if evidence_url is not None:
             inserted_evidence_id = insert_evidence_record(cursor, action_log_id, None, evidence_url, current_time)
@@ -43,7 +48,7 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
         if challenge_id is not None:
             challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved)
 
-        return {"action_log_id" : action_log_id, "evidence_id" : insert_evidence_record, "decision_id" : insert_decision_record, "challenge_id" : challenge_id, "co2e_factor" : co2e_factor, "co2e_saved" : co2e_saved}
+        return {"action_log_id" : action_log_id, "evidence_id" : inserted_evidence_id, "decision_id" : inserted_decision_id, "challenge_id" : challenge_id, "co2e_factor" : co2e_factor, "co2e_saved" : co2e_saved}
     
         
 
