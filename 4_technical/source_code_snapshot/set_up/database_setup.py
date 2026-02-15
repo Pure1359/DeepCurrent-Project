@@ -54,10 +54,10 @@ def production_setup(james_id = 2):
 
     emma_actions = [
         ("walk", "travel", 2, challenge1_id, "https://www.youtube.com/"),
-        ("bus", "travel", 4, challenge1_id, "url2"),
-        ("walk", "travel", 10, challenge1_id, "url3"),
-        ("bus", "travel", 15, challenge1_id, "url4"),
-        ("walk", "travel", 5, challenge2_id, "url5"),
+        ("bus", "travel", 4, challenge1_id, "https://www.strava.com/"),
+        ("walk", "travel", 10, challenge1_id, "https://runkeeper.com/cms/"),
+        ("bus", "travel", 15, challenge1_id, "https://runkeeper.com/cms/"),
+        ("walk", "travel", 5, challenge2_id, "https://www.runtastic.com/"),
         ("walk", "travel", 8, None, None),
         ("bus", "travel", 12, None, None),
         ("walk", "travel", 3, None, None),

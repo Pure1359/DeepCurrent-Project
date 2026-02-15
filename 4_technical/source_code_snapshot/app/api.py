@@ -1,11 +1,12 @@
 from flask import Blueprint, jsonify, request, session, abort
+from datetime import datetime
 
 from app.services.auth import get_account_by_email_for_login, verify_password, derive_role
 from app.services.actions import log_action, personal_dashboard, leaderboard
 from app.services.challenges import join_challenge_individual
 from app.services.evidence import list_pending_decision, create_decision
 
-api_bp = Blueprint("qpi", __name__)
+api_bp = Blueprint("api", __name__)
 
 def require_login():
     account_id = session.get("account_id")
@@ -62,7 +63,7 @@ def api_log_action():
     try:
         result = log_action(
             account_id=account_id,
-            action_name=str(action_name),
+            name=str(action_name),
             category=str(category),
             quantity=quantity,
             challenge_id=challenge_id,
@@ -110,16 +111,15 @@ def api_leaderboard():
         limit = 10
     return jsonify({"leaderboard": leaderboard(limit)})
 
-@api_bp.get("moderation/pending")
+@api_bp.get("/moderation/pending")
 def api_pending_decisions():
     require_login()
     require_role("moderator")
-    data = request.get_json()
-    offset = data.get("offset", 0)
-    limit = data.get("limit", 10)
-    return jsonify({"pending": list_pending_decision(limit, offset)})
+    offset = request.args.get("offset", 0, type=int)
+    limit = request.args.get("limit", 10, type=int)
+    return list_pending_decision(limit, offset)
 
-@api_bp.post("moderation/decision")
+@api_bp.post("/moderation/decision")
 def api_make_decision():
     reviewer_id = require_login()
     require_role("moderator")
@@ -134,5 +134,5 @@ def api_make_decision():
     if status not in {"approved", "rejected"}:
         abort(400, description = "Status must be 'approved' or 'rejected'")
 
-    create_decision(reviewer_id, status, reason, int(evidence_id))
+    create_decision(reviewer_id, status, datetime.now(), reason, int(evidence_id))
     return jsonify({"message": "Decision made successfully"})

@@ -5,6 +5,7 @@ from .db_config import close_connection
 from .app import bp
 from .moderator import moderator_bp
 from .user import user_bp
+from .api import api_bp
 from dotenv import load_dotenv
 load_dotenv("secret.env")
 
@@ -20,6 +21,7 @@ def create_app():
     app.register_blueprint(bp)
     app.register_blueprint(moderator_bp, url_prefix = "/moderator_access")
     app.register_blueprint(user_bp, url_prefix = "/user_access")
+    app.register_blueprint(api_bp, url_prefix = "/api")
     # Close Database connection at the end of each request to prevent memory leaks
     app.teardown_appcontext(lambda _error: close_connection())
 
