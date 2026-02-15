@@ -37,6 +37,9 @@ def default_actionType_data():
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, ("walk", "travel", "KM", 0.7))
         cursor.execute(sql, ("bus", "travel", "KM", 0.9))
+        cursor.execute(sql, ("bike", "travel", "KM", 0.8))
+        cursor.execute(sql, ("train", "travel", "KM", 0.5))
+        cursor.execute(sql, ("car", "travel", "KM", 0.4))
 
 def production_setup(james_id = 2):
     start_date = datetime.now()
