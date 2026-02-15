@@ -120,6 +120,9 @@ def dashboard():
 def challenge():
     return render_template("challenge.html")
 
+@bp.route("/moderator-evidence")
+def moderator_evidence():
+    return render_template("mod-evidence.html")
 
 # Route to handle logout
 @bp.post("/logout")
