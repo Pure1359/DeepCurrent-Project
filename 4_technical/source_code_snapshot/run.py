@@ -7,8 +7,8 @@ load_dotenv("secret.env")
 
 app = create_app()
 deleterecord()
-defaultDatabase()
 default_actionType_data()
+defaultDatabase()
 
 
 if __name__ == '__main__':

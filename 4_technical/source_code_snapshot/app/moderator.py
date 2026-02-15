@@ -18,6 +18,20 @@ def is_moderator():
     else:
         abort(404)
 
+
+# Routes for moderating files
+@moderator_bp.route("/moderator-list")
+def moderator_list():
+    return render_template("moderating_list.html")
+
+@moderator_bp.route("/moderator-request")
+def moderator_request():
+    return render_template("moderator-request.html")
+
+@moderator_bp.route("/moderator-history")
+def moderator_history():
+    return render_template("modhistory.html")
+
 @moderator_bp.route("/view_pending_submission", methods = ["GET", "POST"])
 def view_submission_list():
     data = request.get_json()
