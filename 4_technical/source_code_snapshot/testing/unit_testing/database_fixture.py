@@ -20,9 +20,9 @@ def function_scope_database():
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-
-    defaultDatabase()
     default_actionType_data()
+    defaultDatabase()
+    
     yield
     #turn off the foreign key to make dropping table easier and get all table name
     cursor.execute("PRAGMA foreign_keys = OFF")
@@ -48,9 +48,9 @@ def module_scope_database():
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-
-    defaultDatabase()
     default_actionType_data()
+    defaultDatabase()
+   
     yield
     #turn off the foreign key to make dropping table easier and get all table name
     cursor.execute("PRAGMA foreign_keys = OFF")

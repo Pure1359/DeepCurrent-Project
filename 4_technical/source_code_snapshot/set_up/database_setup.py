@@ -9,10 +9,10 @@ from app.services.actions import log_action
 from app import create_app
 from app.db_config import db_cursor
 from datetime import datetime, timedelta
-
+james_id = 0
 
 def defaultDatabase():
-
+    global james_id
     emma_id = create_user('Emma', 'Watson', 'e.watson@exeter.ac.uk', '1999-04-15', 'student', 'Computer Science', 'Engineering')
 
     james_id = create_user('James', 'Miller', 'j.miller@exeter.ac.uk', '1985-09-22', 'moderator', None, 'Mathematics')
@@ -29,6 +29,16 @@ def defaultDatabase():
     password3 = bcrypt.hashpw('student789'.encode('utf-8'), bcrypt.gensalt())
     create_account(sarah_id, 'schen', password3, '2024-09-10 16:00:00', '2026-02-12 20:30:00')
 
+
+
+def default_actionType_data():
+    sql = """INSERT INTO ActionType(actionName, category, unit, co2e_factor) VALUES (%s, %s, %s, %s)"""
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, ("walk", "travel", "KM", 0.7))
+        cursor.execute(sql, ("bus", "travel", "KM", 0.9))
+
+def production_setup(james_id = 2):
     start_date = datetime.now()
     end_date = start_date + timedelta(days=30)
     challenge1_id = create_challenge(james_id, "travel", "let walk", start_date, end_date, "walk as much as you can")
@@ -76,15 +86,6 @@ def defaultDatabase():
     sarah_account_id = 3
     for action_name, category, quantity, challenge_id, evidence_url in sarah_actions:
         log_action(sarah_account_id, action_name, category, quantity, challenge_id, evidence_url)
-
-
-def default_actionType_data():
-    sql = """INSERT INTO ActionType(actionName, category, unit, co2e_factor) VALUES (%s, %s, %s, %s)"""
-
-    with db_cursor() as (connection, cursor):
-        cursor.execute(sql, ("walk", "travel", "KM", 0.7))
-        cursor.execute(sql, ("bus", "travel", "KM", 0.9))
-
 
 def deleterecord():
     print("DELETION")
