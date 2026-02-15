@@ -1,8 +1,7 @@
 from dotenv import load_dotenv
 from app import create_app
 import os
-from testing.unit_testing.database_fixture import default_actionType_data, defaultDatabase, populated_database
-from testing.unit_testing.delete_record import deleterecord
+from set_up.database_setup import *
 # Load environment variables from .env file
 load_dotenv("secret.env")
 

@@ -9,6 +9,7 @@ from app.services.actions import log_action
 from app import create_app
 from app.db_config import db_cursor
 from datetime import datetime, timedelta
+from set_up.database_setup import *
 
 @pytest.fixture()
 def function_scope_database():
@@ -64,34 +65,6 @@ def module_scope_database():
     conn.commit()
     #close connection
     conn.close()
-
-def defaultDatabase():
-    # Create Users
-    emma_id = create_user('Emma', 'Watson', 'e.watson@exeter.ac.uk', '1999-04-15', 'student', 'Computer Science', 'Engineering')
-
-    james_id = create_user('James', 'Miller', 'j.miller@exeter.ac.uk', '1985-09-22', 'moderator', None, 'Mathematics')
-
-    sarah_id = create_user('Sarah', 'Chen', 's.chen@exeter.ac.uk', '2001-11-08', 'student', 'Business Analytics', 'Business School')
-
-    # Create Accounts
-    password1 = bcrypt.hashpw('password123'.encode('utf-8'), bcrypt.gensalt())
-    create_account(emma_id, 'ewatson', password1, '2024-01-15 10:30:00', '2026-02-13 09:15:00')
-
-    password2 = bcrypt.hashpw('moderator456'.encode('utf-8'), bcrypt.gensalt())
-    create_account(james_id, 'jmiller', password2, '2023-06-01 14:20:00', '2026-02-13 11:45:00', 1)
-
-    password3 = bcrypt.hashpw('student789'.encode('utf-8'), bcrypt.gensalt())
-    create_account(sarah_id, 'schen', password3, '2024-09-10 16:00:00', '2026-02-12 20:30:00')
-
-    print(f"Created users: Emma (ID: {emma_id}), James (ID: {james_id}), Sarah (ID: {sarah_id})")
-
-def default_actionType_data():
-    sql = """INSERT INTO ActionType(actionName, category, unit, co2e_factor) VALUES (%s, %s, %s, %s)"""
-
-    with db_cursor() as (connection, cursor):
-        cursor.execute(sql, ("walk", "travel", "KM", 0.7))
-        cursor.execute(sql, ("bus", "travel", "KM", 0.9))
-
 
 @pytest.fixture(scope="module")
 def populated_database(new_client_module, module_scope_database):
