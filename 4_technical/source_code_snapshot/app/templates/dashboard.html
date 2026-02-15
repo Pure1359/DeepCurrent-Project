@@ -32,17 +32,14 @@
           </div>
 
           <div class="form-row">
-            <label>Upload Evidence (Optional)</label>
-            <label class="upload-box">
-              <input type="file" id="evidence" accept="image/*" hidden />
-              <span>📤</span>
-            </label>
+            <label>Evidence URL (Optional)</label>
+            <input type="url" id="evidence-url" placeholder="https://example.com/image.jpg">
           </div>
 
           <div class="form-row">
-            <label>Challenge ID</label>
+            <label>Challenge ID (Optional)</label>
             <div class="challenge-id-input">
-              <input type="number" id="challenge-id">
+              <input type="number" id="challenge-id" placeholder="Leave empty if none">
             </div>
           </div>
 
@@ -295,7 +292,8 @@
         
         const travelType = document.getElementById("travel-type").value.toLowerCase();
         const distance = parseFloat(document.getElementById("distance").value);
-        const evidenceFile = document.getElementById("evidence").files[0];
+        const evidenceUrl = document.getElementById("evidence-url").value.trim();
+        const challengeId = document.getElementById("challenge-id").value.trim();
         
         if (!distance || distance <= 0) {
           alert("Please enter a valid distance");
@@ -303,22 +301,26 @@
         }
         
         const actionNameMap = {
-          "train": "train",
-          "bus": "bus",
-          "car": "car",
-          "bike": "bike",
-          "walk": "walk"
+          train: "train",
+          bus: "bus",
+          car: "car",
+          bike: "bike",
+          walk: "walk"
         };
-        
-        const action_name = actionNameMap[travelType] || "walk";
         
         const requestData = {
-          action_name: action_name,
+          action_name: actionNameMap[travelType] || "walk",
           category: "travel",
-          quantity: distance,
-          challenge_id: null,
-          evidence_url: null   
+          quantity: distance
         };
+        
+        if (challengeId) {
+          requestData.challenge_id = parseInt(challengeId);
+        }
+        
+        if (evidenceUrl) {
+          requestData.evidence_url = evidenceUrl;
+        }
         
         try {
           const response = await fetch("/user_access/submit_action", {
@@ -340,9 +342,7 @@
             alert(`CO2e Saved = ${co2Factor} * ${quantity} = ${co2Factor * quantity}`)
             
             actionLogOverlay.style.display = "none";
-            
             travelForm.reset();
-            
             loadDashboardData();
           } else {
             alert("Error: " + (data.error || "Failed to log action"));
@@ -363,8 +363,7 @@
           
           const progressValue = monthlyData.total_saving || 0;
           document.getElementById("progress-value").textContent = progressValue.toFixed(1);
-          document.getElementById("co2e-message").textContent = 
-            `You saved ${progressValue.toFixed(1)} kg CO2e this month`;
+          document.getElementById("co2e-message").textContent = "You saved ${progressValue.toFixed(1)} kg CO2e this month";
           
           const weeklyResponse = await fetch("/user_access/get_weekly_co2e_saving", {
             method: "POST",
