@@ -51,9 +51,11 @@ def test_log_action_challenge(new_client_module, module_scope_database, populate
         assert challenge_action["challenge_id"] == 1
         assert challenge_action["point_awarded"] == 50 * 0.7
 
-def test_log_action_personal(module_scope_database, populated_database):
+def test_log_action_personal(new_client_module, module_scope_database, populated_database):
     # Log a personal action (no challenge, no evidence)
-    result = log_action(1, "bus", "travel", 30, None, None)
+    result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "bus", "category" : "travel", "quantity" : 30})
+    result = result.get_json()
+
     
     with db_cursor() as (connection, cursor):
         # Verify ActionLog created
