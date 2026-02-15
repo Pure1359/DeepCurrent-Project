@@ -363,7 +363,7 @@
           
           const progressValue = monthlyData.total_saving || 0;
           document.getElementById("progress-value").textContent = progressValue.toFixed(1);
-          document.getElementById("co2e-message").textContent = "You saved ${progressValue.toFixed(1)} kg CO2e this month";
+          document.getElementById("co2e-message").textContent = `You saved ${progressValue.toFixed(1)} kg CO2e this month`;
           
           const weeklyResponse = await fetch("/user_access/get_weekly_co2e_saving", {
             method: "POST",
