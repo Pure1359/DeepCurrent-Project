@@ -120,7 +120,7 @@ def dashboard():
 def challenge():
     return render_template("challenge.html")
 
-@bp.route("moderator-evidence")
+@bp.route("/moderator-evidence")
 def moderator_evidence():
     return render_template("mod-evidence.html")
 
