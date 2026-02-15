@@ -27,13 +27,13 @@
                     <th>Quantity</th>
                     <th>Evidence</th>
                     <th>Date</th>
-                    <th>Review</th>
+                    <th colspan="2">Review</th>
                 </tr>
             </thead>
 
             <tbody id="submissions-list">
                 <tr>
-                    <td colspan="6" style="text-align: center;">Loading...</td>
+                    <td colspan="7" style="text-align: center;">Loading...</td>
                 </tr>
             </tbody>
 
@@ -58,7 +58,7 @@
             const tbody = document.getElementById('submissions-list');
             
             if (submissions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No pending submissions</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No pending submissions</td></tr>';
                 return;
             }
 
@@ -67,6 +67,7 @@
             submissions.forEach(submission => {
                 const row = document.createElement('tr');
                 const date = new Date(submission.evidence_date).toLocaleDateString();
+                const evidenceId = submission.evidence_id;
                 
                 row.innerHTML = `
                     <td>${submission.actionName}</td>
@@ -74,17 +75,51 @@
                     <td>${submission.quantity} ${submission.unit}</td>
                     <td><a href="${submission.evidence_url}" target="_blank">View</a></td>
                     <td>${date}</td>
-                    <td><button class="review-button">Approve</button></td>
-                    <td><button class="review-button">Reject</button></td>
+                    <td><button class="review-button approve-btn" data-evidence-id="${evidenceId}">Approve</button></td>
+                    <td><button class="review-button reject-btn" data-evidence-id="${evidenceId}">Reject</button></td>
                 `;
                 
                 tbody.appendChild(row);
             });
 
+            document.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.addEventListener('click', () => handleDecision(btn.dataset.evidenceId, 'Accepted', 'Evidence approved'));
+            });
+
+            document.querySelectorAll('.reject-btn').forEach(btn => {
+                btn.addEventListener('click', () => handleDecision(btn.dataset.evidenceId, 'Rejected', 'Evidence rejected'));
+            });
+
         } catch (error) {
             console.error('Failed to load submissions:', error);
             document.getElementById('submissions-list').innerHTML = 
-                '<tr><td colspan="6" style="text-align: center;">Failed to load submissions</td></tr>';
+                '<tr><td colspan="7" style="text-align: center;">Failed to load submissions</td></tr>';
+        }
+    }
+
+    async function handleDecision(evidenceId, result, reason) {
+        try {
+            const response = await fetch('/moderator_access/make_decision', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    evidence_id: evidenceId,
+                    result: result,
+                    reason: reason
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+                loadPendingSubmissions();
+            } else {
+                alert('Error: ' + (data.error));
+            }
+        } catch (error) {
+            console.error('Failed to submit decision:', error);
+            alert('Failed to submit decision');
         }
     }
 </script>
