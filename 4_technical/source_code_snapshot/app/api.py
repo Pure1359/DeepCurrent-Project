@@ -94,7 +94,7 @@ def api_join_challenge():
     except Exception:
         abort(400, description = "Challenge ID must be an integer")
     
-    join_challenge_individual(account_id, challenge_id)
+    join_challenge_individual(challenge_id, account_id)
     return jsonify({"message": "Challenge joined successfully", "challenge_id": challenge_id})
 
 @api_bp.get("/dashboard/personal")
