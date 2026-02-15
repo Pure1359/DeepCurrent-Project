@@ -53,7 +53,7 @@ def production_setup(james_id = 2):
     challenge4_id = create_challenge(james_id, "food", "Future Challenge", future_start, future_end, "This challenge hasn't started yet")
 
     emma_actions = [
-        ("walk", "travel", 2, challenge1_id, "url1"),
+        ("walk", "travel", 2, challenge1_id, "https://www.youtube.com/"),
         ("bus", "travel", 4, challenge1_id, "url2"),
         ("walk", "travel", 10, challenge1_id, "url3"),
         ("bus", "travel", 15, challenge1_id, "url4"),

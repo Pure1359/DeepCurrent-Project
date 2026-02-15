@@ -38,6 +38,7 @@ def list_pending_decision(limit, offset):
                 evidence_url,
                 evidence_type,
                 evidence_date,
+                Evidence.evidence_id,
                 unit
             FROM Decision
             JOIN Evidence 
