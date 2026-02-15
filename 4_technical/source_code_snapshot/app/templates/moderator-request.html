@@ -1,64 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Submissions - Moderator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 
 <body>
 
 <div class="moderating-card">
 
-  <div class="moderating-header">
-    <h2>Moderating Requests</h2>
-    <img src="/4_technical/source_code_snapshot/app/static/Resource/groupicon.svg" class="moderating-icon">
-  </div>
+    <div class="moderating-header">
+        <h2>Moderating Requests</h2>
+        <img src="{{ url_for('static', filename='Resource/groupicon.svg') }}" class="moderating-icon">
+    </div>
 
-  <div class="moderating-body">
+    <div class="moderating-body">
 
-    <table class="moderating-table">
+        <table class="moderating-table">
 
-      <thead>
-        <tr>
-          <th>User</th>
-          <th>Challenge</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Evidence</th>
+                    <th>Date</th>
+                    <th>Review</th>
+                </tr>
+            </thead>
 
-      <tbody>
+            <tbody id="submissions-list">
+                <tr>
+                    <td colspan="6" style="text-align: center;">Loading...</td>
+                </tr>
+            </tbody>
 
-        <tr>
-          <td>User name</td>
-          <td>Walk to Uni</td>
-          <td><button class="review-button">Review</button></td>
-        </tr>
+        </table>
 
-        <tr>
-          <td>User name</td>
-          <td>Eat-out Veg</td>
-          <td><button class="review-button">Review</button></td>
-        </tr>
-
-        <tr>
-          <td>User name</td>
-          <td>CycleSavvy</td>
-          <td><button class="review-button">Review</button></td>
-        </tr>
-
-        <tr>
-          <td>User name</td>
-          <td>CycleSavvy</td>
-          <td><button class="review-button">Review</button></td>
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
+    </div>
 
 </div>
+
+<script>
+    window.addEventListener('load', loadPendingSubmissions);
+
+    async function loadPendingSubmissions() {
+        try {
+            const response = await fetch('/moderator_access/view_pending_submission', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({offset: 0, limit: 100})
+            });
+
+            const submissions = await response.json();
+            const tbody = document.getElementById('submissions-list');
+            
+            if (submissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No pending submissions</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            
+            submissions.forEach(submission => {
+                const row = document.createElement('tr');
+                const date = new Date(submission.evidence_date).toLocaleDateString();
+                
+                row.innerHTML = `
+                    <td>${submission.actionName}</td>
+                    <td>${submission.category}</td>
+                    <td>${submission.quantity} ${submission.unit}</td>
+                    <td><a href="${submission.evidence_url}" target="_blank">View</a></td>
+                    <td>${date}</td>
+                    <td><button class="review-button">Review</button></td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+
+        } catch (error) {
+            console.error('Failed to load submissions:', error);
+            document.getElementById('submissions-list').innerHTML = 
+                '<tr><td colspan="6" style="text-align: center;">Failed to load submissions</td></tr>';
+        }
+    }
+</script>
 
 </body>
 </html>
