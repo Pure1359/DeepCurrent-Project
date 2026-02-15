@@ -43,9 +43,9 @@ def join_challenge_individual(challenge_id, account_id):
             end_date = check_challenge_result["end_date"]
 
             if isinstance(start_date, str):
-                start_date = datetime.strptime(start_date, "%Y-%m-%d")
+                start_date = datetime.fromisoformat(start_date)
             if isinstance(end_date, str):
-                end_date = datetime.strptime(end_date, "%Y-%m-%d")
+                end_date = datetime.fromisoformat(end_date)
 
             if (start_date > current_time or end_date < current_time):
                 raise InvalidChallengeDate("The challenge is currently not active")
