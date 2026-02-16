@@ -14,6 +14,7 @@ from set_up.database_setup import *
 @pytest.fixture()
 def function_scope_database():
     print("DELETION")
+    deleterecord()
     #set up connection
     database_path = 'sqlite_database/mydb.sqlite'
     
@@ -42,6 +43,7 @@ def function_scope_database():
 @pytest.fixture(scope = "module")
 def module_scope_database():
     print("DELETION")
+    deleterecord()
     #set up connection
     database_path = 'sqlite_database/mydb.sqlite'
     

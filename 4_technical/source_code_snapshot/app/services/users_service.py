@@ -32,7 +32,7 @@ def get_weekly_saved(account_id):
     start_of_week = today - timedelta(days = today.weekday()) #Monday
     end_of_week = start_of_week + timedelta(days = 6) #Sunday
 
-    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND log_date BETWEEN %s AND %s"""
+    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)"""
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (account_id, start_of_week, end_of_week))
         result = cursor.fetchone()
@@ -47,7 +47,7 @@ def get_monthly_saved(account_id):
     last_date_of_month = monthrange(temp_today.year, temp_today.month)[1]
     end_of_month = datetime(temp_today.year, temp_today.month, last_date_of_month)
 
-    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND log_date BETWEEN %s AND %s"""
+    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)"""
 
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (account_id, start_of_month, end_of_month))
@@ -62,7 +62,7 @@ def get_yearly_saved(account_id):
     start_of_year = temp_today.replace(day = 1, month=1)
     end_of_year = datetime(day = 31, month=12, year = temp_today.year)
 
-    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND log_date BETWEEN %s AND %s"""
+    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)"""
 
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (account_id, start_of_year, end_of_year))
