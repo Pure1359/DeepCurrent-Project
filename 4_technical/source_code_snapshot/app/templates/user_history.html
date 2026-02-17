@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Action History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+
+<div class="moderating-card">
+
+    <div class="moderating-header">
+        <h2>My Action History</h2>
+        <img src="{{ url_for('static', filename='Resource/groupicon.svg') }}" class="moderating-icon">
+    </div>
+
+    <div class="moderating-body">
+
+        <table class="moderating-table">
+
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>CO2e Saved</th>
+                    <th>Challenge</th>
+                    <th>Evidence</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody id="action-history-list">
+                <tr>
+                    <td colspan="8" style="text-align: center;">Loading...</td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+    window.addEventListener('load', loadActionHistory);
+
+    async function loadActionHistory() {
+        try {
+            const response = await fetch('/user_access/get_action_history', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({offset: 0, limit: 100})
+            });
+
+            const actions = await response.json();
+            const tbody = document.getElementById('action-history-list');
+            
+            if (actions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No action history found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            
+            actions.forEach(action => {
+                const row = document.createElement('tr');
+                const date = action.evidence_date ? new Date(action.evidence_date).toLocaleDateString() : 'N/A';
+                
+                // Calculate CO2e saved
+                const co2eSaved = action.co2e_factor && action.quantity 
+                    ? (action.co2e_factor * action.quantity).toFixed(2) 
+                    : '0.00';
+                
+                // Challenge ID display
+                const challengeHtml = action.challenge_id ? `#${action.challenge_id}` : '<span style="color: gray;">None</span>';
+                
+                // Determine status display
+                let statusHtml = '';
+                if (!action.evidence_url) {
+                    statusHtml = '<span style="color: gray;">No Evidence</span>';
+                } else if (!action.decision_status) {
+                    statusHtml = '<span style="color: orange;">Pending</span>';
+                } else if (action.decision_status.toLowerCase() === 'accepted') {
+                    statusHtml = '<span style="color: green;">✓ Accepted</span>';
+                } else if (action.decision_status.toLowerCase() === 'rejected') {
+                    statusHtml = '<span style="color: red;">✗ Rejected</span>';
+                } else {
+                    statusHtml = `<span>${action.decision_status}</span>`;
+                }
+                
+                // Evidence column
+                let evidenceHtml = '';
+                if (action.evidence_url) {
+                    evidenceHtml = `<a href="${action.evidence_url}" target="_blank">View</a>`;
+                } else {
+                    evidenceHtml = '<span style="color: gray;">None</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${action.actionName}</td>
+                    <td>${action.category}</td>
+                    <td>${action.quantity} ${action.unit || ''}</td>
+                    <td>${co2eSaved} kg</td>
+                    <td>${challengeHtml}</td>
+                    <td>${evidenceHtml}</td>
+                    <td>${statusHtml}</td>
+                    <td>${date}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+
+        } catch (error) {
+            console.error('Failed to load action history:', error);
+            document.getElementById('action-history-list').innerHTML = 
+                '<tr><td colspan="8" style="text-align: center;">Failed to load action history</td></tr>';
+        }
+    }
+</script>
+
+</body>
+</html>
