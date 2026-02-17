@@ -24,6 +24,10 @@ def is_login():
     else:
         pass
 
+@user_bp.route("/user-history")
+def moderator_list():
+    return render_template("user_history.html")
+
 #have to find some link between action log and challenge, as it should contain the status of the decision
 @user_bp.route("/get_action_history", methods = ["POST"])
 def list_action_history():

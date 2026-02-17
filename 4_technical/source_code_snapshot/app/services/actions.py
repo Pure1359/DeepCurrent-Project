@@ -80,6 +80,8 @@ def get_action_history(account_id, limit, offset):
     sql = """SELECT 
                 actionName,
                 category,
+                challenge_id,
+                co2e_factor,
                 quantity,
                 evidence_url,
                 evidence_type,
@@ -93,6 +95,8 @@ def get_action_history(account_id, limit, offset):
                 ON Evidence.evidence_id = Decision.evidence_id
             LEFT JOIN ActionType 
                 ON ActionType.actionType_id = ActionLog.actionType_id
+            LEFT JOIN ChallengeAction
+                ON ChallengeAction.log_id = ActionLog.log_id
             WHERE submitted_by = %s
             ORDER BY evidence_date DESC
             LIMIT %s OFFSET %s
