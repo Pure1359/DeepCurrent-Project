@@ -13,10 +13,7 @@ def test_log_action_challenge(new_client_module, module_scope_database, populate
 
     result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "walk", "category" : "travel", "quantity" : 50, "challenge_id" : 1, "evidence_url" : "url_new_challenge"})
     result = result.get_json()
-
-    print(result)
     # Log a new challenge action with evidence
-    
     # Verify ActionLog is created
     with db_cursor() as (connection, cursor):
         cursor.execute("SELECT * FROM ActionLog WHERE log_id = %s", (result["action_log_id"],))
@@ -79,20 +76,15 @@ def test_log_action_personal(new_client_module, module_scope_database, populated
         assert challenge_action is None
 
 def test_get_weekly_action(new_client_module, module_scope_database, populated_database):
-   
+    #check the weekly action, across different account
     new_client_module.post("/logout")
-    
-    
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
         "password": "password123"
     }, follow_redirects=True)
-    
     response = new_client_module.post("/user_access/get_weekly_co2e_saving", json={})
     data = response.get_json()
-    assert data["total_saving"] == 133.4
-    
- 
+    assert data["total_saving"] == 133.4 
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -104,20 +96,15 @@ def test_get_weekly_action(new_client_module, module_scope_database, populated_d
     assert data["total_saving"] == 87.6
 
 def test_get_monthly_action(new_client_module, module_scope_database, populated_database):
-    
+    #check the monthly action, across different account
     new_client_module.post("/logout")
-    
-   
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
         "password": "password123"
     }, follow_redirects=True)
-    
     response = new_client_module.post("/user_access/get_monthly_co2e_saving", json={})
     data = response.get_json()
     assert data["total_saving"] == 133.4
-    
-   
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -129,52 +116,40 @@ def test_get_monthly_action(new_client_module, module_scope_database, populated_
     assert data["total_saving"] == 87.6
 
 def test_get_yearly_action(new_client_module, module_scope_database, populated_database):
-    
+    #check the yearly action, across different account
     new_client_module.post("/logout")
-    
-  
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
         "password": "password123"
     }, follow_redirects=True)
-    
     response = new_client_module.post("/user_access/get_yearly_co2e_saving", json={})
     data = response.get_json()
     assert data["total_saving"] == 133.4
-    
-    
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
         "password": "student789"
     }, follow_redirects=True)
-    
     response = new_client_module.post("/user_access/get_yearly_co2e_saving", json={})
     data = response.get_json()
     assert data["total_saving"] == 87.6
 
 def test_get_action_history(new_client_module, module_scope_database, populated_database):
     new_client_module.post("/logout")
-
     new_client_module.post("/login", data = {
         "email" : "e.watson@exeter.ac.uk",
         "password" : "password123"
     }, follow_redirects = True)
-
     response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 100})
-
     response = response.get_json()
-    #only count action with evidence for now
+    #Count all action that emma have done
     for record in response:
         print(record)
         print("\n")
     assert len(response) == 13
 
-    new_client_module.post("/logout")
-
-    new_client_module.post("/login")
-
 def test_user_view_submission_result(new_client_module, module_scope_database, populated_database):
+    #login as moderator , make a decision
     new_client_module.post("/logout")
     new_client_module.post("/login", data = {
         "email" : "j.miller@exeter.ac.uk",
@@ -187,6 +162,7 @@ def test_user_view_submission_result(new_client_module, module_scope_database, p
         "reason" : "Evidence is accepted"
     }, follow_redirects = True)
 
+    #login as user, and then see if the status of evidence have been updated in the user history section
     new_client_module.post("/logout")
     new_client_module.post("/login", data = {
         "email" : "e.watson@exeter.ac.uk",
@@ -196,10 +172,9 @@ def test_user_view_submission_result(new_client_module, module_scope_database, p
     response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 100})
     response = response.get_json()
     
+    #for each decision status in emma 13 decision, at least 1 should be accepted by now
     assert len(response) == 13
-    
     result_list = []
-
     for record in response:
         result_list.append(record["decision_status"])
 

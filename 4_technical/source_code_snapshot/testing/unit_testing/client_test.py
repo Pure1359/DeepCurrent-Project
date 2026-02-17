@@ -3,6 +3,7 @@ from database_fixture import *
 
 
 def test_get_register(new_client_function, recorded_template):
+    #test to see if they can access register page
     response = new_client_function.get("/register", follow_redirects = True)
     assert len(recorded_template) == 1
     template, context = recorded_template[0]
@@ -41,6 +42,7 @@ def test_register_normal(new_client_module, recorded_template_module, module_sco
     assert template.name == "login.html"
 
 def test_login_normal(new_client_module, recorded_template_module, module_scope_database):
+    #test to see that for the case of correct logging in, the template render is dashbaord, and location is dashboard
     response = new_client_module.post("/login", data = {
         "email":  "jd123@exeter.ac.uk",
         "password" : "jd123tv"

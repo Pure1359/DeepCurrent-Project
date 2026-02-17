@@ -48,7 +48,7 @@ def test_moderator_can_access_moderator_routes(new_client_module, module_scope_d
     })
     assert response.status_code == 200
     data = response.get_json()
-    assert "challenge_id" in data
+    assert "Successfully make a challenge" in data["message"]
 
 def test_user_routes_require_login(new_client_module, module_scope_database):
     
@@ -93,7 +93,7 @@ def test_login_with_invalid_credentials(new_client_module, module_scope_database
         "password": "wrongpassword"
     }, follow_redirects=False)
     
-    # Should not redirect (stays on login page)
+    # Should not redirect (stays on login page), 200 is ok, 302 is redirect
     assert response.status_code == 200
 
 
@@ -107,7 +107,7 @@ def test_login_with_valid_credentials_sets_session(new_client_module, module_sco
     
     # Check session is set
     with new_client_module.session_transaction() as session:
-        assert session.get("account_id") is not None
+        assert session.get("account_id") == 1
         assert session.get("account_role") == "user"
 
 def test_logout_clears_session(new_client_module, module_scope_database):
@@ -134,7 +134,7 @@ def test_access_without_session_redirects(new_client_module, module_scope_databa
     
     # Try to access protected routes
     protected_routes = "/dashboard"
-
     response = new_client_module.get(protected_routes, follow_redirects=False)
+    #redirect to login page, code for redirect = 302
     assert response.status_code == 302
     assert "/login" in response.location

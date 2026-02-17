@@ -9,6 +9,7 @@ def test_login_moderator(new_client_module, recorded_template_module, module_sco
         "password" : "moderator456" 
     }, follow_redirects = True)
 
+    #check to see if we can login as the moderator and have access to the dashboard, and check the session
     assert len(recorded_template_module) >= 1
     template, context = recorded_template_module[-1]
     assert response.request.path == "/dashboard"
@@ -18,6 +19,7 @@ def test_login_moderator(new_client_module, recorded_template_module, module_sco
         assert session.get("account_role") == "moderator"
 
 def test_moderator_make_challenge(new_client_module, recorded_template_module, module_scope_database, populated_database):
+    #check if when the moderator make a challenge, the challenge record is inserted into the database
     start_date = datetime.now()
     end_date = datetime.now() + timedelta(days = 30)
     response = new_client_module.post("/moderator_access/create_challenge", data = {
@@ -42,11 +44,8 @@ def test_moderator_make_challenge(new_client_module, recorded_template_module, m
         assert response["end_date"] == str(end_date)
         assert response["rules"] == "Walk in a park"
 
-        sql = "SELECT * FROM Accounts"
-        cursor.execute(sql)
-        accounts = cursor.fetchall()
-
 def test_moderator_view_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
+    #from the setup database we can see that the normal user submit about 7 action with evidence to be approved or rejected by moderator
     response = new_client_module.post("/moderator_access/view_pending_submission", json = {
         "offset" : 0,
         "limit" : 100
@@ -62,7 +61,8 @@ def test_moderator_accept_pending_evidence(new_client_module, recorded_template_
         "result" : "accepted",
         "reason" : "Evidence is accepted"
     }, follow_redirects = True)
-
+    #We used to assume that evidence can have multiple decision, because evidence can be applied to many actionlog, but we won't need that for the prototype right now
+    #This still work:
     response = response.get_json()
     decision_list = response["decision_list"]
     assert len(decision_list) == 1
@@ -95,20 +95,18 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
         "offset" : 0,
         "limit" : 100,
     })
-
+    #since the moderator make 2 decision, the list of decision left to be approved should now be 7 - 5 = 2
     response = response.get_json()
     assert len(response) == 5
 
 def test_moderator_view_all_submission_again(new_client_module, recorded_template_module, module_scope_database, populated_database):
+    #view all past submission even the one that already have been made the decision by moderator
     response = new_client_module.post("/moderator_access/view_all_submission", json = {
         "offset" : 0,
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
     assert len(response) == 7
-
-
-
 
 def test_check_db_after(new_client_module, recorded_template_module, module_scope_database, populated_database):
     #check if evidence record and decision record is generated when in case of evidence is submitted by user

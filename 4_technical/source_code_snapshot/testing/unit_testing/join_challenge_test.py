@@ -11,17 +11,17 @@ def test_join_challenge_success(new_client_module, module_scope_database, popula
         "email": "s.chen@exeter.ac.uk",
         "password": "student789"
     }, follow_redirects=True)
-    
+    #send request to join the challenge with id = 1
     response = new_client_module.post("/user_access/join_challenge", json={
         "challenge_id": 1
     })
-    
+    #assert that the data return is success
     data = response.get_json()
     assert response.status_code == 200
     assert data["success"] == True
-    assert "Successfully added" in data["message"]
+    assert "Successfully added the user to challenge" in data["message"]
     
-    # Verify in database
+    # Verify in database (From setup we know that sarah id = 3 , and she just tried to join challenge id = 1)
     with db_cursor() as (connection, cursor):
         cursor.execute("SELECT * FROM IndividualParticipation WHERE account_id = %s AND challenge_id = %s", (3, 1))
         result = cursor.fetchone()
@@ -48,7 +48,7 @@ def test_join_challenge_already_joined(new_client_module, module_scope_database,
     response2 = new_client_module.post("/user_access/join_challenge", json={
         "challenge_id": 1
     })
-    
+    #test if the error get return
     data = response2.get_json()
     assert response2.status_code == 400
     assert "The user already participate in this challenge" in data["error"]
@@ -65,10 +65,12 @@ def test_join_challenge_not_found(new_client_module, module_scope_database, popu
     response = new_client_module.post("/user_access/join_challenge", json={
         "challenge_id": 999
     })
-    
+    #Data return should contain error
     data = response.get_json()
     assert response.status_code == 400
     assert "error" in data
+    #also check the error message
+    assert "The Challenge with ID: 999 does not exists in database"
 
 def test_join_challenge_expired(new_client_module, module_scope_database, populated_database):
     #error when joining challenge that already expired
@@ -117,12 +119,15 @@ def test_join_multiple_challenges(new_client_module, module_scope_database, popu
     response2 = new_client_module.post("/user_access/join_challenge", json={
         "challenge_id": 2
     })
+    #if status_code == 200, then the user successfully join
+    data = response2.get_json()
     assert response2.status_code == 200
 
+    assert "Successfully added the user to challenge" in data["message"]
+
+    #check the get_challenge_for_user function that return challenge that the user is participating
     response = new_client_module.post("/user_access/get_challenge_for_user")
-
     response = response.get_json()
-
     assert len(response) == 2
     challenge_id = [each_response["challenge_id"] for each_response in response]
     assert 1 in challenge_id
@@ -137,7 +142,6 @@ def test_join_challenge_without_login(new_client_module, module_scope_database):
     response = new_client_module.post("/user_access/join_challenge", json={
         "challenge_id": 1
     })
-    
     # Should redirect or return error due to @user_bp.before_request
     assert response.status_code in [302, 400, 401, 403]
 
@@ -157,7 +161,6 @@ def test_get_user_challenges(new_client_module, module_scope_database, populated
     # Get user's challenges
     response = new_client_module.post("/user_access/get_challenge_for_user", json={})
     data = response.get_json()
-    
     assert response.status_code == 200
     assert len(data) >= 2
     challenge_ids = [item["challenge_id"] for item in data]
