@@ -18,7 +18,7 @@ def test_log_action_challenge(new_client_module, module_scope_database, populate
     with db_cursor() as (connection, cursor):
         cursor.execute("SELECT * FROM ActionLog WHERE log_id = %s", (result["action_log_id"],))
         action_log = cursor.fetchone()
-        
+        #walking co2e factor is 0.7
         assert action_log is not None
         assert action_log["submitted_by"] == 1
         assert action_log["quantity"] == 50
@@ -177,7 +177,6 @@ def test_user_view_submission_result(new_client_module, module_scope_database, p
     result_list = []
     for record in response:
         result_list.append(record["decision_status"])
-
     assert "accepted" in result_list
 
     

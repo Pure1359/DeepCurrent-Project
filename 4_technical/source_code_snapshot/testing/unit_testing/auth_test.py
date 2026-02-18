@@ -15,7 +15,7 @@ def test_user_cannot_access_moderator_routes(new_client_module, module_scope_dat
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
         "password": "password123"
-    }, follow_redirects=True)
+    }, follow_redirects=False)
     
     # Try to access moderator route
     response = new_client_module.post("/moderator_access/create_challenge", data={

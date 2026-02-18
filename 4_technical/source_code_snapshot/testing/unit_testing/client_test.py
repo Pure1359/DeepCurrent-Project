@@ -62,12 +62,10 @@ def test_login_moderator(new_client_function, recorded_template, module_scope_da
         "email" : "j.miller@exeter.ac.uk",
         "password" : "moderator456" 
     }, follow_redirects = True)
-
     assert len(recorded_template) == 1
     template, context = recorded_template[-1]
     assert response.request.path == "/dashboard"
     assert template.name == "dashboard.html"
-
     with new_client_function.session_transaction() as session:
         assert session.get("account_role") == "moderator"
 
