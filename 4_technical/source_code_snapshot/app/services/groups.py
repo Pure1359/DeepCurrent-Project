@@ -1,3 +1,5 @@
+from flask import Response, jsonify
+
 from app.db_config import db_cursor
 
 # Placeholder for now
@@ -9,3 +11,20 @@ from app.db_config import db_cursor
 # list_group_members
 # remove_account_from_group
 # get_group_id
+
+def UserCreateGroup(account_id) -> int:
+    return 0
+
+def UserJoinGroup(account_id, group_id) -> Response:
+    return jsonify(None)
+
+def UserLeaveGroup(account_id, group_id) -> Response:
+    return jsonify(None)
+
+def getGroupMember(group_id) -> Response:
+    return jsonify(None)
+
+def getUserGroups(account_id) -> Response:
+    return jsonify(None)
+
+
