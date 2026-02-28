@@ -9,3 +9,7 @@ class ChallengeIdNotFound(Exception):
 class UserAlreadyJoinChallenge(Exception):
     def __init__(self, message):
         super().__init__(message)
+class GroupAlreadyJoinChallenge(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
