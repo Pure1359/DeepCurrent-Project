@@ -4,11 +4,15 @@ import bcrypt
 from datetime import datetime, timezone
 
 # Import Database Functions from services/
-from app.services.users_service import create_user, create_account, update_last_active, join_challenge_individual, get_monthly_saved, get_weekly_saved, get_yearly_saved
+from app.services.users_service import create_user, create_account, update_last_active, get_monthly_saved, get_weekly_saved, get_yearly_saved
 from app.services.actions import *
 from app.services.auth import get_account_by_email_for_login, verify_password, verify_session_role
 from app.db_config import db_cursor
+from app.services.challenges import join_challenge_individual, join_challenge_group
 from custom_error.Challenge_Exception import *
+from custom_error.Group_Exception import *
+from app.services.groups import *
+from app.services.challenges import *
 
 #need to do required login 
 user_bp = Blueprint("user", __name__)
@@ -121,6 +125,75 @@ def get_user_yearly_saving():
     account_id = session.get("account_id")
     result = get_yearly_saved(account_id)
     return jsonify({"total_saving":result})
+
+
+@user_bp.route("/create_group", methods = ["POST"])
+def user_create_group():
+    data = request.get_json();
+    group_name = data.get("group_name")
+    account_id = session.get("account_id")
+    try:
+        group_id = UserCreateGroup(account_id, group_name)
+    except DuplicateGroupName as error:
+        error_message = str(error)
+        return make_response(jsonify(error = error_message), 409)
+
+    return jsonify({"success" : True, "message" : f"You have successfully create a group name : {group_name}", "group_id" : group_id}), 200
+
+@user_bp.route("/join_group", methods = ["POST"])
+def user_join_group():
+    data = request.get_json()
+    group_id = data.get("group_id")
+    account_id = session.get("account_id")
+    try:
+        UserJoinGroup(account_id, group_id)
+    except UserAlreadyJoinGroup as error:
+        error_message = str(error)
+        return make_response(jsonify(error = error_message), 409)
+    
+    return jsonify({"success" : True, "message" : f"Successfully join a group id : {group_id}"}), 200
+
+@user_bp.route("/leave_group", methods = ["POST"])
+def user_leave_group():
+    data = request.get_json()
+    group_id = data.get("group_id")
+    account_id = session.get("account_id")
+    try:
+        UserLeaveGroup(account_id, group_id)
+    except LeaveGroupError as error:
+        error_message = str(error)
+        return make_response(jsonify(error = error_message)), 409
+    
+    return jsonify({"success" : True, "message" : "Successfully leave the group"}), 200
+
+@user_bp.route("get_group_memeber", methods = ["POST"])
+def get_group_member():
+    data = request.get_json()
+    group_id = data.get("group_id")
+    member_list = getGroupMember(group_id)
+
+    return jsonify({"success" : True, "member" : member_list}), 200
+
+@user_bp.route("get_user_groups", methods = ["POST"])
+def get_user_groups():
+    account_id = session.get("account_id")
+    group_list = getUserGroups(account_id)
+    return jsonify({"success" : True, "member" : group_list}), 200
+
+@user_bp.route("join_group_challenge", methods = ["POST"])
+def join_group_challenge():
+    account_id = session.get("account_id")
+    data = request.get_json()
+    challenge_id = data.get("challenge_id")
+    group_id = data.get("group_id")
+    try:
+        join_challenge_group(challenge_id, group_id, account_id)
+        return {"success" :True, "message":f"Successfully added the group to challenge : {challenge_id}"}, 200
+    except (GroupPermissionError, ChallengeIdNotFound, GroupAlreadyJoinChallenge, InvalidChallengeDate) as error:
+        error_message = str(error)
+        return make_response(jsonify(error = error_message)), 409
+    
+
 
 
     

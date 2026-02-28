@@ -8,4 +8,6 @@ class DuplicateGroupName(Exception):
 class LeaveGroupError(Exception):
     def __init__(self, message):
         super().__init__(message)
-        
+class GroupPermissionError(Exception):
+    def __init__(self, message):
+        super().__init__(message)

@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Any
+from typing import Any, Literal
 from flask import Response, jsonify
 from app.db_config import db_cursor
 from datetime import datetime
@@ -34,7 +34,7 @@ def UserCreateGroup(account_id, group_name) -> int | DuplicateGroupName:
         return UserGroupID
     
 
-def UserJoinGroup(account_id, group_id)-> bool | UserAlreadyJoinGroup:
+def UserJoinGroup(account_id, group_id):
     with db_cursor() as (connection, cursor):
         time: datetime = datetime.now()
         #check if the user is already joined
@@ -49,7 +49,7 @@ def UserJoinGroup(account_id, group_id)-> bool | UserAlreadyJoinGroup:
 
         return True
     
-def UserLeaveGroup(account_id, group_id) -> bool | LeaveGroupError:
+def UserLeaveGroup(account_id, group_id):
     with db_cursor() as (connection, cursor):
         #User can not leave the group if they are the owner
         sql = """SELECT * FROM UserGroup WHERE group_id = %s AND group_creator_id = %s"""
@@ -59,7 +59,7 @@ def UserLeaveGroup(account_id, group_id) -> bool | LeaveGroupError:
             raise LeaveGroupError("Can not leave group that you are owner")
         #User is not the owner of group then do 
         sql = """DELETE FROM AccountGroup WHERE account_id = %s AND group_id = %s"""
-        cursor.execute(sql)
+        cursor.execute(sql, (account_id, group_id))
         return True
 
 def getGroupMember(group_id) -> list[str]:
