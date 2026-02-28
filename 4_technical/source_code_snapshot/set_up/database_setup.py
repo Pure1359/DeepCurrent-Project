@@ -19,6 +19,12 @@ def defaultDatabase():
 
     sarah_id = create_user('Sarah', 'Chen', 's.chen@exeter.ac.uk', '2001-11-08', 'student', 'Business Analytics', 'Business School')
 
+    John_id = create_user('John', 'Doe', 'jdsiki@fakemail.com','1997-11-15', 'student', 'Biology', 'ScienceDepartment')
+
+    jack_id = create_user('Jack', 'Mike', 'jamike@goodmail.com', '2004-07-22', 'student', 'architecture', 'DesignDepartment')
+
+    rosy_id = create_user('rosy', 'Winthrop', 'rw@mail.com', '1996', 'moderator')
+
     # Create Accounts
     password1 = bcrypt.hashpw('password123'.encode('utf-8'), bcrypt.gensalt())
     create_account(emma_id, 'ewatson', password1, '2024-01-15 10:30:00', '2026-02-13 09:15:00')
@@ -29,7 +35,14 @@ def defaultDatabase():
     password3 = bcrypt.hashpw('student789'.encode('utf-8'), bcrypt.gensalt())
     create_account(sarah_id, 'schen', password3, '2024-09-10 16:00:00', '2026-02-12 20:30:00')
 
+    password4 = bcrypt.hashpw('johndoe123'.encode('utf-8'), bcrypt.gensalt())
+    create_account(John_id, 'johndoe', password4, '2024-09-10 12:00:00', '2026-02-12 20:30:00')
 
+    password5 = bcrypt.hashpw('jackmike123'.encode('utf-8'), bcrypt.gensalt())
+    create_account(jack_id, 'jackmike', password5, '2024-09-10 12:00:00', '2026-02-12 20:30:00')
+
+    password6 = bcrypt.hashpw('rosy123'.encode('utf-8'), bcrypt.gensalt())
+    create_account(rosy_id, 'rose', password6, '2024-09-10 12:00:00', '2026-02-12 20:30:00', 1)
 
 def default_actionType_data():
     sql = """INSERT INTO ActionType(actionName, category, unit, co2e_factor) VALUES (%s, %s, %s, %s)"""
