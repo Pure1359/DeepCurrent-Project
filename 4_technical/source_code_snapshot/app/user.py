@@ -180,8 +180,8 @@ def get_user_groups():
     group_list = getUserGroups(account_id)
     return jsonify({"success" : True, "member" : group_list}), 200
 
-@user_bp.route("join_group_challenge", methods = ["POST"])
-def join_group_challenge():
+@user_bp.route("group_join_challenge", methods = ["POST"])
+def group_join_challenge():
     account_id = session.get("account_id")
     data = request.get_json()
     challenge_id = data.get("challenge_id")
@@ -192,6 +192,7 @@ def join_group_challenge():
     except (GroupPermissionError, ChallengeIdNotFound, GroupAlreadyJoinChallenge, InvalidChallengeDate) as error:
         error_message = str(error)
         return make_response(jsonify(error = error_message)), 409
+
     
 
 

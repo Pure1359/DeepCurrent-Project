@@ -1,3 +1,6 @@
+import sqlite3
+from typing import Any
+
 from app.db_config import db_cursor
 from app.services.auth import verify_session_role
 from flask import abort
@@ -96,10 +99,49 @@ def join_challenge_group(challenge_id, group_id, account_id):
         cursor.execute(sql, (challenge_id, group_id, current_time))
             
     
+#ignore specific challenge conflict with category type, we will check this later
+def challenge_leaderboard_individual(start_date :str, end_date:str, challenge_category_type:str = "All", specific_challenge:int|None = None) -> list[dict]:
+    """
+    Give the ranking and leaderboard of individuals and groups based on parameter given
 
-def challenge_leaderboard_individual():
-    pass
+    Args:
+        start_date (string): The start date to filter rankings from
+        end_date (string): The end date to filter ranking to
+        challenge_category_type(string): What type of challenge to be consider for ranking ("Travel", "Energy", "Food", "Waste", "All")
+        specific_challenge(int): Use to show leaderboard only for 1 particular challenge, by using challenge id. 
+
+    Returns:
+        list[dict] : list of dictionary, each dictionary represent each record , each key in dictionary represent each field
+    """
+
+    if specific_challenge is not None and challenge_category_type != "All":
+        raise ValueError("Invalid argument type : if specific_challenge is given, challenge_category_type must be \"All\"")
+    
+    
+    query = """SELECT Accounts.account_id, username, SUM(ChallengeAction.point_awarded) AS Total_Points FROM Accounts INNER JOIN ActionLog ON Accounts.account_id = ActionLog.submitted_by INNER JOIN ActionType ON ActionLog.actionType_id = ActionType.actionType_id INNER JOIN ChallengeAction ON ActionLog.log_id = ChallengeAction.log_id INNER JOIN Evidence ON Evidence.log_id = ActionLog.log_id INNER JOIN Decision ON Evidence.evidence_id = Decision.evidence_id WHERE ActionLog.log_date BETWEEN %s AND %s AND Decision.decision_status = 'Approved'"""
+
+    parameter: list[str|int] = [start_date, end_date]
+
+
+    if specific_challenge is not None:
+        query += """ AND ChallengeAction.challenge_id = %s"""
+        parameter.append(specific_challenge)
+
+    if challenge_category_type != "All":
+        query += """ AND ActionType.category = %s"""
+        parameter.append(challenge_category_type)
+
+    #Group by operation
+    query += """ GROUP BY Accounts.account_id , username"""
+
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(query, parameter)
+        query_result = cursor.fetchall()
+    
+
+    return query_result
+
 
 def challenge_leaderboard_group():
     pass
-
