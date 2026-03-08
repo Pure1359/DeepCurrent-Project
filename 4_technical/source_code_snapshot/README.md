@@ -13,7 +13,7 @@ The platform promotes climate-positive behaviour through:
 
 * User authentication and profiles
 * Environmental action logging
-* CO~2~e savings calculations
+* CO<sub>2</sub>e savings calculations
 * Group challenges and leaderboards
 * Evidence submission and moderation
 * Personal and group statistics dashboard
@@ -141,7 +141,7 @@ DeepCurrent Development Team
 |----------------		 |------------					  |
 | Joaquin Bradley Rigunay| Frontend 					  |
 | Xuan Ting Pheng 		 | Frontend 					  |
-| Farzad Rezari Kohvadeh | Frontend						  |
+| Farzad Rezaei Kohvadeh | Frontend						  |
 | Pure Nantasuwan 		 | Backend 						  |
 | Carlin Barlow 		 | Backend 						  |
 | Rumi Mansoubi 		 | Backend 						  |
