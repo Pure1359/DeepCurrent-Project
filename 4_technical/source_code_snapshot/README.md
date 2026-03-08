@@ -2,74 +2,86 @@
 
 DeepCurrent is a Flask-based web application that aims to record user actions for their environmental impact and calculate their total CO2e savings over time. The application includes user accounts, activity logging, group challenges, and evidence submission, with the use of a MySQL database.
 
+The platform promotes climate-positive behaviour through:
+* Personal Tracking
+* Group Challenges
+* Evidence Submissions
+
+---
+
+## Features
+
+* User authentication and profiles
+* Environmental action logging
+* CO~2~e savings calculations
+* Group challenges and leaderboards
+* Evidence submission and moderation
+* Personal and group statistics dashboard
+
 ---
 
 ## Tech Stack
 
-* Python 3.9+
-* Flask
-* MySQL
-* PyMySQL
-* python-dotenv
-* bcrypt
+| Layer 					| Technology		   |
+|--------------			|----------		   |
+| Backend 					| Flask (Python 3.10+) |
+| Database 					| MySQL / SQLite 	   |
+| ORM / DB Driver 			| PyMySQL 			   |
+| Authentication & Security | bcrypt 			   |
+| Environment Config 		| python-dotenv 	   |
+| Testing 					| pytest 			   |
 
 ---
 
 ## Project Structure
 
-```
+```code
 DeepCurrent-Project/
   app/
-    __init__.py
-    app.py
-    db_config.py
-    services/
-      actions.py
-      auth.py
-      challenges.py
-      evidence.py
-      groups.py
-      stats.py
-      users.py
-    templates/
-      login.html
-      register.html
-      dashboard.html
-  secret.env
+    app.py				# Flask app factory
+	api.py				# API routes
+	db_config.py		# Database connection
+	services/			# Business logic layer
+	templates/			# HTML views
+	__init__.py
+  run.py				# App entry point
   requirements.txt
-  run.py
   README.md
+  LICENSE
 ```
 
 ---
 
-## Requirements
+## Installation & Setup
 
-Install dependencies using:
+### Clone the repository
+```bash
+git clone https://github.com/Pure1359/DeepCurrent-Project.git
+cd "DeepCurrent-Project"
+```
 
+---
+
+### Create virtual environment
+```bash
+python -m venv venv
+source venv/bin/activate		# Linux / Mac
+venv\Scripts\activate 			# Windows
+```
+
+---
+
+### Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-Contents of `requirements.txt`:
-
-```txt
-bcrypt
-Cryptography
-Flask
-PyMySQL
-python-dotenv
-pytest
-```
-
 ---
 
-## Environment Variables Setup
+### Environment Variables
+Create secret.env in the root directory
 
-Create a file named `secret.env` in the project root:
-(.gitignore already includes secret.env so you don't have to worry)
-
-```
+```env
 # Flask
 FLASK_APP=DeepCurrent
 FLASK_SECRET_KEY=<FlaskSecretKey>
@@ -87,8 +99,6 @@ MYSQL_DB=<Database>
 SQLITE_PATH=<SQLite Database Path>
 ```
 
-Replace variables in `<>` with the according information provided
-
 ---
 
 ## Running the Project
@@ -101,16 +111,39 @@ python run.py
 
 The app will run at:
 
+```code
+http://localhost:5020
 ```
-http://localhost:5000
+
+---
+
+## Running Tests
+
+From the project root directory:
+
+```bash
+python -m pytest testing/unit_testing -v
 ```
 
 ---
 
 ## License
 
-`<Insert License Here>`
+MIT (See LICENSE)
 
-## Author
+---
+
+## Author(s)
 
 DeepCurrent Development Team
+
+| Name  		  		 | Assignment  					  |
+|----------------		 |------------					  |
+| Joaquin Bradley Rigunay| Frontend 					  |
+| Xuan Ting Pheng 		 | Frontend 					  |
+| Farzad Rezari Kohvadeh | Frontend						  |
+| Pure Nantasuwan 		 | Backend 						  |
+| Carlin Barlow 		 | Backend 						  |
+| Rumi Mansoubi 		 | Backend 						  |
+| Akkshay Sharrma 		 | Backend 						  |
+| Jayden Kam 			 | Database Management / Creation |
