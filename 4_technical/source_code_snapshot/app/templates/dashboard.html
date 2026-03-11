@@ -271,6 +271,93 @@
       <div class="spacer"></div>
     </div>
 
+    <!-- Impact Comparison Overlay -->
+    <div id="impact-overlay" class="congrats-overlay hidden">
+      <div class="impact-comparison-container">
+
+        <div class="back-button" id="closeImpact">
+          X
+        </div>
+
+        <div class="content-container">
+          <div class="type-and-distance">
+            <p id="impact-title">Train Journey - Impact Comparison</p>
+            <p id="impact-distance">Distance: 0km</p>
+          </div>
+
+          <!--<div class="actual-emission">
+            <p>Your Choice</p>
+            <p id="actual-co2">0 kg CO2e</p>
+          </div>-->
+
+          <div class="calculation">
+            <p id="impact-factor">Factor: 0 kg CO₂e/km</p>
+            <p id="impact-calculation">0 × 0 = 0 kg CO₂e</p>
+          </div>
+
+          <div class="challenge-form-question">
+            <label>Is this a challenge based action?</label>
+          </div>
+
+          <div class="challenge-form-answer">
+            <select id="impact-challenge">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="achievement-text">
+            <p>To add to overall achievement just submit</p>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="impactSubmitBtn">Submit</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Congrats Card with Calculation Overlay -->
+    <div id="congrats-overlay" class="congrats-overlay hidden">
+      <div class="congrats-card-container">
+        <div class="close-button" id="closeCongrats">
+          ✕
+        </div>
+    
+        <div class="content-container">
+          <div class="well-done-message">
+            <h1 id="co2e-result">You saved 0 kg CO2e, Well Done!</h1>
+          </div>
+    
+          <div class="celebration-icons">
+            <img src="{{ url_for('static', filename='Resource/happyface.png') }}" alt="">
+            <img src="{{ url_for('static', filename='Resource/confetti.png') }}" alt="">
+          </div>
+    
+          <div class="points-added">
+            <p id="points-result">0 points added to your total score</p>
+          </div>
+    
+          <div class="trophy-icon">
+            <img src="{{ url_for('static', filename='Resource/trophy.png') }}" alt="">
+          </div>
+    
+          <div class="check-dashboard">
+            <p>Check your dashboard</p>
+          </div>
+    
+          <div class="share">
+            <a href="#">Click to share on your social media</a>
+          </div>
+    
+          <div class="impact-comparison-submit">
+            <button id="congratsOkBtn">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       const addButton = document.querySelector("#action_log_button");
       const actionLogOverlay = document.getElementById("dashboard-overlay");
@@ -336,12 +423,38 @@
           if (response.ok) {
             const co2Factor = data.co2e_factor;
             const quantity = data.quantity;
+            const totalSaved = (co2Factor * quantity).toFixed(2);
 
-            alert(data.message || "Action logged successfully!");
+            document.getElementById("impact-title").textContent = `${travelType} Journey - Impact Comparison`
 
-            alert(`CO2e Saved = C02e Factor (${co2Factor}) * Quantity  (${quantity}) = ${co2Factor * quantity}`)
-            
+            // Show distance input
+            document.getElementById("impact-distance").textContent = `Distance Travelled: ${quantity} km`
+
+            // Show emission factor
+            document.getElementById("impact-factor").textContent =
+              `Emission Factor: ${co2Factor} kg CO₂e per km`;
+
+            // Show calculation
+            document.getElementById("impact-calculation").textContent =
+              `${co2Factor} × ${quantity} km = ${totalSaved} kg CO2e`;
+
+            // Update your congrats card values
+            document.getElementById("co2e-result").textContent =
+              `You saved ${totalSaved} kg CO2e, Well Done!`;
+
+            document.getElementById("points-result").textContent =
+              `${Math.round(totalSaved)} points added to your total score`;
+
+            // Hide the action log overlay
             actionLogOverlay.style.display = "none";
+
+            // Show Impact Comparison overlay
+            document.getElementById("impact-overlay").classList.remove("hidden");
+
+            // Store value for congrats
+            window.latestSavedAmount = totalSaved;
+
+            // Reset the form
             travelForm.reset();
             loadDashboardData();
           } else {
@@ -392,6 +505,48 @@
       }
 
       window.addEventListener("load", loadDashboardData);
+
+      /* Close congrats card */
+      const closeCongrats = document.getElementById("closeCongrats");
+      const congratsOkBtn = document.getElementById("congratsOkBtn");
+      const congratsOverlay = document.getElementById("congrats-overlay");
+
+      closeCongrats.addEventListener("click", () => {
+        congratsOverlay.classList.add("hidden");
+      });
+
+      congratsOkBtn.addEventListener("click", () => {
+        congratsOverlay.classList.add("hidden");
+      });
+
+      congratsOverlay.addEventListener("click", (e) => {
+        if (e.target === congratsOverlay) {
+          congratsOverlay.classList.add("hidden");
+        }
+      });
+
+      /* Script for Impact Comparison Card */
+      const impactSubmitBtn = document.getElementById("impactSubmitBtn");
+      const impactOverlay = document.getElementById("impact-overlay");
+
+      impactSubmitBtn.addEventListener("click", () => {
+        impactOverlay.classList.add("hidden");
+
+        const saved = window.latestSavedAmount || 0;
+
+        document.getElementById("co2e-result").textContent =
+          `You saved ${saved} kg CO2e, Well Done!`;
+
+        document.getElementById("points-result").textContent =
+          `${Math.round(saved)} points added to your total score`;
+
+        congratsOverlay.classList.remove("hidden");
+      });
+
+      /* Close Impact Overlay */
+      document.getElementById("closeImpact").addEventListener("click", () => {
+        document.getElementById("impact-overlay").classList.add("hidden");
+      });
     </script>
   </body>
 </html>
