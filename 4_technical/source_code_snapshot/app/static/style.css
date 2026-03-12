@@ -207,7 +207,7 @@ body::after {
 }
 
 .increase-value {
-  color: #CCE88C;
+  color: #cce88c;
   font-weight: bold;
   font-size: 16px;
 }
@@ -215,9 +215,8 @@ body::after {
 .big-value {
   font-size: 32px;
   font-weight: bold;
-  color: #214F4D;
+  color: #214f4d;
 }
-
 
 #add-button:active + .action_log_wrapper {
   display: flex;
@@ -229,7 +228,7 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  border:none;
+  border: none;
   background: transparent;
   padding: 0;
   outline: none;
@@ -499,12 +498,11 @@ select {
 .history-card {
   width: 540px;
   height: fit-content;
-
 }
 
 .history-header {
   padding: 16px 24px;
-  background: #C0E4E6;
+  background: #c0e4e6;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -515,46 +513,45 @@ select {
 }
 
 .history-row {
-  display:grid;
+  display: grid;
   align-items: center;
   grid-template-columns: 1fr 160px 200px;
-  background : #FCFBFC;
+  background: #fcfbfc;
   padding: 20px 24px;
 }
 
 .history-row span:first-child {
   border-bottom: 1px solid #00000080;
   padding-bottom: 16px;
-  text-align: center;;
+  text-align: center;
 }
 
 .status {
   width: fit-content;
-  padding : 8px 32px;
+  padding: 8px 32px;
   border-radius: 16px;
   text-align: center;
-  gap : 10px;
-
+  gap: 10px;
 }
 
 .approve {
-  background: #CCE88C;
+  background: #cce88c;
 }
 
 .reject {
-  background : #FF383C;
+  background: #ff383c;
 }
 
 .moderating-card {
   width: 900px;
   background: white;
   border-radius: 16px;
-  border: 0.8px solid #153A39;
+  border: 0.8px solid #153a39;
   overflow: hidden;
 }
 
 .moderating-header {
-  background: #F8C3E2;
+  background: #f8c3e2;
   padding: 20px 24px;
   display: flex;
   justify-content: space-between;
@@ -594,31 +591,29 @@ select {
   width: 28px;
 }
 
-
 .evidence-container {
-  width:928px;
+  width: 928px;
   background: white;
-  padding-bottom : 38px;
+  padding-bottom: 38px;
   border-radius: 16px;
   align-items: center;
   justify-content: center;
-
 }
 
-.evidence-info-card{
+.evidence-info-card {
   display: flex;
   justify-content: space-between;
   width: 576px;
   height: 168px;
   padding: 16px 28px;
   border: 0.8px solid #949999;
-  border-radius: 20px;;
+  border-radius: 20px;
   align-items: center;
-  margin: 0 auto 60px auto; 
-
+  margin: 0 auto 60px auto;
 }
 
-.info-left, .info-right {
+.info-left,
+.info-right {
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -633,7 +628,6 @@ select {
   font-size: 22px;
   color: #333;
 }
-
 
 .evidence-review {
   width: 122;
@@ -679,9 +673,8 @@ select {
   display: flex;
   justify-content: center;
   gap: 30px;
-  padding: 16px
-
-    }
+  padding: 16px;
+}
 .button {
   padding: 12px 40px;
   border-radius: 25px;
@@ -690,23 +683,22 @@ select {
   cursor: pointer;
   transition: 0.3s;
   justify-content: center;
-
 }
 
 .approve {
   background-color: #2f5d56;
   color: white;
-    }
+}
 
 .approve:hover {
   background-color: #244944;
-    }
+}
 
 .reject {
   background-color: #f0d778;
   color: #222;
-    }
+}
 
 .reject:hover {
   background-color: #e6c85c;
-    }
+}
