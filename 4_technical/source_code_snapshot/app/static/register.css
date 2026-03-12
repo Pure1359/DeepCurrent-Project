@@ -1,0 +1,70 @@
+body {
+  font-family: Arial, sans-serif;
+  margin-top: 60px;
+  overflow: hidden;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  justify-items: self-start;
+  min-height: 100vh;
+  background-image: url("Resource/RegisterBackground.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.body,
+h1,
+p,
+label {
+  color: #153a39;
+}
+
+.bodycontainer {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  background-color: #fcfbfc;
+  border-radius: 10px;
+  border: solid;
+  border-width: 48px;
+  border-color: #fcfbfc;
+}
+.register-container,
+label {
+  display: -webkit-inline-box;
+  align-items: self-start;
+  width: 200px;
+}
+.register-container,
+input {
+  width: 300px;
+  padding: 10px;
+  margin: 10px 0;
+  border: solid;
+  border-radius: 6px;
+  border-width: 1px;
+}
+.register-container,
+button {
+  width: 160px;
+  height: 40px;
+  margin: 20px 0;
+  border: solid;
+  border-width: 1.2px;
+  border-radius: 20px;
+  background-color: #214f4d;
+  border-color: white;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+.register-container,
+a {
+  margin-left: 32px;
+  color: #153a39;
+  font-size: 16px;
+}
+
+.register-link {
+  display: flex;
+  justify-content: center;
+}
