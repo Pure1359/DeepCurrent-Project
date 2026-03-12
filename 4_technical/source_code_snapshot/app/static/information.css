@@ -1,0 +1,23 @@
+.info-overlay {
+    width: 549px;
+    height: 600px;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    border-radius: 16px;
+}
+
+.info-card {
+    background: white;
+    width: 453px;
+    height: 371px;
+    padding-left: 28px;
+    padding-right: 28px;
+}
+
+.hidden {
+    display: none;
+}

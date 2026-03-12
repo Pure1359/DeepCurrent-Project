@@ -151,7 +151,7 @@
               </div>
               <h3>Travel</h3>
             </div>
-            <button class="card-menu">⋮</button>
+            <button id="travel-info-btn" class="card-menu">⋮</button>
           </div>
           <div class="card-structure">
             <div class="card-body">
@@ -182,7 +182,7 @@
               </div>
               <h3>Food</h3>
             </div>
-            <button class="card-menu">⋮</button>
+            <button id="food-info-btn" class="card-menu">⋮</button>
           </div>
           <div class="card-structure">
             <div class="card-body">
@@ -213,7 +213,7 @@
               </div>
               <h3>Energy</h3>
             </div>
-            <button class="card-menu">⋮</button>
+            <button id="energy-info-btn" class="card-menu">⋮</button>
           </div>
           <div class="card-structure">
             <div class="card-body">
@@ -244,7 +244,7 @@
               </div>
               <h3>Waste</h3>
             </div>
-            <button class="card-menu">⋮</button>
+            <button id="waste-info-btn" class="card-menu">⋮</button>
           </div>
           <div class="card-structure">
             <div class="card-body">
@@ -269,6 +269,100 @@
         </div>
       </div>
       <div class="spacer"></div>
+    </div>
+
+    <!-- Travel Impact Information Card -->
+    <div id="travel-info-overlay" class="info-overlay hidden">
+      <div class="info-card">
+        <button id="closeTravelInfo">X</button>
+    
+        <h2><b>Travel Impact Calculation</b></h2>
+        <p>We estimate your travel emissions using your journey distance
+          and the transport method selected. Lower-impact options, such as
+          walking, are used as a baseline, while car and bus journeys are
+          calculated using standard emissions factors. In some cases, factors
+          such as fuel type, fuel efficiency, and passenger occupancy may also
+          be include. This gives you a useful estimate of the carbon impact of
+          your journey, rather than an exact value.
+        </p>
+    
+        <h2><b>Formula</b></h2>
+        <p>For most journeys, the calculation uses a simple method:</p>
+        <p><b>Estimate CO2e = Distance Travelled × Emissions Factor of Transport Type</b></p>
+      </div>
+    </div>
+
+    <!-- Energy Impact Information Card -->
+    <div id="energy-info-overlay" class="info-overlay hidden">
+      <div class="info-card">
+        <button id="closeEnergyInfo">X</button>
+    
+        <h2><b>How Energy Tracking Works</b></h2>
+    
+        <p>Log energy-saving actions anytime. To calculate
+          savings, first upload a meter photo of your starting reading.
+          Then submit a new meter image or monthly bill whenever
+          available, and we'll compare the readings to estimate
+          your energy and carbon savings.
+        </p>
+
+        <h2><b>Good Energy Actions to Log</b></h2>
+        <ul>
+          <li>Used library/study space instead of heating my room</li>
+          <li>Turned heating down for X hours</li>
+          <li>Switched off unused lights/devices</li>
+        </ul>
+    
+        <h2><b>Formula</b></h2>
+    
+        <p><b>Estimated CO2e = Energy consumed x emissions factor of the chosen energy type</b></p>
+      </div>
+    </div>
+
+    <!-- Food Info Overlay -->
+    <div id="food-info-overlay" class="info-overlay hidden">
+      <div class="info-card">
+        <button id="closeFoodInfo">X</button>
+    
+        <h2><b>Food Impact Calculation</b></h2>
+    
+        <p>We estimate your food-related impact using life
+          cycle assement data for food products. This includes
+          environmental factors such as emissions, land use and water
+          use from production through to processing. Your receipt
+          helps us identify lower-impact choices and generate an
+          estimated saving. These results are intended as an informed
+          estimate, not an exact value.
+        </p>
+    
+        <h2><b>Formula</b></h2>
+    
+        <p><b>Estimated CO2e = Food Consumed x Emissions factor of chosen food type</b></p>
+      </div>
+    </div>
+
+    <!-- Waste Info Overlay -->
+    <div id="waste-info-overlay" class="info-overlay hidden">
+      <div class="info-card">
+        <button id="closeWasteInfo">X</button>
+    
+        <h2><b>Waste Impact Calculation</b></h2>
+        <p>We estimate your waste-related impact based on your
+          recycling habits, the type of materials you recycle, and
+          the size of the bin bag you use. The bin bag size helps us
+          estimate the approximate weight of your recycling. We then apply
+          general conversion factors for different types of recyclable waste
+          to calculate an estimated CO2e saving. These results are intended as
+          informed estimate rather than an exact value.
+        </p>
+    
+        <h2><b>Formula</b></h2>
+        <p><b>Saved CO2e = Reference Basket - Chosen Basket</b></p>
+        <p><b>Chosen Basket = CO2e produced based on your chosen product</b></p>
+        <p><b>Produced CO2e = Product Weight x CO2e Estimation Factor</b></p>
+        <p><b>Reference Basket</b></p>
+        <p>A standard higher-carbon shopping basket used as a benchmark for comparison</p>
+      </div>
     </div>
 
     <!-- Impact Comparison Overlay -->
@@ -546,6 +640,82 @@
       /* Close Impact Overlay */
       document.getElementById("closeImpact").addEventListener("click", () => {
         document.getElementById("impact-overlay").classList.add("hidden");
+      });
+
+      /* Open Travel Info Card */
+      const travelInfoBtn = document.getElementById("travel-info-btn");
+      const travelInfoOverlay = document.getElementById("travel-info-overlay");
+      travelInfoBtn.addEventListener("click", () => {
+        travelInfoOverlay.classList.remove("hidden");
+      });
+
+      travelInfoOverlay.addEventListener("click", (e) => {
+        if (e.target === travelInfoOverlay) {
+          travelInfoOverlay.classList.add("hidden");
+        }
+      });
+
+      const closeTravelInfo = document.getElementById("closeTravelInfo");
+
+      closeTravelInfo.addEventListener("click", () => {
+        travelInfoOverlay.classList.add("hidden");
+      });
+
+      /* Energy Overlay Script */
+      const energyInfoBtn = document.getElementById("energy-info-btn");
+      const energyInfoOverlay = document.getElementById("energy-info-overlay");
+      const closeEnergyInfo = document.getElementById("closeEnergyInfo");
+
+      energyInfoBtn.addEventListener("click", () => {
+        energyInfoOverlay.classList.remove("hidden");
+      });
+
+      closeEnergyInfo.addEventListener("click", () => {
+        energyInfoOverlay.classList.add("hidden");
+      });
+
+      energyInfoOverlay.addEventListener("click", (e) => {
+        if (e.target === energyInfoOverlay) {
+          energyInfoOverlay.classList.add("hidden");
+        }
+      });
+
+      /* Food Overlay Script */
+      const foodInfoBtn = document.getElementById("food-info-btn");
+      const foodInfoOverlay = document.getElementById("food-info-overlay");
+      const closeFoodInfo = document.getElementById("closeFoodInfo");
+
+      foodInfoBtn.addEventListener("click", () => {
+        foodInfoOverlay.classList.remove("hidden");
+      });
+
+      closeFoodInfo.addEventListener("click", () => {
+        foodInfoOverlay.classList.add("hidden");
+      });
+
+      foodInfoOverlay.addEventListener("click", (e) => {
+        if (e.target === foodInfoOverlay) {
+          foodInfoOverlay.classList.add("hidden");
+        }
+      });
+
+      /* Waste Overlay Script */
+      const wasteInfoBtn = document.getElementById("waste-info-btn");
+      const wasteInfoOverlay = document.getElementById("waste-info-overlay");
+      const closeWasteInfo = document.getElementById("closeWasteInfo");
+
+      wasteInfoBtn.addEventListener("click", () => {
+        wasteInfoOverlay.classList.remove("hidden");
+      });
+
+      closeWasteInfo.addEventListener("click", () => {
+        wasteInfoOverlay.classList.add("hidden");
+      });
+
+      wasteInfoOverlay.addEventListener("click", (e) => {
+        if (e.target === wasteInfoOverlay) {
+          wasteInfoOverlay.classList.add("hidden");
+        }
       });
     </script>
   </body>
