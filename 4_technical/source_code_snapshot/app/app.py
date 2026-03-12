@@ -19,11 +19,15 @@ def require_login():
     if not account_id:
         return None
     return int(account_id)
+# Route for the welcome page
+@bp.route("/welcome")
+def welcome():
+    return render_template("welcome.html")
 
 # Route for the home page
 @bp.route("/")
 def index():
-    return render_template("register.html") # display register.html by default
+    return render_template("welcome.html") # display welcome.html by default
 
 # Create a route to handle user registration
 @bp.route("/register", methods=["GET", "POST"])
