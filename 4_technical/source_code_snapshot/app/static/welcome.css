@@ -1,0 +1,75 @@
+body {
+  font-family: Arial, sans-serif;
+  margin-top: 60px;
+  overflow: hidden;
+  /* overflow-y: auto; */
+  display: grid;
+  grid-gap: 20px;
+  justify-content: center;
+  justify-items: self-start;
+  min-height: 100vh;
+  background-image: url("Resource/WelcomePageBackground.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.body,
+h1,
+h2,
+p {
+  color: #ffffff;
+}
+.container1 {
+  display: flex;
+  align-items: center;
+}
+h1 {
+  width: 643px;
+  font-size: 57px;
+  margin-bottom: 20px;
+  stroke-color: #153a39;
+  stroke-width: 1.2;
+}
+.body,
+button {
+  width: 160px;
+  height: 40px;
+  margin: 20px 0;
+  border: solid;
+  border-width: 1.2px;
+  border-radius: 20px;
+  background-color: #214f4d;
+  border-color: white;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+/* .register-link {
+  width: fit-content;
+  padding: 10px 42px;
+  border-radius: 20px;
+  border: solid;
+  background-color: #214f4d;
+  border-color: white;
+  border-width: 1.2px;
+} */
+
+a:link,
+a:visited {
+  background-color: #214f4d;
+  width: 160px;
+  padding: 10px;
+  border-radius: 20px;
+  border: solid;
+  border-color: white;
+  border-width: 1.2px;
+  text-align: center;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 18px;
+  display: inline-block;
+}
+a:hover,
+a:active {
+  color: #153a39;
+}
