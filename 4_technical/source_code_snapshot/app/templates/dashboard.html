@@ -232,7 +232,7 @@
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
-              <button class="add-button">+</button>
+              <button id="energy-action-btn" class="add-button">+</button>
             </div>
           </div>
         </div>
@@ -289,6 +289,37 @@
         <h2><b>Formula</b></h2>
         <p>For most journeys, the calculation uses a simple method:</p>
         <p><b>Estimate CO2e = Distance Travelled × Emissions Factor of Transport Type</b></p>
+      </div>
+    </div>
+
+    <!-- Energy Action Input Overlay -->
+    <div id="energy-overlay" class="overlay-wrapper hidden">
+      <div class="action_log_card">
+        <form class="energy_form">
+          <div class="form-row">
+            <label>What energy-saving action did you take?</label>
+            <select id="energy-action-type" required>
+              <option value="heating">Turn the heating down</option>
+              <option value="lights">Switch off unused lights</option>
+              <option value="cold-wash">Used a cold wash</option>
+              <option value="air-dry">Air dry clothes</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Evidence URL (Optional)</label>
+            <input type="url" id="energy-evidence-url" placeholder="https://example.com/image.jpg">
+          </div>
+    
+          <div class="form-row">
+            <label>Challenge ID (Optional)</label>
+            <div class="challenge-id-input">
+              <input type="number" id="energy-challenge-id" placeholder="Leave empty if none">
+            </div>
+          </div>
+    
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
       </div>
     </div>
 
@@ -716,6 +747,48 @@
         if (e.target === wasteInfoOverlay) {
           wasteInfoOverlay.classList.add("hidden");
         }
+      });
+
+      /* Open Energy form when buttonis clicked  */
+      const energyActionBtn = document.getElementById("energy-action-btn"); // the + button in energy card
+      const energyOverlay = document.getElementById("energy-overlay"); // form card overlay to enter energy-saving action
+      const energyForm = document.querySelector(".energy_form"); // energy form inside energyOverlay
+
+      /* Show energyOverlay when the + button is clicked */
+      energyActionBtn.addEventListener("click", () => {
+        energyOverlay.style.display = "flex";
+      });
+
+      /* Hide energyOverlay when clicking outside the form */
+      energyOverlay.addEventListener("click", (e) => {
+        if (e.target === energyOverlay) {
+          energyOverlay.style.display = "none";
+        }
+      });
+
+      /* Form processing when submit button is pressed */
+      energyForm.addEventListener("submit", async (e) => {
+        e.preventDefault;
+
+        // Retrieve form data
+        const actionType = document.getElementById("energy-action-type").value;
+        const evidenceUrl = document.getElementById("energy-evidence-url").value.trim();
+        const challengeId = document.getElementById("energy-challenge-id").value.trim();
+
+        const formData = {
+          action_name: actionType,
+          evidence_url: evidenceUrl || null,
+          challenge_id: challengeId ? parseInt(challengeId) : null,
+          category: "energy"
+        };
+
+        console.log("Energy Form Data:", formData);
+
+        // Close overlay after logging
+        energyOverlay.style.display = "none";
+
+        // Reset form
+        energyForm.reset();
       });
     </script>
   </body>
