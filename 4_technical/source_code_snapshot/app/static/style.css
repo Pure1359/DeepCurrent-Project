@@ -203,6 +203,7 @@ body::after {
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  padding-right: 80px;
 }
 
 .card-metrics {
@@ -219,7 +220,7 @@ body::after {
 
 .card-metrics div {
   font-weight: 600;
-  width: 60px;
+  width: fit-content;
 }
 
 .increase-value {

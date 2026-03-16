@@ -1,17 +1,36 @@
 // Replace this with your actual API/backend call
 
-async function fetchData() {
-  // Example: const res = await fetch('/api/stats');
-  // const data = await res.json();
-  // return data;
+// async function fetchData() {
+//   // Example: const res = await fetch('/api/stats');
+//   // const data = await res.json();
+//   // return data;
 
-  // Placeholder — swap this out with your real endpoint
-  return [
-    { label: "Category A", pct: 40, color: "#378ADD" },
-    { label: "Category B", pct: 25, color: "#1D9E75" },
-    { label: "Category C", pct: 20, color: "#D85A30" },
-    { label: "Category D", pct: 15, color: "#7F77DD" },
-  ];
+//   // Placeholder — swap this out with your real endpoint
+//   return [
+//     { label: "Category A", pct: 40, color: "#378ADD" },
+//     { label: "Category B", pct: 25, color: "#1D9E75" },
+//     { label: "Category C", pct: 20, color: "#D85A30" },
+//     { label: "Category D", pct: 15, color: "#7F77DD" },
+//   ];
+// }
+async function fetchData() {
+  try {
+    const res = await fetch("/user_access/get_category_stats", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error: ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Failed to fetch category stats:", error);
+    return [];
+  }
 }
 //-----------------------------------------------
 
@@ -107,14 +126,14 @@ function drawChart(cats) {
   svg.appendChild(centerSub);
 }
 
-async function fetchData() {
-  return [
-    { label: "Travel", pct: 35, color: "#F8C3E2" },
-    { label: "Food", pct: 30, color: "#C0E4E6" },
-    { label: "Energy", pct: 20, color: "#FADF7D" },
-    { label: "Waste", pct: 15, color: "#C1D9FF" },
-  ];
-}
+// async function fetchData() {
+//   return [
+//     { label: "Travel", pct: 35, color: "#F8C3E2" },
+//     { label: "Food", pct: 30, color: "#C0E4E6" },
+//     { label: "Energy", pct: 20, color: "#FADF7D" },
+//     { label: "Waste", pct: 15, color: "#C1D9FF" },
+//   ];
+// }
 
 async function init() {
   const data = await fetchData();
