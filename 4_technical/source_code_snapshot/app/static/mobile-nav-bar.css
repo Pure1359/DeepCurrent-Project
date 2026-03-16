@@ -1,0 +1,41 @@
+.mobile-header-bar {
+  width: -webkit-fill-available;
+  position: sticky;
+  display: none;
+  height: 48px;
+  display: var();
+  /* justify-content: space-between; */
+  align-items: center;
+  /* padding-bottom: 10px; */
+  background-color: #153a39;
+  color: white;
+  z-index: 1;
+  margin-top: 16px;
+}
+
+.mobile-navbar {
+  position: absolute;
+  width: 100vh;
+  width: -webkit-fill-available;
+  display: none;
+  z-index: 1;
+  flex-direction: column;
+  background: #fcfbfc;
+  padding: 16px;
+  margin-right: 12px;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.burgermenu-btn {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+.mobile-navbar.closed {
+  display: none;
+}

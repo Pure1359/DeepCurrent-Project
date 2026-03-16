@@ -6,6 +6,7 @@
 @import url(impact-comparison.css);
 @import url(information.css);
 @import url(chart-wrapper.css);
+@import url(mobile-nav-bar.css);
 
 html,
 body {
@@ -737,7 +738,7 @@ select {
    Responsive Design
    */
 
-/*tablets */
+/*desctop */
 @media (max-width: 1200px) {
   body {
     margin-top: 30px;
@@ -758,6 +759,9 @@ select {
     height: auto;
     gap: 16px;
     align-items: center;
+  }
+  .mobile-navbar {
+    display: none;
   }
 
   #co2e-message {
@@ -833,6 +837,9 @@ select {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
+  }
+  .mobile-navbar {
+    display: none;
   }
 
   #co2e-message {
@@ -940,7 +947,7 @@ select {
   }
 
   body {
-    margin-top: 64px;
+    margin-top: 0px;
     padding: 0 12px 20px;
     display: block;
   }
@@ -952,6 +959,12 @@ select {
 
   .spacer {
     height: 10px;
+  }
+  .sidebar {
+    display: none;
+  }
+  .mobile-header-bar {
+    display: flex;
   }
 
   .dashboard-header {
@@ -992,12 +1005,13 @@ select {
   }
 
   .card {
-    width: 100%;
-    max-width: 100%;
-    min-height: 160px;
+    width: 70%;
     height: auto;
-    padding: 14px;
-    background-size: 90px;
+    margin: 8px;
+    gap: 12px;
+  }
+  .card-menu {
+    transform: rotate(90deg);
   }
 
   .rank-card,
@@ -1037,16 +1051,13 @@ select {
   .card-menu {
     font-size: 24px;
   }
-
+  /* removing hover effect on mobile for better UX */
   .card-structure {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-left: 0;
-    gap: 10px;
+    justify-content: center;
   }
 
   .card-body {
-    gap: 6px;
+    margin-left: 60px;
   }
 
   .card-metrics {
