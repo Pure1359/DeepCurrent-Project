@@ -73,7 +73,13 @@ def get_yearly_saved(account_id):
             return 0
 
 
+def get_total_action_quantity_by_type(account_id):
+    sql = """SELECT action_type, SUM(quantity) as total_quantity FROM ActionLog WHERE submitted_by = %s GROUP BY action_type"""
 
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id,))
+        result = cursor.fetchall()
+        return {row["action_type"]: row["total_quantity"] for row in result}
 
 
     

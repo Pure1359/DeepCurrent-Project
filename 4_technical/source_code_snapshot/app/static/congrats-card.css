@@ -1,97 +1,98 @@
 .congrats-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  .congrats-card-container {
-      width: 448px;
-      height: 477px;
-      max-width: 448px;
-      border-radius: 16px;
-  
-      border-top: 6px;
-      border-right: 2px;
-      border-bottom: 6px;
-      border-left: 2px;
-  
-      padding-top: 32px;
-      padding-bottom: 38px;
-  
-      background-color: #FCFBFC;
-  }
-  
-  .close-button img {
-      float: right;
-      cursor: pointer;
-  }
-  
-  .content-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-  }
-  
-  .content-container h1 {
-      font-size: 46px;
-      font-weight: bold;
-      line-height: 120%;
-      letter-spacing: -2%;
-  }
-  
-  .celebration-icons {
-      display: flex;
-      padding-top: 1px;
-      padding-bottom: 1px;
-      gap: 4px;
-  }
-  
-  .points-added {
-      font-weight: bold;
-      font-size: 20px;
-      line-height: 120%;
-      letter-spacing: -2%;
-  }
-  
-  .trophy-icon {
-      width: 48px;
-      height: 48px;
-  }
-  
-  .check-dashboard {
-      font-weight: bold;
-      font-size: 20px;
-      line-height: 120%;
-      letter-spacing: -2%;
-  }
-  
-  .share {
-      padding-bottom: 15px;
-  }
-  
-  .share a{
-      font-size: 18px;
-      line-height: 120%;
-      letter-spacing: 0%;
-      color: #000000;
-      text-decoration: none;
-  }
-  
-  .impact-comparison-submit button {
-      width: 140px;
-      height: 32px;
-      border-radius: 16px;
-      border: none;
-      background-color: #214F4D;
-      color: white;
-      cursor: pointer;
-  }
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.hidden {
+  display: none;
+}
+
+.congrats-card-container {
+  width: 448px;
+  height: 477px;
+  max-width: 448px;
+  border-radius: 16px;
+
+  border-top: 6px;
+  border-right: 2px;
+  border-bottom: 6px;
+  border-left: 2px;
+
+  padding-top: 32px;
+  padding-bottom: 38px;
+
+  background-color: #fcfbfc;
+}
+
+.close-button img {
+  float: right;
+  cursor: pointer;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.content-container h1 {
+  font-size: 46px;
+  font-weight: bold;
+  line-height: 120%;
+  letter-spacing: -2%;
+}
+
+.celebration-icons {
+  display: flex;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  gap: 4px;
+}
+
+.points-added {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 120%;
+  letter-spacing: -2%;
+}
+
+.trophy-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.check-dashboard {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 120%;
+  letter-spacing: -2%;
+}
+
+.share {
+  padding-bottom: 15px;
+}
+
+.share a {
+  font-size: 18px;
+  line-height: 120%;
+  letter-spacing: 0%;
+  color: #000000;
+  text-decoration: none;
+}
+
+.impact-comparison-submit button {
+  width: 140px;
+  height: 32px;
+  border-radius: 16px;
+  border: none;
+  background-color: #214f4d;
+  color: white;
+  cursor: pointer;
+}
