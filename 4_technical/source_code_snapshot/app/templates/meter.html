@@ -1,54 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
-<title>Food Log Card</title>
+<title>Carbon Intensity Meter</title>
 <link rel="stylesheet" href="/4_technical/source_code_snapshot/app/static/style.css">
 </head>
 
 <body>
 
-<div class="overlay">
+    <div class="meter">
 
-  <div class="foodcard_1">
-
-    <div class="food-bg-icon">
-        <img class = "food-bg" src = "/4_technical/source_code_snapshot/app/static/Resource/foodcardbg.svg" alt="food-bg">
-    </div>
-
-    <div class="title-box">
-        <h1>What food products would you like to log?</h1>
-        <div class="close-btn">
-          <img class="close" src="/4_technical/source_code_snapshot/app/static/Resource/cross.svg" />
+        <img src="/4_technical/source_code_snapshot/app/static/Resource/metertemp.svg" class="meter-bg">
+    
+        <div class="needle" id="needle"></div>
+    
+        <div class="meter-text">
+            <div class="number">159</div>
+            <div>gCO₂/kWh (MODERATE)</div>
         </div>
-      </div>
-
-    <p class="subtitle">
-      Type to search and select items from the dropdown below. When you have added all items to your list, click submit.
-    </p>
-
-    <div class="form-row">
-        <div class="input-group">
-            <label>Select:</label>
-          
-            <div class="multi-select">
-              <div class="selected-items" id="selectedItems"></div>
-              <input type="text" id="searchInput" placeholder="Type to search...">
-              <div class="dropdown" id="dropdown"></div>
-            </div>
-          </div>
-
-      <div class="input-group">
-        <label>Weight(estimate):</label>
-        <input type="text" placeholder="Type">
-      </div>
+    
     </div>
 
-    <button class="submit-btn">Submit</button>
+<script>
 
-  </div>
-
-</div>
-
-</body>
-</html>
+    function updateMeter(value){
+    
+        const minValue = 0
+        const maxValue = 280
+    
+        const minAngle = -105
+        const maxAngle = 105
+    
+        const ratio = (value - minValue) / (maxValue - minValue)
+    
+        const angle = minAngle + ratio * (maxAngle - minAngle)
+    
+        const needle = document.getElementById("needle")
+    
+        needle.style.transform =
+            `translateX(-50%) rotate(${angle}deg)`
+    }
+    
+    updateMeter(159)
+    
+    </script>
+    
+    
