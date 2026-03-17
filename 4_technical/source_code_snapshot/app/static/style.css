@@ -979,10 +979,22 @@ select {
     font-size: 26px;
   }
 
+  .congrats-card-container {
+    width: 400px;
+    box-sizing: initial;
+  }
+  .close-button {
+    padding-left: 16px;
+  }
+
   .header-right .profile-icon {
     width: 34px;
     height: 34px;
     padding: 10px;
+  }
+
+  .congrats-overlay {
+    padding: 16px;
   }
 
   .dashboard-graphs-wrraper {
@@ -1012,6 +1024,8 @@ select {
   }
   .card-menu {
     transform: rotate(90deg);
+    padding-right: 8%;
+    font-size: 24px;
   }
 
   .rank-card,
@@ -1048,16 +1062,14 @@ select {
     height: 32px;
   }
 
-  .card-menu {
-    font-size: 24px;
-  }
-  /* removing hover effect on mobile for better UX */
   .card-structure {
     justify-content: center;
   }
 
   .card-body {
     margin-left: 60px;
+    margin-right: 24px;
+    padding-right: initial;
   }
 
   .card-metrics {
