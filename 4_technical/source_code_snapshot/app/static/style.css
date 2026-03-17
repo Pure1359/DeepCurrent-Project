@@ -1338,43 +1338,45 @@ select {
     padding: 10px 12px;
   }
 }
+<<<<<<< Updated upstream
+=======
 
-.meter{
-  position:relative;
-  width:700px;
+.meter {
+  position: relative;
+  width: 380px;
 }
 
-.meter-bg{
-  width:100%;
-  display:block;
+.meter-bg {
+  width: 100%;
+  display: block;
 }
 
-.needle{
-  position:absolute;
+.needle {
+  position: absolute;
 
-  width:6px;
-  height:170px;
-  background:#2ab7d6;
+  width: 6px;
+  height: 170px;
+  background: #2ab7d6;
 
-  left:50%;
-  top:2%;                 
-  transform-origin:bottom center;
-  transform:translateX(-50%) rotate(0deg);
+  left: 50%;
+  top: 2%;
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(0deg);
 
   transition: transform 0.6s ease;
 }
 
-.meter-text{
-  position:absolute;
-  top: 25%;
-  left:50%;
-  transform:translateX(-50%);
-  text-align:center;
+.meter-text {
+  position: absolute;
+  top: 68%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
 }
 
-.number{
-  font-size:80px;
-  font-weight:bold;
-  color:#E5B500;
+.number {
+  font-size: 40px;
+  font-weight: bold;
+  color: #e5b500;
 }
-
+>>>>>>> Stashed changes
