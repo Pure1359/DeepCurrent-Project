@@ -808,6 +808,7 @@
       const impactOverlay = document.getElementById("impact-overlay");
 
       impactSubmitBtn.addEventListener("click", () => {
+        init();
         impactOverlay.classList.add("hidden");
 
         const saved = window.latestSavedAmount || 0;
