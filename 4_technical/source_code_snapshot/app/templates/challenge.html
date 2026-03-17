@@ -35,6 +35,67 @@
 
       <button class="toggle-btn" id="toggleBtn">❯</button>
     </div>
+    <div class="mobile-header-bar">
+      <button, id="burgermenu" class="burgermenu-btn">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/burgermenu.svg') }}"
+          alt="closemenu"
+        />
+      </button>
+    </div>
+    <div class="mobile-navbar">
+      <div class="nav-item" onclick="window.location.href='{{ url_for('app.dashboard')}}'">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/home.svg') }}"
+          alt="home"
+        />
+        <span class="label">Home</span>
+      </div>
+
+      <div
+        class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/chalange.svg') }}"
+          alt="Challenges"
+        />
+        <span class="label">Challenges</span>
+      </div>
+
+      <div class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/group.svg') }}"
+          alt="Group"
+        />
+        <span class="label">Group</span>
+      </div>
+
+      <div class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/notifications.svg') }}"
+          alt="Read"
+        />
+        <span class="label">Notifications</span>
+      </div>
+    </div>
+    <script>
+      const burgerMenu = document.getElementById("burgermenu");
+      const mobileNavbar = document.querySelector(".mobile-navbar");
+
+      burgerMenu.addEventListener("click", () => {
+        if (mobileNavbar.classList.contains("open")) {
+          mobileNavbar.classList.remove("open");
+          mobileNavbar.style.display = "none";
+        } else {
+          mobileNavbar.classList.add("open");
+          mobileNavbar.style.display = "flex";
+        }
+      });
+    </script>
     <script>
       const toggle = document.getElementById("toggleBtn");
       const navbar = document.getElementsByClassName("navbar")[0];

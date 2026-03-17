@@ -192,8 +192,40 @@ def join_group_challenge():
     except (GroupPermissionError, ChallengeIdNotFound, GroupAlreadyJoinChallenge, InvalidChallengeDate) as error:
         error_message = str(error)
         return make_response(jsonify(error = error_message)), 409
-    
 
+@user_bp.route("/get_category_stats", methods=["POST"])
+def get_category_stats():
+    account_id = session.get("account_id")
+    get_stats = """
+        SELECT 
+            at.category,
+            SUM(al.co2e_saved) AS total_saved
+        FROM ActionLog al
+        JOIN ActionType at
+            ON al.actionType_id = at.actionType_id
+        WHERE al.submitted_by = %s
+        GROUP BY at.category
+        ORDER BY total_saved DESC
+    """
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(get_stats, (account_id,))
+        stats_result = cursor.fetchall()
+
+        total = sum((row["total_saved"] or 0) for row in stats_result)
+
+        colors = ["#378ADD", "#1D9E75", "#D85A30", "#7F77DD", "#E0B43B", "#D94F70"]
+
+        data = []
+        for i, row in enumerate(stats_result):
+            pct = ((row["total_saved"] or 0) / total * 100) if total else 0
+            data.append({
+                "label": row["category"],
+                "pct": round(pct, 1),
+                "color": colors[i % len(colors)]
+            })
+
+        return jsonify(data)
 
 
     
