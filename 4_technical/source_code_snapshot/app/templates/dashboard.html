@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
     <script src="{{ url_for('static', filename='JavaScript.js') }}"></script>
   </head>
 
@@ -26,20 +29,35 @@
           <div class="form-row">
             <label>Distance</label>
             <div class="distance-input">
-              <input type="number" id="distance" placeholder="0.0" step="0.1" min="0" required />
+              <input
+                type="number"
+                id="distance"
+                placeholder="0.0"
+                step="0.1"
+                min="0"
+                required
+              />
               <span>KM</span>
             </div>
           </div>
 
           <div class="form-row">
             <label>Evidence URL (Optional)</label>
-            <input type="url" id="evidence-url" placeholder="https://example.com/image.jpg">
+            <input
+              type="url"
+              id="evidence-url"
+              placeholder="https://example.com/image.jpg"
+            />
           </div>
 
           <div class="form-row">
             <label>Challenge ID (Optional)</label>
             <div class="challenge-id-input">
-              <input type="number" id="challenge-id" placeholder="Leave empty if none">
+              <input
+                type="number"
+                id="challenge-id"
+                placeholder="Leave empty if none"
+              />
             </div>
           </div>
 
@@ -50,28 +68,115 @@
     <div class="sidebar">
       <nav class="navbar">
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/home.svg') }}" alt="home" />
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/home.svg') }}"
+            alt="home"
+          />
           <span class="label">Home</span>
         </div>
 
+<<<<<<< HEAD
         <div class="nav-item" onclick="window.location.href='{{ url_for('app.challenge') }}'"></div>
           <img class="icon" src="{{ url_for('static', filename='Resource/chalange.svg') }}" alt="Challenges" />
+=======
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('app.challenge') }}'"
+        >
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/chalange.svg') }}"
+            alt="Challenges"
+          />
+>>>>>>> 4be23cf43fc4604477d96ec172414d5a2679daab
           <span class="label">Challenges</span>
         </div>
 
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/group.svg') }}" alt="Group" />
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/group.svg') }}"
+            alt="Group"
+          />
           <span class="label">Group</span>
         </div>
 
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/eco.svg') }}" alt="Read" />
-          <span class="label">Read</span>
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/notifications.svg') }}"
+            alt="Read"
+          />
+          <span class="label">Notifications</span>
         </div>
       </nav>
 
       <button class="toggle-btn" id="toggleBtn">❯</button>
     </div>
+    <div class="mobile-header-bar">
+      <button, id="burgermenu" class="burgermenu-btn">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/burgermenu.svg') }}"
+          alt="closemenu"
+        />
+      </button>
+    </div>
+    <div class="mobile-navbar">
+      <div class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/home.svg') }}"
+          alt="home"
+        />
+        <span class="label">Home</span>
+      </div>
+
+      <div
+        class="nav-item"
+        onclick="window.location.href='{{ url_for('app.challenge') }}'"
+      >
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/chalange.svg') }}"
+          alt="Challenges"
+        />
+        <span class="label">Challenges</span>
+      </div>
+
+      <div class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/group.svg') }}"
+          alt="Group"
+        />
+        <span class="label">Group</span>
+      </div>
+
+      <div class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/notifications.svg') }}"
+          alt="Read"
+        />
+        <span class="label">Notifications</span>
+      </div>
+    </div>
+    <script>
+      const burgerMenu = document.getElementById("burgermenu");
+      const mobileNavbar = document.querySelector(".mobile-navbar");
+
+      burgerMenu.addEventListener("click", () => {
+        if (mobileNavbar.classList.contains("open")) {
+          mobileNavbar.classList.remove("open");
+          mobileNavbar.style.display = "none";
+        } else {
+          mobileNavbar.classList.add("open");
+          mobileNavbar.style.display = "flex";
+        }
+      });
+    </script>
     <script>
       const toggle = document.getElementById("toggleBtn");
       const navbar = document.getElementsByClassName("navbar")[0];
@@ -112,7 +217,14 @@
       <div id="progress-wrraper" class="dashboard-graphs-wrraper">
         <div class="dashboard-graph-left">
           <div id="graph-container">
-            <img src="{{ url_for('static', filename='Resource/GroupProgress.svg') }}" alt="graph" />
+            <div class="chart-wrapper">
+              <svg
+                id="donut"
+                viewBox="0 0 400 400"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+              <div class="legend" id="legend"></div>
+            </div>
             <span id="graph-caption">Savings by Category</span>
           </div>
           <div id="progress-message">
@@ -127,12 +239,18 @@
           </div>
           <div id="matrix-wrrapper">
             <span id="matrix-caption">Estimated weekly CO₂e savings</span>
-            <img src="{{ url_for('static', filename='Resource/matrixNoShadow.svg') }}" alt="matrix" />
+            <img
+              src="{{ url_for('static', filename='Resource/matrixNoShadow.svg') }}"
+              alt="matrix"
+            />
           </div>
         </div>
         <div class="dashboard-graph-right">
           <div id="image-container-right">
-            <img src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}" alt="graph" />
+            <img
+              src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}"
+              alt="graph"
+            />
             <p id="matrix-caption-leftside">
               Colours show the total estimated carbon impact of your actions
               each week, based on reported activities and standard conversion
@@ -147,7 +265,10 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Travel.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Travel.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Travel</h3>
             </div>
@@ -178,7 +299,10 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Food.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Food.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Food</h3>
             </div>
@@ -209,7 +333,10 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Energy.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Energy.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Energy</h3>
             </div>
@@ -232,7 +359,7 @@
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
-              <button class="add-button">+</button>
+              <button id="energy-action-btn" class="add-button">+</button>
             </div>
           </div>
         </div>
@@ -240,7 +367,10 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Waste.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Waste.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Waste</h3>
             </div>
@@ -275,20 +405,57 @@
     <div id="travel-info-overlay" class="info-overlay hidden">
       <div class="info-card">
         <button id="closeTravelInfo">X</button>
-    
+
         <h2><b>Travel Impact Calculation</b></h2>
-        <p>We estimate your travel emissions using your journey distance
-          and the transport method selected. Lower-impact options, such as
-          walking, are used as a baseline, while car and bus journeys are
-          calculated using standard emissions factors. In some cases, factors
-          such as fuel type, fuel efficiency, and passenger occupancy may also
-          be include. This gives you a useful estimate of the carbon impact of
-          your journey, rather than an exact value.
+        <p>
+          We estimate your travel emissions using your journey distance and the
+          transport method selected. Lower-impact options, such as walking, are
+          used as a baseline, while car and bus journeys are calculated using
+          standard emissions factors. In some cases, factors such as fuel type,
+          fuel efficiency, and passenger occupancy may also be include. This
+          gives you a useful estimate of the carbon impact of your journey,
+          rather than an exact value.
         </p>
-    
+
         <h2><b>Formula</b></h2>
         <p>For most journeys, the calculation uses a simple method:</p>
-        <p><b>Estimate CO2e = Distance Travelled × Emissions Factor of Transport Type</b></p>
+        <p>
+          <b
+            >Estimate CO2e = Distance Travelled × Emissions Factor of Transport
+            Type</b
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Energy Action Input Overlay -->
+    <div id="energy-overlay" class="overlay-wrapper hidden">
+      <div class="action_log_card">
+        <form class="energy_form">
+          <div class="form-row">
+            <label>What energy-saving action did you take?</label>
+            <select id="energy-action-type" required>
+              <option value="heating">Turn the heating down</option>
+              <option value="lights">Switch off unused lights</option>
+              <option value="cold-wash">Used a cold wash</option>
+              <option value="air-dry">Air dry clothes</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Evidence URL (Optional)</label>
+            <input type="url" id="energy-evidence-url" placeholder="https://example.com/image.jpg">
+          </div>
+    
+          <div class="form-row">
+            <label>Challenge ID (Optional)</label>
+            <div class="challenge-id-input">
+              <input type="number" id="energy-challenge-id" placeholder="Leave empty if none">
+            </div>
+          </div>
+    
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
       </div>
     </div>
 
@@ -296,14 +463,14 @@
     <div id="energy-info-overlay" class="info-overlay hidden">
       <div class="info-card">
         <button id="closeEnergyInfo">X</button>
-    
+
         <h2><b>How Energy Tracking Works</b></h2>
-    
-        <p>Log energy-saving actions anytime. To calculate
-          savings, first upload a meter photo of your starting reading.
-          Then submit a new meter image or monthly bill whenever
-          available, and we'll compare the readings to estimate
-          your energy and carbon savings.
+
+        <p>
+          Log energy-saving actions anytime. To calculate savings, first upload
+          a meter photo of your starting reading. Then submit a new meter image
+          or monthly bill whenever available, and we'll compare the readings to
+          estimate your energy and carbon savings.
         </p>
 
         <h2><b>Good Energy Actions to Log</b></h2>
@@ -312,10 +479,15 @@
           <li>Turned heating down for X hours</li>
           <li>Switched off unused lights/devices</li>
         </ul>
-    
+
         <h2><b>Formula</b></h2>
-    
-        <p><b>Estimated CO2e = Energy consumed x emissions factor of the chosen energy type</b></p>
+
+        <p>
+          <b
+            >Estimated CO2e = Energy consumed x emissions factor of the chosen
+            energy type</b
+          >
+        </p>
       </div>
     </div>
 
@@ -323,21 +495,26 @@
     <div id="food-info-overlay" class="info-overlay hidden">
       <div class="info-card">
         <button id="closeFoodInfo">X</button>
-    
+
         <h2><b>Food Impact Calculation</b></h2>
-    
-        <p>We estimate your food-related impact using life
-          cycle assement data for food products. This includes
-          environmental factors such as emissions, land use and water
-          use from production through to processing. Your receipt
-          helps us identify lower-impact choices and generate an
-          estimated saving. These results are intended as an informed
-          estimate, not an exact value.
+
+        <p>
+          We estimate your food-related impact using life cycle assement data
+          for food products. This includes environmental factors such as
+          emissions, land use and water use from production through to
+          processing. Your receipt helps us identify lower-impact choices and
+          generate an estimated saving. These results are intended as an
+          informed estimate, not an exact value.
         </p>
-    
+
         <h2><b>Formula</b></h2>
-    
-        <p><b>Estimated CO2e = Food Consumed x Emissions factor of chosen food type</b></p>
+
+        <p>
+          <b
+            >Estimated CO2e = Food Consumed x Emissions factor of chosen food
+            type</b
+          >
+        </p>
       </div>
     </div>
 
@@ -345,33 +522,33 @@
     <div id="waste-info-overlay" class="info-overlay hidden">
       <div class="info-card">
         <button id="closeWasteInfo">X</button>
-    
+
         <h2><b>Waste Impact Calculation</b></h2>
-        <p>We estimate your waste-related impact based on your
-          recycling habits, the type of materials you recycle, and
-          the size of the bin bag you use. The bin bag size helps us
-          estimate the approximate weight of your recycling. We then apply
-          general conversion factors for different types of recyclable waste
-          to calculate an estimated CO2e saving. These results are intended as
-          informed estimate rather than an exact value.
+        <p>
+          We estimate your waste-related impact based on your recycling habits,
+          the type of materials you recycle, and the size of the bin bag you
+          use. The bin bag size helps us estimate the approximate weight of your
+          recycling. We then apply general conversion factors for different
+          types of recyclable waste to calculate an estimated CO2e saving. These
+          results are intended as informed estimate rather than an exact value.
         </p>
-    
+
         <h2><b>Formula</b></h2>
         <p><b>Saved CO2e = Reference Basket - Chosen Basket</b></p>
         <p><b>Chosen Basket = CO2e produced based on your chosen product</b></p>
         <p><b>Produced CO2e = Product Weight x CO2e Estimation Factor</b></p>
         <p><b>Reference Basket</b></p>
-        <p>A standard higher-carbon shopping basket used as a benchmark for comparison</p>
+        <p>
+          A standard higher-carbon shopping basket used as a benchmark for
+          comparison
+        </p>
       </div>
     </div>
 
     <!-- Impact Comparison Overlay -->
     <div id="impact-overlay" class="congrats-overlay hidden">
       <div class="impact-comparison-container">
-
-        <div class="back-button" id="closeImpact">
-          X
-        </div>
+        <div class="back-button" id="closeImpact">X</div>
 
         <div class="content-container">
           <div class="type-and-distance">
@@ -407,7 +584,6 @@
           <div class="impact-comparison-submit">
             <button id="impactSubmitBtn">Submit</button>
           </div>
-
         </div>
       </div>
     </div>
@@ -415,36 +591,43 @@
     <!-- Congrats Card with Calculation Overlay -->
     <div id="congrats-overlay" class="congrats-overlay hidden">
       <div class="congrats-card-container">
-        <div class="close-button" id="closeCongrats">
-          ✕
-        </div>
-    
+        <div class="close-button" id="closeCongrats">✕</div>
+
         <div class="content-container">
           <div class="well-done-message">
             <h1 id="co2e-result">You saved 0 kg CO2e, Well Done!</h1>
           </div>
-    
+
           <div class="celebration-icons">
-            <img src="{{ url_for('static', filename='Resource/happyface.png') }}" alt="">
-            <img src="{{ url_for('static', filename='Resource/confetti.png') }}" alt="">
+            <img
+              src="{{ url_for('static', filename='Resource/happyface.png') }}"
+              alt=""
+            />
+            <img
+              src="{{ url_for('static', filename='Resource/confetti.png') }}"
+              alt=""
+            />
           </div>
-    
+
           <div class="points-added">
             <p id="points-result">0 points added to your total score</p>
           </div>
-    
+
           <div class="trophy-icon">
-            <img src="{{ url_for('static', filename='Resource/trophy.png') }}" alt="">
+            <img
+              src="{{ url_for('static', filename='Resource/trophy.png') }}"
+              alt=""
+            />
           </div>
-    
+
           <div class="check-dashboard">
             <p>Check your dashboard</p>
           </div>
-    
+
           <div class="share">
             <a href="#">Click to share on your social media</a>
           </div>
-    
+
           <div class="impact-comparison-submit">
             <button id="congratsOkBtn">OK</button>
           </div>
@@ -470,80 +653,98 @@
 
       travelForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
-        const travelType = document.getElementById("travel-type").value.toLowerCase();
+
+        const travelType = document
+          .getElementById("travel-type")
+          .value.toLowerCase();
         const distance = parseFloat(document.getElementById("distance").value);
-        const evidenceUrl = document.getElementById("evidence-url").value.trim();
-        const challengeId = document.getElementById("challenge-id").value.trim();
-        
+        const evidenceUrl = document
+          .getElementById("evidence-url")
+          .value.trim();
+        const challengeId = document
+          .getElementById("challenge-id")
+          .value.trim();
+
         if (!distance || distance <= 0) {
           alert("Please enter a valid distance");
           return;
         }
-        
+
         const actionNameMap = {
           train: "train",
           bus: "bus",
           car: "car",
           bike: "bike",
-          walk: "walk"
+          walk: "walk",
         };
-        
+
         const requestData = {
           action_name: actionNameMap[travelType] || "walk",
           category: "travel",
-          quantity: distance
+          quantity: distance,
         };
-        
+
         if (challengeId) {
           requestData.challenge_id = parseInt(challengeId);
         }
-        
+
         if (evidenceUrl) {
           requestData.evidence_url = evidenceUrl;
         }
-        
+
         try {
           const response = await fetch("/user_access/submit_action", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify(requestData)
+            body: JSON.stringify(requestData),
           });
-          
+
           const data = await response.json();
-          
+
           if (response.ok) {
             const co2Factor = data.co2e_factor;
             const quantity = data.quantity;
             const totalSaved = (co2Factor * quantity).toFixed(2);
 
-            document.getElementById("impact-title").textContent = `${travelType} Journey - Impact Comparison`
+            document.getElementById(
+              "impact-title"
+            ).textContent = `${travelType} Journey - Impact Comparison`;
 
             // Show distance input
-            document.getElementById("impact-distance").textContent = `Distance Travelled: ${quantity} km`
+            document.getElementById(
+              "impact-distance"
+            ).textContent = `Distance Travelled: ${quantity} km`;
 
             // Show emission factor
-            document.getElementById("impact-factor").textContent =
-              `Emission Factor: ${co2Factor} kg CO₂e per km`;
+            document.getElementById(
+              "impact-factor"
+            ).textContent = `Emission Factor: ${co2Factor} kg CO₂e per km`;
 
             // Show calculation
-            document.getElementById("impact-calculation").textContent =
-              `${co2Factor} × ${quantity} km = ${totalSaved} kg CO2e`;
+            document.getElementById(
+              "impact-calculation"
+            ).textContent = `${co2Factor} × ${quantity} km = ${totalSaved} kg CO2e`;
 
             // Update your congrats card values
-            document.getElementById("co2e-result").textContent =
-              `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById(
+              "co2e-result"
+            ).textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
 
-            document.getElementById("points-result").textContent =
-              `${Math.round(totalSaved)} points added to your total score`;
+            document.getElementById(
+              "points-result"
+            ).textContent = `${Math.round(
+              totalSaved
+            )} points added to your total score`;
 
             // Hide the action log overlay
             actionLogOverlay.style.display = "none";
 
             // Show Impact Comparison overlay
-            document.getElementById("impact-overlay").classList.remove("hidden");
+            document
+              .getElementById("impact-overlay")
+              .classList.remove("hidden");
 
             // Store value for congrats
             window.latestSavedAmount = totalSaved;
@@ -562,37 +763,56 @@
 
       async function loadDashboardData() {
         try {
-          const monthlyResponse = await fetch("/user_access/get_monthly_co2e_saving", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"}
-          });
+          const monthlyResponse = await fetch(
+            "/user_access/get_monthly_co2e_saving",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
           const monthlyData = await monthlyResponse.json();
-          
+
           const progressValue = monthlyData.total_saving || 0;
-          document.getElementById("progress-value").textContent = progressValue.toFixed(1);
-          document.getElementById("co2e-message").textContent = `You saved ${progressValue.toFixed(1)} kg CO2e this month`;
-          
-          const weeklyResponse = await fetch("/user_access/get_weekly_co2e_saving", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"}
-          });
+          document.getElementById("progress-value").textContent =
+            progressValue.toFixed(1);
+          document.getElementById(
+            "co2e-message"
+          ).textContent = `You saved ${progressValue.toFixed(
+            1
+          )} kg CO2e this month`;
+
+          const weeklyResponse = await fetch(
+            "/user_access/get_weekly_co2e_saving",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
           const weeklyData = await weeklyResponse.json();
-          
-          const yearlyResponse = await fetch("/user_access/get_yearly_co2e_saving", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"}
-          });
+
+          const yearlyResponse = await fetch(
+            "/user_access/get_yearly_co2e_saving",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
           const yearlyData = await yearlyResponse.json();
-          
+
           const travelCard = document.querySelectorAll(".card")[0];
           const weeklyValue = travelCard.querySelector(".weekly-value");
           const monthlyValue = travelCard.querySelector(".monthly-value");
           const totalValue = travelCard.querySelector(".total-value");
-          
-          weeklyValue.textContent = `${(weeklyData.total_saving || 0).toFixed(1)} kg`;
-          monthlyValue.textContent = `${(monthlyData.total_saving || 0).toFixed(1)} kg`;
-          totalValue.textContent = `${(yearlyData.total_saving || 0).toFixed(1)} kg`;
-          
+
+          weeklyValue.textContent = `${(weeklyData.total_saving || 0).toFixed(
+            1
+          )} kg`;
+          monthlyValue.textContent = `${(monthlyData.total_saving || 0).toFixed(
+            1
+          )} kg`;
+          totalValue.textContent = `${(yearlyData.total_saving || 0).toFixed(
+            1
+          )} kg`;
         } catch (error) {
           console.error("Failed to load dashboard data:", error);
         }
@@ -624,15 +844,18 @@
       const impactOverlay = document.getElementById("impact-overlay");
 
       impactSubmitBtn.addEventListener("click", () => {
+        init();
         impactOverlay.classList.add("hidden");
 
         const saved = window.latestSavedAmount || 0;
 
-        document.getElementById("co2e-result").textContent =
-          `You saved ${saved} kg CO2e, Well Done!`;
+        document.getElementById(
+          "co2e-result"
+        ).textContent = `You saved ${saved} kg CO2e, Well Done!`;
 
-        document.getElementById("points-result").textContent =
-          `${Math.round(saved)} points added to your total score`;
+        document.getElementById("points-result").textContent = `${Math.round(
+          saved
+        )} points added to your total score`;
 
         congratsOverlay.classList.remove("hidden");
       });
@@ -717,6 +940,49 @@
           wasteInfoOverlay.classList.add("hidden");
         }
       });
+
+      /* Open Energy form when buttonis clicked  */
+      const energyActionBtn = document.getElementById("energy-action-btn"); // the + button in energy card
+      const energyOverlay = document.getElementById("energy-overlay"); // form card overlay to enter energy-saving action
+      const energyForm = document.querySelector(".energy_form"); // energy form inside energyOverlay
+
+      /* Show energyOverlay when the + button is clicked */
+      energyActionBtn.addEventListener("click", () => {
+        energyOverlay.style.display = "flex";
+      });
+
+      /* Hide energyOverlay when clicking outside the form */
+      energyOverlay.addEventListener("click", (e) => {
+        if (e.target === energyOverlay) {
+          energyOverlay.style.display = "none";
+        }
+      });
+
+      /* Form processing when submit button is pressed */
+      energyForm.addEventListener("submit", async (e) => {
+        e.preventDefault;
+
+        // Retrieve form data
+        const actionType = document.getElementById("energy-action-type").value;
+        const evidenceUrl = document.getElementById("energy-evidence-url").value.trim();
+        const challengeId = document.getElementById("energy-challenge-id").value.trim();
+
+        const formData = {
+          action_name: actionType,
+          evidence_url: evidenceUrl || null,
+          challenge_id: challengeId ? parseInt(challengeId) : null,
+          category: "energy"
+        };
+
+        console.log("Energy Form Data:", formData);
+
+        // Close overlay after logging
+        energyOverlay.style.display = "none";
+
+        // Reset form
+        energyForm.reset();
+      });
     </script>
+    <script src="{{ url_for('static', filename='wrapper-script.js') }}"></script>
   </body>
 </html>

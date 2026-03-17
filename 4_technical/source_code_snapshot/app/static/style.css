@@ -5,6 +5,8 @@
 @import url(congrats-card.css);
 @import url(impact-comparison.css);
 @import url(information.css);
+@import url(chart-wrapper.css);
+@import url(mobile-nav-bar.css);
 
 html,
 body {
@@ -202,6 +204,7 @@ body::after {
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  padding-right: 80px;
 }
 
 .card-metrics {
@@ -218,7 +221,7 @@ body::after {
 
 .card-metrics div {
   font-weight: 600;
-  width: 60px;
+  width: fit-content;
 }
 
 .increase-value {
@@ -735,7 +738,7 @@ select {
    Responsive Design
    */
 
-/*tablets */
+/*desctop */
 @media (max-width: 1200px) {
   body {
     margin-top: 30px;
@@ -756,6 +759,9 @@ select {
     height: auto;
     gap: 16px;
     align-items: center;
+  }
+  .mobile-navbar {
+    display: none;
   }
 
   #co2e-message {
@@ -831,6 +837,9 @@ select {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
+  }
+  .mobile-navbar {
+    display: none;
   }
 
   #co2e-message {
@@ -938,7 +947,7 @@ select {
   }
 
   body {
-    margin-top: 64px;
+    margin-top: 0px;
     padding: 0 12px 20px;
     display: block;
   }
@@ -950,6 +959,12 @@ select {
 
   .spacer {
     height: 10px;
+  }
+  .sidebar {
+    display: none;
+  }
+  .mobile-header-bar {
+    display: flex;
   }
 
   .dashboard-header {
@@ -964,10 +979,22 @@ select {
     font-size: 26px;
   }
 
+  .congrats-card-container {
+    width: 400px;
+    box-sizing: initial;
+  }
+  .close-button {
+    padding-left: 16px;
+  }
+
   .header-right .profile-icon {
     width: 34px;
     height: 34px;
     padding: 10px;
+  }
+
+  .congrats-overlay {
+    padding: 16px;
   }
 
   .dashboard-graphs-wrraper {
@@ -990,12 +1017,15 @@ select {
   }
 
   .card {
-    width: 100%;
-    max-width: 100%;
-    min-height: 160px;
+    width: 70%;
     height: auto;
-    padding: 14px;
-    background-size: 90px;
+    margin: 8px;
+    gap: 12px;
+  }
+  .card-menu {
+    transform: rotate(90deg);
+    padding-right: 8%;
+    font-size: 24px;
   }
 
   .rank-card,
@@ -1032,19 +1062,14 @@ select {
     height: 32px;
   }
 
-  .card-menu {
-    font-size: 24px;
-  }
-
   .card-structure {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-left: 0;
-    gap: 10px;
+    justify-content: center;
   }
 
   .card-body {
-    gap: 6px;
+    margin-left: 60px;
+    margin-right: 24px;
+    padding-right: initial;
   }
 
   .card-metrics {
