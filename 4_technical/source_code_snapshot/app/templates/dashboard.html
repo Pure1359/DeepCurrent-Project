@@ -246,6 +246,42 @@
               src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}"
               alt="graph"
             />
+            <div class="meter">
+
+              <img src="{{url_for('static', filename='Resource/metertemp.svg') }}" class="meter-bg">
+          
+              <div class="needle" id="needle"></div>
+          
+              <div class="meter-text">
+                  <div class="number">159</div>
+                  <div>gCO₂/kWh (MODERATE)</div>
+              </div>
+          
+          </div>
+      
+      <script>
+      
+          function updateMeter(value){
+          
+              const minValue = 0
+              const maxValue = 280
+          
+              const minAngle = -105
+              const maxAngle = 105
+          
+              const ratio = (value - minValue) / (maxValue - minValue)
+          
+              const angle = minAngle + ratio * (maxAngle - minAngle)
+          
+              const needle = document.getElementById("needle")
+          
+              needle.style.transform =
+                  `translateX(-50%) rotate(${angle}deg)`
+          }
+          
+          updateMeter(159)
+          
+          </script>
             <p id="matrix-caption-leftside">
               Colours show the total estimated carbon impact of your actions
               each week, based on reported activities and standard conversion
