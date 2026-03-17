@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Food Log Card</title>
+<link rel="stylesheet" href="/4_technical/source_code_snapshot/app/static/style.css">
+</head>
+
+<body>
+
+<div class="overlay">
+
+  <div class="foodcard_1">
+
+    <div class="food-bg-icon">
+        <img class = "food-bg" src = "/4_technical/source_code_snapshot/app/static/Resource/foodcardbg.svg" alt="food-bg">
+    </div>
+
+    <div class="title-box">
+        <h1>What food products would you like to log?</h1>
+        <div class="close-btn">
+          <img class="close" src="/4_technical/source_code_snapshot/app/static/Resource/cross.svg" />
+        </div>
+      </div>
+
+    <p class="subtitle">
+      Type to search and select items from the dropdown below. When you have added all items to your list, click submit.
+    </p>
+
+    <div class="form-row">
+        <div class="input-group">
+            <label>Select:</label>
+          
+            <div class="multi-select">
+              <div class="selected-items" id="selectedItems"></div>
+              <input type="text" id="searchInput" placeholder="Type to search...">
+              <div class="dropdown" id="dropdown"></div>
+            </div>
+          </div>
+
+      <div class="input-group">
+        <label>Weight(estimate):</label>
+        <input type="text" placeholder="Type">
+      </div>
+    </div>
+
+    <button class="submit-btn">Submit</button>
+
+  </div>
+
+</div>
+
+</body>
+</html>
