@@ -121,7 +121,16 @@ def populated_database(new_client_module, module_scope_database):
         "end_date": future_end,
         "rule": "This challenge hasn't started yet"
     })
-    
+
+    # Create active food challenge for food action testing (challenge_id will be 5)
+    new_client_module.post("/moderator_access/create_challenge", data={
+        "challenge_type": "food",
+        "title": "Low Carbon Meals",
+        "start_date": start_date,
+        "end_date": end_date,
+        "rule": "Log your meals and try to keep CO2e low"
+    })
+
     # Logout
     new_client_module.post("/logout")
     
@@ -144,6 +153,7 @@ def populated_database(new_client_module, module_scope_database):
         {"action_name": "walk", "category": "travel", "quantity": 7, "challenge_id": 1, "evidence_url": None},
         {"action_name": "walk", "category": "travel", "quantity": 4, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 18, "challenge_id": None, "evidence_url": None},
+        {"action_name": "food", "category": "food", "quantity": [("Broccoli", 0.3), ("Chicken", 0.5), ("Potatoes", 0.4)], "challenge_id": 5, "evidence_url": "url_food1"},
     ]
     
     for action in actions_emma:

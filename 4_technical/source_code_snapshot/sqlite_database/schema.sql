@@ -25,7 +25,7 @@ CREATE TABLE "ActionLog" (
         "submitted_by" INTEGER NULL  ,
         "actionType_id" INTEGER NULL  ,
         "log_date" DATETIME NULL  ,
-        "quantity" INTEGER NULL  ,
+        "quantity" TEXT NULL  ,
         "co2e_saved" FLOAT NULL,
         FOREIGN KEY("submitted_by") REFERENCES "Accounts" ("account_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
         FOREIGN KEY("actionType_id") REFERENCES "ActionType" ("actionType_id") ON UPDATE NO ACTION ON DELETE NO ACTION

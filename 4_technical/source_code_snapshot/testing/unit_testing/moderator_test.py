@@ -45,13 +45,12 @@ def test_moderator_make_challenge(new_client_module, recorded_template_module, m
         assert response["rules"] == "Walk in a park"
 
 def test_moderator_view_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
-    #from the setup database we can see that the normal user submit about 7 action with evidence to be approved or rejected by moderator
     response = new_client_module.post("/moderator_access/view_pending_submission", json = {
         "offset" : 0,
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
-    assert len(response) == 7
+    assert len(response) == 8
 
     print(response)
     
@@ -95,18 +94,16 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
         "offset" : 0,
         "limit" : 100,
     })
-    #since the moderator make 2 decision, the list of decision left to be approved should now be 7 - 5 = 2
     response = response.get_json()
-    assert len(response) == 5
+    assert len(response) == 6
 
 def test_moderator_view_all_submission_again(new_client_module, recorded_template_module, module_scope_database, populated_database):
-    #view all past submission even the one that already have been made the decision by moderator
     response = new_client_module.post("/moderator_access/view_all_submission", json = {
         "offset" : 0,
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
-    assert len(response) == 7
+    assert len(response) == 8
 
 def test_check_db_after(new_client_module, recorded_template_module, module_scope_database, populated_database):
     #check if evidence record and decision record is generated when in case of evidence is submitted by user
@@ -119,24 +116,24 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlActionLog)
         result = cursor.fetchall()
 
-        assert len(result) == 18
+        assert len(result) == 19
         assert result[0]["log_id"] == 1
         assert result[0]["submitted_by"] == 1
         assert result[0]["actionType_id"] == 1
-        assert result[0]["quantity"] == 2
+        assert result[0]["quantity"] == '2'
         assert result[0]["co2e_saved"] == 1.4
 
         assert result[1]["log_id"] == 2
         assert result[1]["submitted_by"] == 1
         assert result[1]["actionType_id"] == 2
-        assert result[1]["quantity"] == 4
+        assert result[1]["quantity"] == '4'
         assert result[1]["co2e_saved"] == 3.6
 
         # Check Evidence
         cursor.execute(sqlEvidence)
         result = cursor.fetchall()
 
-        assert len(result) == 7
+        assert len(result) == 8
         assert result[0]["evidence_id"] == 1
         assert result[0]["log_id"] == 1
         assert result[0]["evidence_type"] is None
@@ -151,7 +148,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlDecision)
         result = cursor.fetchall()
 
-        assert len(result) == 7
+        assert len(result) == 8
         # First decision (Accepted)
         assert result[0]["decision_id"] == 1
         assert result[0]["evidence_id"] == 1
@@ -172,7 +169,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlChallengeAction)
         result = cursor.fetchall()
 
-        assert len(result) == 9
+        assert len(result) == 10
         assert result[0]["challenge_id"] == 1
         assert result[0]["group_id"] is None
         assert result[0]["log_id"] == 1

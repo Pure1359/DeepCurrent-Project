@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import pytest
 from database_fixture import *
 from app.db_config import db_cursor
-from app.services.actions import log_action
+
 from app.services.users_service import get_weekly_saved, get_monthly_saved, get_yearly_saved
 
 def test_log_action_challenge(new_client_module, module_scope_database, populated_database):
@@ -21,7 +21,7 @@ def test_log_action_challenge(new_client_module, module_scope_database, populate
         #walking co2e factor is 0.7
         assert action_log is not None
         assert action_log["submitted_by"] == 1
-        assert action_log["quantity"] == 50
+        assert action_log["quantity"] == "50"
         assert action_log["actionType_id"] == 1  # walk
         assert action_log["co2e_saved"] == 50 * 0.7
         
@@ -61,7 +61,7 @@ def test_log_action_personal(new_client_module, module_scope_database, populated
         
         assert action_log is not None
         assert action_log["submitted_by"] == 1
-        assert action_log["quantity"] == 30
+        assert action_log["quantity"] == "30"
         assert action_log["actionType_id"] == 2  # bus
         assert action_log["co2e_saved"] == 30 * 0.9
         
@@ -84,7 +84,7 @@ def test_get_weekly_action(new_client_module, module_scope_database, populated_d
     }, follow_redirects=True)
     response = new_client_module.post("/user_access/get_weekly_co2e_saving", json={})
     data = response.get_json()
-    assert data["total_saving"] == 133.4 
+    assert data["total_saving"] == 136.6553 
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -104,7 +104,7 @@ def test_get_monthly_action(new_client_module, module_scope_database, populated_
     }, follow_redirects=True)
     response = new_client_module.post("/user_access/get_monthly_co2e_saving", json={})
     data = response.get_json()
-    assert data["total_saving"] == 133.4
+    assert data["total_saving"] == 136.6553
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -124,7 +124,7 @@ def test_get_yearly_action(new_client_module, module_scope_database, populated_d
     }, follow_redirects=True)
     response = new_client_module.post("/user_access/get_yearly_co2e_saving", json={})
     data = response.get_json()
-    assert data["total_saving"] == 133.4
+    assert data["total_saving"] == 136.6553
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -146,7 +146,7 @@ def test_get_action_history(new_client_module, module_scope_database, populated_
     for record in response:
         print(record)
         print("\n")
-    assert len(response) == 13
+    assert len(response) == 14
 
 def test_user_view_submission_result(new_client_module, module_scope_database, populated_database):
     #login as moderator , make a decision
@@ -172,11 +172,31 @@ def test_user_view_submission_result(new_client_module, module_scope_database, p
     response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 100})
     response = response.get_json()
     
-    #for each decision status in emma 13 decision, at least 1 should be accepted by now
-    assert len(response) == 13
+    assert len(response) == 14
     result_list = []
     for record in response:
         result_list.append(record["decision_status"])
     assert "accepted" in result_list
 
-    
+def test_log_food_co2e_saved(new_client_module, module_scope_database, populated_database):
+    new_client_module.post("/login", data = {
+        "email" : "e.watson@exeter.ac.uk",
+        "password" : "password123"
+    }, follow_redirects = True)
+
+    food_quantity = [("Broccoli", 0.3), ("Chicken", 0.5), ("Potatoes", 0.4)]
+    result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "food", "category" : "food", "quantity" : food_quantity, "challenge_id" : 5})
+    result = result.get_json()
+
+    expected_co2e = (0.3 * 0.726) + (0.5 * 4.963) + (0.4 * 1.390)
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute("SELECT * FROM ActionLog WHERE log_id = %s", (result["action_log_id"],))
+        action_log = cursor.fetchone()
+
+        assert action_log is not None
+        assert action_log["submitted_by"] == 1
+        assert action_log["quantity"] == "Broccoli:0.3 Chicken:0.5 Potatoes:0.4"
+        assert action_log["co2e_saved"] == expected_co2e
+        assert result["co2e_saved"] == expected_co2e
+

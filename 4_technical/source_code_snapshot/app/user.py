@@ -68,21 +68,18 @@ def submit_action():
     #     error_message = f"Category name : {category} is not recognized as a valid category name"
     #     return make_response(jsonify(error = error_message), 400)
     
-    if quantity <= 0:
+    if category != "food" and quantity <= 0:
         error_message = "Quantity can not be 0 or have negative value"
         return make_response(jsonify(error = error_message), 400)
 
     #if we pass all check
     #then we log an action
-    response = log_action(account_id, action_name, category, quantity, challenge_id, evidence_url)
+    try:
+        response = log_action(account_id, action_name, category, quantity, challenge_id, evidence_url)
+    except ValueError as error:
+        return make_response(jsonify(error = str(error)), 400)
 
-    action_log_id = response["action_log_id"]
-    evidence_id = response["evidence_id"]
-    decision_id = response["decision_id"]
-    challenge_id = response["challenge_id"]
-    co2e_factor = response["co2e_factor"]
-
-    return jsonify({"success" :True, "message":"Successfully log an action", "action_log_id" : action_log_id, "evidence_id" : evidence_id, "decision_id" : decision_id, "challenge_id" : challenge_id, "co2e_factor" : co2e_factor, "quantity" : quantity}), 200
+    return jsonify({"success" :True, "message":"Successfully log an action", **response}), 200
     
 
 @user_bp.route("/join_challenge",  methods = ["POST"])
