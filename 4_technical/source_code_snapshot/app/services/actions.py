@@ -12,24 +12,29 @@ from pymysql.cursors import DictCursor
 # get_action_logs
 # get_account_totals
 
-#Log action into database
+#Log action into database, dispatches to log_travel or log_food based on category
 def log_action(account_id, name, category, quantity, challenge_id = None, evidence_url = None):
+    if category == "food":
+        return log_food(account_id, name, category, quantity, challenge_id, evidence_url)
+    else:
+        return log_travel(account_id, name, category, quantity, challenge_id, evidence_url)
+
+def log_travel(account_id, name, category, quantity, challenge_id = None, evidence_url = None):
     current_time = datetime.now()
-    #implement this later
     co2e_saved = 0
- 
-    #Get what type an action being logged is. e.g. Is it (cycle, travel)?
+
     sqlActionType = """SELECT * FROM ActionTYPE
                        WHERE actionName = %s AND category = %s
                     """
 
     sqlActionLog = """INSERT INTO ActionLog(submitted_by, actionType_id, log_date, quantity, co2e_saved) VALUES (%s, %s, %s, %s, %s)"""
+
     with db_cursor() as (connection, cursor):
         cursor.execute(sqlActionType, (name, category))
         return_record = cursor.fetchone()
         if return_record is None:
             raise ValueError(f"Action type does not exists: {name}, {category}")
-        
+
         actionType_id = return_record["actionType_id"]
         co2e_factor = return_record["co2e_factor"]
         co2e_saved = co2e_factor * quantity
@@ -41,14 +46,55 @@ def log_action(account_id, name, category, quantity, challenge_id = None, eviden
         inserted_decision_id = None
         inserted_evidence_id = None
     
-        if evidence_url is not None:
+        #For prototype only, in the final project the apply_to_challenge() will only be called when there is evidence_url
+        if challenge_id is not None and evidence_url is not None:
             inserted_evidence_id = insert_evidence_record(cursor, action_log_id, None, evidence_url, current_time)
             inserted_decision_id = insert_decision_record(cursor,inserted_evidence_id, None, "pending", None, None)
-        #For prototype only, in the final project the apply_to_challenge() will only be called when there is evidence_url
-        if challenge_id is not None:
             challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved)
+        elif challenge_id is not None and evidence_url is None:
+            raise ValueError("Can not submit to challenge with no evidence")
 
         return {"action_log_id" : action_log_id, "evidence_id" : inserted_evidence_id, "decision_id" : inserted_decision_id, "challenge_id" : challenge_id, "co2e_factor" : co2e_factor, "co2e_saved" : co2e_saved}
+
+def log_food(account_id, name, category, quantity, challenge_id = None, evidence_url = None):
+    if len(quantity) > 5:
+        raise ValueError("A meal can contain at most 5 ingredients")
+    current_time = datetime.now()
+    food_text = ""
+    co2e_saved = 0
+    last_actionType_id = None
+    sqlActionType = """SELECT * FROM ActionTYPE
+                       WHERE actionName = %s AND category = 'food'
+                    """
+    sqlActionLog = """INSERT INTO ActionLog(submitted_by, actionType_id, log_date, quantity, co2e_saved) VALUES (%s, %s, %s, %s, %s)"""
+
+    with db_cursor() as (connection, cursor):
+        # quantity is a list of (ingredient_name, kg) tuples
+        for food_name, kg in quantity:
+            food_text += f"{food_name}:{kg} "
+            cursor.execute(sqlActionType, (food_name,))
+            return_record = cursor.fetchone()
+            if return_record is None:
+                raise ValueError(f"Action type does not exists: {food_name}, {category}")
+            last_actionType_id = return_record["actionType_id"]
+            co2e_factor = return_record["co2e_factor"]
+            co2e_saved = co2e_saved + (co2e_factor * kg)
+        cursor.execute(sqlActionLog, (account_id, last_actionType_id, current_time, food_text.strip(), co2e_saved))
+        action_log_id = cursor.lastrowid
+        inserted_decision_id = None
+        inserted_evidence_id = None
+            
+        #For prototype only, in the final project the apply_to_challenge() will only be called when there is evidence_url
+        if challenge_id is not None and evidence_url is not None:
+            inserted_evidence_id = insert_evidence_record(cursor, action_log_id, None, evidence_url, current_time)
+            inserted_decision_id = insert_decision_record(cursor,inserted_evidence_id, None, "pending", None, None)
+            challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved)
+        elif challenge_id is not None and evidence_url is None:
+            raise ValueError("Can not submit to challenge with no evidence")
+
+        return {"action_log_id" : action_log_id, "evidence_id" : inserted_evidence_id, "decision_id" : inserted_decision_id, "challenge_id" : challenge_id, "co2e_saved" : co2e_saved}
+
+    # quantity is a list of (ingredient_name, kg) tuples
     
         
 
