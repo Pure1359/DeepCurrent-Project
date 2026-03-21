@@ -7,7 +7,8 @@ fake = Faker()
 random.seed(42)
 Faker.seed(42)
 
-DB_PATH = "C:\\Users\\Kkyua\\Desktop\\UoE\\Year 2\\Sem 2\\Team Project\\DeepCurrent-Project\\4_technical\\source_code_snapshot\\sqlite_database\\mydb.sqlite"   # change this
+# change this to local file path 
+DB_PATH = "C:\\Users\\Kkyua\\Desktop\\UoE\\Year 2\\Sem 2\\Team Project\\DeepCurrent-Project\\4_technical\\source_code_snapshot\\sqlite_database\\mydb.sqlite"   
 
 NUM_USERS = 120
 NUM_GROUPS = 20
@@ -58,9 +59,6 @@ def clear_tables():
             pass
     cursor.execute("PRAGMA foreign_keys = ON;")
     conn.commit()
-
-# Uncomment if you want a fresh reseed
-# clear_tables()
 
 # 1. Users
 user_ids = []
