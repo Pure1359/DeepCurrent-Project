@@ -57,7 +57,7 @@ def test_api_join_challenge_then_submit_awards_challenge_action(new_client_funct
 
     action_resp = new_client_function.post(
         "/api/actions",
-        json={"action_name": "bus", "category": "travel", "quantity": 3, "challenge_id": challenge_id},
+        json={"action_name": "bus", "category": "travel", "quantity": 3, "challenge_id": challenge_id, "evidence_url": "https://www.youtube.com/"},
     )
     assert action_resp.status_code == 200
     action_data = action_resp.get_json()

@@ -150,7 +150,7 @@ def populated_database(new_client_module, module_scope_database):
         {"action_name": "walk", "category": "travel", "quantity": 8, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 12, "challenge_id": None, "evidence_url": None},
         {"action_name": "walk", "category": "travel", "quantity": 3, "challenge_id": None, "evidence_url": None},
-        {"action_name": "walk", "category": "travel", "quantity": 7, "challenge_id": 1, "evidence_url": None},
+        {"action_name": "walk", "category": "travel", "quantity": 7, "challenge_id": 1, "evidence_url": "url_walk7"},
         {"action_name": "walk", "category": "travel", "quantity": 4, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 18, "challenge_id": None, "evidence_url": None},
         {"action_name": "food", "category": "food", "quantity": [("Broccoli", 0.3), ("Chicken", 0.5), ("Potatoes", 0.4)], "challenge_id": 5, "evidence_url": "url_food1"},
@@ -174,7 +174,7 @@ def populated_database(new_client_module, module_scope_database):
         {"action_name": "bus", "category": "travel", "quantity": 25, "challenge_id": 1, "evidence_url": "url7"},
         {"action_name": "walk", "category": "travel", "quantity": 6, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 9, "challenge_id": None, "evidence_url": None},
-        {"action_name": "bus", "category": "travel", "quantity": 11, "challenge_id": 2, "evidence_url": None},
+        {"action_name": "bus", "category": "travel", "quantity": 11, "challenge_id": 2, "evidence_url": "url_bus11"},
         {"action_name": "walk", "category": "travel", "quantity": 13, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 22, "challenge_id": None, "evidence_url": None},
     ]

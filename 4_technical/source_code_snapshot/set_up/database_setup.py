@@ -174,7 +174,7 @@ def production_setup(james_id = 2):
         ("walk", "travel", 8, None, None),
         ("bus", "travel", 12, None, None),
         ("walk", "travel", 3, None, None),
-        ("walk", "travel", 7, challenge1_id, None),
+        ("walk", "travel", 7, challenge1_id, "https://www.youtube.com/"),
         ("walk", "travel", 4, None, None),
         ("bus", "travel", 18, None, None),
         ("food", "food", [("Broccoli", 0.3), ("Chicken", 0.5), ("Potatoes", 0.4)], challenge5_id, "https://www.youtube.com/"),
@@ -192,7 +192,7 @@ def production_setup(james_id = 2):
         ("bus", "travel", 25, challenge1_id, "url7"),
         ("walk", "travel", 6, None, None),
         ("bus", "travel", 9, None, None),
-        ("bus", "travel", 11, challenge2_id, None),
+        ("bus", "travel", 11, challenge2_id, "https://www.youtube.com/"),
         ("walk", "travel", 13, None, None),
         ("bus", "travel", 22, None, None),
     ]

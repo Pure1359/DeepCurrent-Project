@@ -78,7 +78,7 @@ def test_moderator_can_access_user_routes(new_client_module, module_scope_databa
         "category": "travel",
         "quantity": 10,
         "challenge_id": 1,
-        "evidence_url": None
+        "evidence_url": "https://www.youtube.com/"
     })
     
     assert response.status_code == 200
