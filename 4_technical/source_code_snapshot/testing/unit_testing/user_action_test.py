@@ -21,7 +21,7 @@ def test_log_action_challenge(new_client_module, module_scope_database, populate
         #walking co2e factor is 0.7
         assert action_log is not None
         assert action_log["submitted_by"] == 1
-        assert action_log["quantity"] == "50"
+        assert action_log["quantity"] == '50'
         assert action_log["actionType_id"] == 1  # walk
         assert action_log["co2e_saved"] == 50 * 0.7
         
@@ -61,7 +61,7 @@ def test_log_action_personal(new_client_module, module_scope_database, populated
         
         assert action_log is not None
         assert action_log["submitted_by"] == 1
-        assert action_log["quantity"] == "30"
+        assert action_log["quantity"] == '30'
         assert action_log["actionType_id"] == 2  # bus
         assert action_log["co2e_saved"] == 30 * 0.9
         
@@ -185,7 +185,7 @@ def test_log_food_co2e_saved(new_client_module, module_scope_database, populated
     }, follow_redirects = True)
 
     food_quantity = [("Broccoli", 0.3), ("Chicken", 0.5), ("Potatoes", 0.4)]
-    result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "food", "category" : "food", "quantity" : food_quantity, "challenge_id" : 5})
+    result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "food", "category" : "food", "quantity" : food_quantity, "challenge_id" : 5, "evidence_url" : "https://www.youtube.com/"})
     result = result.get_json()
 
     expected_co2e = (0.3 * 0.726) + (0.5 * 4.963) + (0.4 * 1.390)

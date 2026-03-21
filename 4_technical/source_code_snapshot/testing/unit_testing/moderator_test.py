@@ -50,10 +50,10 @@ def test_moderator_view_pending_evidence(new_client_module, recorded_template_mo
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
-    assert len(response) == 8
+    assert len(response) == 10
 
     print(response)
-    
+
 def test_moderator_accept_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/make_decision", json = {
         "evidence_id" : 1,
@@ -95,7 +95,7 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
         "limit" : 100,
     })
     response = response.get_json()
-    assert len(response) == 6
+    assert len(response) == 8
 
 def test_moderator_view_all_submission_again(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/view_all_submission", json = {
@@ -103,7 +103,7 @@ def test_moderator_view_all_submission_again(new_client_module, recorded_templat
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
-    assert len(response) == 8
+    assert len(response) == 10
 
 def test_check_db_after(new_client_module, recorded_template_module, module_scope_database, populated_database):
     #check if evidence record and decision record is generated when in case of evidence is submitted by user
@@ -133,7 +133,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlEvidence)
         result = cursor.fetchall()
 
-        assert len(result) == 8
+        assert len(result) == 10
         assert result[0]["evidence_id"] == 1
         assert result[0]["log_id"] == 1
         assert result[0]["evidence_type"] is None
@@ -148,7 +148,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         cursor.execute(sqlDecision)
         result = cursor.fetchall()
 
-        assert len(result) == 8
+        assert len(result) == 10
         # First decision (Accepted)
         assert result[0]["decision_id"] == 1
         assert result[0]["evidence_id"] == 1
