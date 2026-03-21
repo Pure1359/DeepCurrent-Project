@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Food Log Card</title>
+<link rel="stylesheet" href="/4_technical/source_code_snapshot/app/static/style.css">
+</head>
+
+<body>
+
+<div class="overlay">
+
+  <div class="foodcard_1">
+
+    <div class="food-bg-icon">
+        <img class = "food-bg" src = "/4_technical/source_code_snapshot/app/static/Resource/foodcardbg.svg" alt="food-bg">
+    </div>
+
+    <div class="title-box">
+        <h1>What food products would you like to log?</h1>
+        <div class="close-btn">
+          <img class="close" src="/4_technical/source_code_snapshot/app/static/Resource/cross.svg" />
+        </div>
+      </div>
+
+    <p class="subtitle">
+      Type to search and select items from the dropdown below. When you have added all items to your list, click submit.
+    </p>
+
+    <div class="selected-list">
+
+        <div class="food-row">
+          
+          <img class="delete-icon" src="/4_technical/source_code_snapshot/app/static/Resource/delete.svg">
+      
+          <div class="food-name"></div>
+      
+          <div class="food-weight-label">Weight:</div>
+      
+          <input class="food-weight-input" type="text" value="128g">
+      
+        </div>
+      
+      </div>
+
+    <div class="form-row">
+        <div class="input-group">
+            <label>Select:</label>
+          
+            <div class="multi-select">
+              <div class="selected-items" id="selectedItems"></div>
+              <input type="text" id="searchInput" placeholder="Type to search...">
+              <div class="dropdown" id="dropdown"></div>
+            </div>
+          </div>
+
+      <div class="input-group">
+        <label>Weight(estimate):</label>
+        <input type="text" placeholder="Type">
+      </div>
+    </div>
+
+    <button class="submit-btn">Submit</button>
+
+  </div>
+
+</div>
+
+</body>
+</html>
+
+<script>
+
+    // backend
+    const foods = [
+      "Apple", "Banana", "Chicken", "Rice", "Eggs",
+      "Milk", "Bread", "Cheese", "Salmon", "Broccoli",
+      "Tomato, raw, ripe", "Tomato, dried", "Pepper"
+    ];
+
+    const searchInput = document.getElementById("searchInput");
+    const dropdown = document.getElementById("dropdown");
+    const selectedList = document.getElementById("selectedList");
+    
+
+    searchInput.addEventListener("input", () => {
+    
+      const value = searchInput.value.toLowerCase();
+      dropdown.innerHTML = "";
+    
+      if (value === "") {
+        dropdown.style.display = "none";
+        return;
+      }
+    
+      const filtered = foods.filter(food =>
+        food.toLowerCase().includes(value)
+      );
+    
+      filtered.forEach(food => {
+        const div = document.createElement("div");
+        div.textContent = food;
+    
+        div.onclick = () => addItem(food);
+    
+        dropdown.appendChild(div);
+      });
+    
+      dropdown.style.display = filtered.length ? "block" : "none";
+    });
+    
+
+    function addItem(food) {
+    
+      if (document.querySelector(`[data-food="${food}"]`)) return;
+    
+      const row = document.createElement("div");
+      row.className = "food-row";
+      row.setAttribute("data-food", food);
+    
+      row.innerHTML = `
+        <img class="delete-icon" src="/4_technical/source_code_snapshot/app/static/Resource/delete.svg">
+    
+        <div class="food-name">${food}</div>
+    
+        <div class="food-weight-label">Weight:</div>
+    
+        <input class="food-weight-input" type="text" placeholder="e.g. 100g">
+      `;
+    
+      row.querySelector(".delete-icon").onclick = () => {
+        row.remove();
+      };
+    
+      selectedList.appendChild(row);
+    
+      searchInput.value = "";
+      dropdown.style.display = "none";
+    }
+    
+
+    document.querySelector(".submit-btn").addEventListener("click", () => {
+    
+      const rows = document.querySelectorAll(".food-row");
+    
+      const data = [];
+    
+      rows.forEach(row => {
+        const food = row.getAttribute("data-food");
+        const weight = row.querySelector("input").value;
+    
+        data.push({
+          food: food,
+          weight: weight
+        });
+      });
+    
+      console.log("Submitted data:", data);
+      });
+    
+    
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".multi-select")) {
+        dropdown.style.display = "none";
+      }
+    });
+    
+    </script> 
