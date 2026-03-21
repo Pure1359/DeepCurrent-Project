@@ -194,6 +194,15 @@
           </div>
           <div class="header-right">
             <button class="profile-icon">👤</button>
+            {% if session.get('account_role') == "moderator" %}
+              <button class= "moderator-inboxbtn">
+                <img
+                  class="icon"
+                  src="{{ url_for('static', filename='Resource/moderator-inbox.svg') }}"
+                  alt="Moderator Inbox"
+                />
+              </button>
+            {% endif %}
           </div>
         </header>
 
