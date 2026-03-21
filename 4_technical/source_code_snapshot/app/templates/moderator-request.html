@@ -43,6 +43,73 @@
 
 </div>
 
+<div id="food-modal" class="food-modal-overlay hidden" onclick="closeFoodModal(event)">
+    <div class="food-modal-card">
+        <div class="moderating-header">
+            <h2>Ingredient Details</h2>
+            <span class="food-modal-close" onclick="closeFoodModal()">&times;</span>
+        </div>
+        <div class="moderating-body">
+            <table class="moderating-table">
+                <thead>
+                    <tr>
+                        <th>Ingredient</th>
+                        <th>Weight (kg)</th>
+                    </tr>
+                </thead>
+                <tbody id="food-modal-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .food-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .food-modal-overlay.hidden {
+        display: none;
+    }
+
+    .food-modal-card {
+        width: 450px;
+        background: #fcfbfc;
+        border-radius: 16px;
+        border: 0.8px solid #153a39;
+        overflow: hidden;
+    }
+
+    .food-modal-card .moderating-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .food-modal-close {
+        font-size: 28px;
+        cursor: pointer;
+        color: #153a39;
+        font-weight: bold;
+    }
+
+    .expand-btn {
+        background: #214f4d;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+</style>
+
 <script>
     window.addEventListener('load', loadPendingSubmissions);
 
@@ -68,18 +135,31 @@
                 const row = document.createElement('tr');
                 const date = new Date(submission.evidence_date).toLocaleDateString();
                 const evidenceId = submission.evidence_id;
-                
+
+                let quantityCell;
+                if (submission.category === 'food') {
+                    const totalKg = submission.quantity.trim().split(' ').reduce((sum, item) => sum + parseFloat(item.split(':')[1]), 0);
+                    const roundedKg = parseFloat(totalKg.toPrecision(3));
+                    quantityCell = `<td>${roundedKg} KG <button class="expand-btn" data-quantity="${submission.quantity}">Expand</button></td>`;
+                } else {
+                    quantityCell = `<td>${submission.quantity} ${submission.unit}</td>`;
+                }
+
                 row.innerHTML = `
                     <td>${submission.actionName}</td>
                     <td>${submission.category}</td>
-                    <td>${submission.quantity} ${submission.unit}</td>
+                    ${quantityCell}
                     <td><a href="${submission.evidence_url}" target="_blank">View</a></td>
                     <td>${date}</td>
                     <td><button class="review-button approve-btn" data-evidence-id="${evidenceId}">Approve</button></td>
                     <td><button class="review-button reject-btn" data-evidence-id="${evidenceId}">Reject</button></td>
                 `;
-                
+
                 tbody.appendChild(row);
+            });
+
+            document.querySelectorAll('.expand-btn').forEach(btn => {
+                btn.addEventListener('click', () => openFoodModal(btn.dataset.quantity));
             });
 
             document.querySelectorAll('.approve-btn').forEach(btn => {
@@ -120,6 +200,30 @@
         } catch (error) {
             console.error('Failed to submit decision:', error);
             alert('Failed to submit decision');
+        }
+    }
+
+    function openFoodModal(quantityStr) {
+        const items = quantityStr.trim().split(' ');
+        const tbody = document.getElementById('food-modal-body');
+        tbody.innerHTML = '';
+
+        items.forEach(item => {
+            const [name, kg] = item.split(':');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${name}</td>
+                <td>${kg}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.getElementById('food-modal').classList.remove('hidden');
+    }
+
+    function closeFoodModal(event) {
+        if (!event || event.target === document.getElementById('food-modal')) {
+            document.getElementById('food-modal').classList.add('hidden');
         }
     }
 </script>
