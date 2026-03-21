@@ -25,6 +25,21 @@ body {
   justify-items: self-start;
   min-height: 100vh;
 }
+/* moderatot inbox btn */
+.header-right,
+button {
+  width: 48px;
+  gap: 10px;
+  height: 40px;
+  border: solid;
+  border-width: 1.2px;
+  border-radius: 20px;
+  background-color: #214f4d;
+  border-color: white;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
 
 /* Background image */
 body::before {
@@ -336,7 +351,7 @@ body::after {
 .dashboard-header {
   font-size: 48px;
   width: 828px;
-  height: 58px;
+  height: fit-content;
   align-items: centre;
   display: flex;
   justify-content: space-between;
@@ -349,8 +364,8 @@ body::after {
 
 .header-right .profile-icon {
   cursor: pointer;
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
 }
 
 .link a {
@@ -988,8 +1003,8 @@ select {
   }
 
   .header-right .profile-icon {
-    width: 34px;
-    height: 34px;
+    width: 48px;
+    height: 48px;
     padding: 10px;
   }
 
