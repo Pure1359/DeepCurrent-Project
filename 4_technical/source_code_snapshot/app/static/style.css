@@ -26,8 +26,8 @@ body {
   min-height: 100vh;
 }
 /* moderatot inbox btn */
-.header-right,
-button {
+.profile-icon,
+.moderator-inboxbtn {
   width: 48px;
   gap: 10px;
   height: 40px;
