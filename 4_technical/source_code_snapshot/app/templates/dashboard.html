@@ -87,16 +87,18 @@
           />
           <span class="label">Challenges</span>
         </div>
-
-        <div class="nav-item">
+        {% if session.get('account_role') == "moderator" %}
+        <div 
+          class="nav-item" 
+            onclick="window.location.href='{{ url_for('app.moderator_dashboard') }}'">
           <img
             class="icon"
             src="{{ url_for('static', filename='Resource/group.svg') }}"
             alt="Group"
           />
-          <span class="label">Group</span>
+          <span class="label">Mod-Dashboard</span>
         </div>
-
+        {% endif %}
         <div class="nav-item">
           <img
             class="icon"
@@ -195,7 +197,7 @@
           <div class="header-right">
             <button class="profile-icon">👤</button>
             {% if session.get('account_role') == "moderator" %}
-              <button class= "moderator-inboxbtn">
+              <button class= "moderator-inboxbtn" onclick="window.location.href='{{ url_for('app.moderator_evidence') }}'">
                 <img
                   class="icon"
                   src="{{ url_for('static', filename='Resource/moderator-inbox.svg') }}"
@@ -243,10 +245,10 @@
           </div>
           <div id="matrix-wrrapper">
             <span id="matrix-caption">Estimated weekly CO₂e savings</span>
-            <img
-              src="{{ url_for('static', filename='Resource/matrixNoShadow.svg') }}"
-              alt="matrix"
-            />
+            <div class="calendar">
+              <div class="months" id="months"></div>
+              <div class="matrix" id="matrix"></div>
+            </div>
           </div>
         </div>
         <div class="dashboard-graph-right">
@@ -1024,5 +1026,7 @@
       });
     </script>
     <script src="{{ url_for('static', filename='wrapper-script.js') }}"></script>
+    <script src="{{ url_for('static', filename='matrix.js') }}"></script>
+
   </body>
 </html>
