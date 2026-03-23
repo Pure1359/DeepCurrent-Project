@@ -20,10 +20,10 @@ def test_login_moderator(new_client_module, recorded_template_module, module_sco
 
 def test_moderator_make_challenge(new_client_module, recorded_template_module, module_scope_database, populated_database):
     #check if when the moderator make a challenge, the challenge record is inserted into the database
-    start_date = datetime.now()
-    end_date = datetime.now() + timedelta(days = 30)
+    start_date = datetime.now().strftime("%Y-%m-%d")
+    end_date = (datetime.now() + timedelta(days = 30)).strftime("%Y-%m-%d")
     response = new_client_module.post("/moderator_access/create_challenge", data = {
-        "challenge_type" : "travel",
+        "challenge_type" : "Personal",
         "title" : "Let Walk",
         "start_date" : start_date,
         "end_date" : end_date,
@@ -38,10 +38,10 @@ def test_moderator_make_challenge(new_client_module, recorded_template_module, m
         response = cursor.fetchone()
 
         assert response["created_by"] == 2
-        assert response["challenge_type"] == "travel"
+        assert response["challenge_type"] == "Personal"
         assert response["title"] == "Let Walk"
-        assert response["start_date"] == str(start_date)
-        assert response["end_date"] == str(end_date)
+        assert response["start_date"] == start_date + " 00:00:00"
+        assert response["end_date"] == end_date + " 23:59:59"
         assert response["rules"] == "Walk in a park"
 
 def test_moderator_view_pending_evidence(new_client_module, recorded_template_module, module_scope_database, populated_database):

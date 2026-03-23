@@ -4,6 +4,14 @@ from flask import abort
 from custom_error.Challenge_Exception import InvalidChallengeDate, ChallengeIdNotFound, UserAlreadyJoinChallenge, GroupAlreadyJoinChallenge
 from custom_error.Group_Exception import *
 from datetime import datetime
+
+def _parse_date(value):
+    if not isinstance(value, str):
+        return value
+    value = value.split(".")[0]
+    return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+
+
 # Placeholder for now
 # Create functions that have to do with challenges
 # Follow templates in users.py and auth.py
@@ -43,15 +51,13 @@ def join_challenge_individual(challenge_id, account_id):
             start_date = check_challenge_result["start_date"]
             end_date = check_challenge_result["end_date"]
 
-            if isinstance(start_date, str):
-                start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            if isinstance(end_date, str):
-                end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            start_date = _parse_date(start_date)
+            end_date = _parse_date(end_date)
 
             if (start_date > current_time or end_date < current_time):
                 raise InvalidChallengeDate("The challenge is currently not active")
-            
-            
+
+
         #if this is reached then user is not already in the challenge and the challenge exists and is still active
         cursor.execute(sql, (challenge_id, account_id, current_time))
     
@@ -85,17 +91,51 @@ def join_challenge_group(challenge_id, group_id, account_id):
     
         if check_challenge is not None:
             #check if challenge is active or not
-            start_date = check_challenge["start_date"]
-            end_date = check_challenge["end_date"]
-            start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            start_date = _parse_date(check_challenge["start_date"])
+            end_date = _parse_date(check_challenge["end_date"])
 
             if (start_date > current_time or end_date < current_time):
                 raise InvalidChallengeDate("The challenge is currently not active")
         
         cursor.execute(sql, (challenge_id, group_id, current_time))
             
-    
+
+def get_all_active_challenges():
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sql = """SELECT c.challenge_id, c.challenge_type, c.title, c.start_date, c.end_date, c.rules, c.created_by
+             FROM Challenge c
+             WHERE c.start_date <= %s AND c.end_date >= %s
+             ORDER BY c.end_date ASC"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (now, now))
+        return cursor.fetchall()
+
+def get_challenge_for_user(account_id):
+    sql = """SELECT challenge_id FROM IndividualParticipation WHERE account_id = %s"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id,))
+        return cursor.fetchall()
+
+def get_user_active_challenges_by_category(account_id):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sql = """SELECT Challenge.challenge_id, Challenge.title, Challenge.challenge_type, Challenge.start_date, Challenge.end_date
+             FROM Challenge
+             JOIN IndividualParticipation ON IndividualParticipation.challenge_id = Challenge.challenge_id
+             WHERE IndividualParticipation.account_id = %s
+               AND Challenge.start_date <= %s
+               AND Challenge.end_date >= %s
+             UNION
+             SELECT Challenge.challenge_id, Challenge.title, Challenge.challenge_type, Challenge.start_date, Challenge.end_date
+             FROM Challenge
+             JOIN GroupParticipation ON GroupParticipation.challenge_id = Challenge.challenge_id
+             JOIN AccountGroup ON AccountGroup.group_id = GroupParticipation.group_id
+             WHERE AccountGroup.account_id = %s
+               AND Challenge.start_date <= %s
+               AND Challenge.end_date >= %s
+             ORDER BY end_date ASC"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id, now, now, account_id, now, now))
+        return cursor.fetchall()
 
 def challenge_leaderboard_individual():
     pass
