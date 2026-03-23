@@ -434,7 +434,7 @@
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
-              <button class="add-button">+</button>
+              <button id="waste-action-btn" class="add-button">+</button>
             </div>
           </div>
         </div>
@@ -475,7 +475,7 @@
         <form class="energy_form">
           <div class="form-row">
             <label>What energy-saving action did you take?</label>
-            <select id="energy-action-type" required>
+            <select id="energy-action-type" required style="width: 100%; min-width: 300px;">
               <option value="heating">Turn the heating down</option>
               <option value="lights">Switch off unused lights</option>
               <option value="cold-wash">Used a cold wash</option>
@@ -484,10 +484,18 @@
           </div>
 
           <div class="form-row">
+            <label>Quantity</label>
+            <div class="distance-input">
+              <input type="number" id="energy-quantity" placeholder="0" step="1" min="1" required />
+              <span id="energy-unit-label">HR</span>
+            </div>
+          </div>
+
+          <div class="form-row">
             <label>Evidence URL (Optional)</label>
             <input type="url" id="energy-evidence-url" placeholder="https://example.com/image.jpg">
           </div>
-    
+
           <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
             <label>Submit to Challenge (Optional)</label>
             <select id="energy-challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
@@ -583,6 +591,48 @@
           A standard higher-carbon shopping basket used as a benchmark for
           comparison
         </p>
+      </div>
+    </div>
+
+    <!-- Waste Action Input Overlay -->
+    <div id="waste-overlay" class="overlay-wrapper hidden">
+      <div class="action_log_card">
+        <form class="waste_form">
+          <div class="form-row">
+            <label>What waste action did you take?</label>
+            <select id="waste-action-type" required style="width: 100%; min-width: 300px;">
+              <option value="recycle-paper">Recycled paper</option>
+              <option value="recycle-cardboard">Recycled cardboard</option>
+              <option value="recycle-plastic">Recycled plastic</option>
+              <option value="recycle-glass">Recycled glass</option>
+              <option value="recycle-aluminium">Recycled aluminium</option>
+              <option value="recycle-steel">Recycled steel / tin cans</option>
+              <option value="compost-food">Composted food waste</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Quantity</label>
+            <div class="distance-input">
+              <input type="number" id="waste-quantity" placeholder="0.0" step="0.1" min="0.1" required />
+              <span>KG</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Evidence URL (Optional)</label>
+            <input type="url" id="waste-evidence-url" placeholder="https://example.com/image.jpg">
+          </div>
+
+          <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label>Submit to Challenge (Optional)</label>
+            <select id="waste-challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
+              <option value="">None</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
       </div>
     </div>
 
@@ -772,58 +822,33 @@
         document.getElementById("impact-overlay").classList.remove("hidden");
       });
 
+      async function fetchSaving(category) {
+        const [weekly, monthly, yearly] = await Promise.all([
+          fetch("/user_access/get_weekly_co2e_saving", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category }) }).then(r => r.json()),
+          fetch("/user_access/get_monthly_co2e_saving", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category }) }).then(r => r.json()),
+          fetch("/user_access/get_yearly_co2e_saving", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category }) }).then(r => r.json()),
+        ]);
+        return { weekly: weekly.total_saving || 0, monthly: monthly.total_saving || 0, yearly: yearly.total_saving || 0 };
+      }
+
+      function updateCard(card, data) {
+        card.querySelector(".weekly-value").textContent = `${data.weekly.toFixed(1)} kg`;
+        card.querySelector(".monthly-value").textContent = `${data.monthly.toFixed(1)} kg`;
+        card.querySelector(".total-value").textContent = `${data.yearly.toFixed(1)} kg`;
+      }
+
       async function loadDashboardData() {
         try {
-          const monthlyResponse = await fetch(
-            "/user_access/get_monthly_co2e_saving",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-          const monthlyData = await monthlyResponse.json();
+          const cards = document.querySelectorAll(".card");
+          const categories = ["travel", "food", "energy", "waste"];
 
-          const progressValue = monthlyData.total_saving || 0;
-          document.getElementById("progress-value").textContent =
-            progressValue.toFixed(1);
-          document.getElementById(
-            "co2e-message"
-          ).textContent = `You saved ${progressValue.toFixed(
-            1
-          )} kg CO2e this month`;
+          const results = await Promise.all(categories.map(c => fetchSaving(c)));
 
-          const weeklyResponse = await fetch(
-            "/user_access/get_weekly_co2e_saving",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-          const weeklyData = await weeklyResponse.json();
+          categories.forEach((cat, i) => updateCard(cards[i], results[i]));
 
-          const yearlyResponse = await fetch(
-            "/user_access/get_yearly_co2e_saving",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-          const yearlyData = await yearlyResponse.json();
-
-          const travelCard = document.querySelectorAll(".card")[0];
-          const weeklyValue = travelCard.querySelector(".weekly-value");
-          const monthlyValue = travelCard.querySelector(".monthly-value");
-          const totalValue = travelCard.querySelector(".total-value");
-
-          weeklyValue.textContent = `${(weeklyData.total_saving || 0).toFixed(
-            1
-          )} kg`;
-          monthlyValue.textContent = `${(monthlyData.total_saving || 0).toFixed(
-            1
-          )} kg`;
-          totalValue.textContent = `${(yearlyData.total_saving || 0).toFixed(
-            1
-          )} kg`;
+          const totalMonthly = results.reduce((sum, r) => sum + r.monthly, 0);
+          document.getElementById("progress-value").textContent = totalMonthly.toFixed(1);
+          document.getElementById("co2e-message").textContent = `You saved ${totalMonthly.toFixed(1)} kg CO2e this month`;
         } catch (error) {
           console.error("Failed to load dashboard data:", error);
         }
@@ -977,10 +1002,79 @@
         }
       });
 
+      /* Waste Action Form */
+      const wasteActionBtn = document.getElementById("waste-action-btn");
+      const wasteOverlay = document.getElementById("waste-overlay");
+      const wasteForm = document.querySelector(".waste_form");
+
+      wasteActionBtn.addEventListener("click", () => {
+        populateChallengeDropdown('waste-challenge-id', 'waste');
+        wasteOverlay.style.display = "flex";
+      });
+
+      wasteOverlay.addEventListener("click", (e) => {
+        if (e.target === wasteOverlay) {
+          wasteOverlay.style.display = "none";
+        }
+      });
+
+      wasteForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const actionType = document.getElementById("waste-action-type").value;
+        const quantity = parseFloat(document.getElementById("waste-quantity").value);
+        const evidenceUrl = document.getElementById("waste-evidence-url").value.trim();
+        const challengeId = document.getElementById("waste-challenge-id").value.trim();
+
+        if (!quantity || quantity <= 0) {
+          alert("Please enter a valid quantity");
+          return;
+        }
+
+        const formData = {
+          action_name: actionType,
+          category: "waste",
+          quantity: quantity,
+          evidence_url: evidenceUrl || null,
+          challenge_id: challengeId ? parseInt(challengeId) : null,
+        };
+
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            wasteOverlay.style.display = "none";
+            congratsOverlay.classList.remove("hidden");
+            wasteForm.reset();
+            loadDashboardData();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
+      });
+
       /* Open Energy form when buttonis clicked  */
       const energyActionBtn = document.getElementById("energy-action-btn"); // the + button in energy card
       const energyOverlay = document.getElementById("energy-overlay"); // form card overlay to enter energy-saving action
       const energyForm = document.querySelector(".energy_form"); // energy form inside energyOverlay
+
+      /* Update energy unit label based on action type */
+      const energyUnitMap = { heating: "HR", lights: "HR", "cold-wash": "Load", "air-dry": "Load" };
+      document.getElementById("energy-action-type").addEventListener("change", (e) => {
+        document.getElementById("energy-unit-label").textContent = energyUnitMap[e.target.value] || "HR";
+      });
 
       /* Show energyOverlay when the + button is clicked */
       energyActionBtn.addEventListener("click", () => {
@@ -997,27 +1091,50 @@
 
       /* Form processing when submit button is pressed */
       energyForm.addEventListener("submit", async (e) => {
-        e.preventDefault;
+        e.preventDefault();
 
-        // Retrieve form data
         const actionType = document.getElementById("energy-action-type").value;
+        const quantity = parseFloat(document.getElementById("energy-quantity").value);
         const evidenceUrl = document.getElementById("energy-evidence-url").value.trim();
         const challengeId = document.getElementById("energy-challenge-id").value.trim();
 
+        if (!quantity || quantity <= 0) {
+          alert("Please enter a valid quantity");
+          return;
+        }
+
         const formData = {
           action_name: actionType,
+          category: "energy",
+          quantity: quantity,
           evidence_url: evidenceUrl || null,
           challenge_id: challengeId ? parseInt(challengeId) : null,
-          category: "energy"
         };
 
-        console.log("Energy Form Data:", formData);
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          });
 
-        // Close overlay after logging
-        energyOverlay.style.display = "none";
+          const data = await response.json();
 
-        // Reset form
-        energyForm.reset();
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            energyOverlay.style.display = "none";
+            congratsOverlay.classList.remove("hidden");
+            energyForm.reset();
+            loadDashboardData();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
       });
     </script>
     <script src="{{ url_for('static', filename='wrapper-script.js') }}"></script>
