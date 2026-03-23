@@ -88,6 +88,35 @@ def production_setup(james_id = 2):
     
     print(f"Created {len(emma_actions)} actions for Emma")
     
+    # Matrix test data for Emma - spread across the year
+    # actionType_id: 1=walk, 2=bus, 3=bike, 4=train, 5=car (based on default_actionType_data)
+    matrix_test_data = [
+        (1, 1,  0.7),   # walk 1km - level 1
+        (1, 2,  1.4),   # walk 2km - level 2
+        (2, 4,  3.6),   # bus 4km  - level 3
+        (2, 8,  7.2),   # bus 8km  - level 4
+    ]
+
+    sql = """INSERT INTO ActionLog (submitted_by, actionType_id, quantity, co2e_saved, log_date)
+            VALUES (%s, %s, %s, %s, %s)"""
+
+    test_dates = [
+        datetime.now() - timedelta(days=60),
+        datetime.now() - timedelta(days=30),
+        datetime.now() - timedelta(days=14),
+        datetime.now() - timedelta(days=7),
+        datetime.now() - timedelta(days=3),
+        datetime.now() - timedelta(days=1),
+        datetime.now(),
+    ]
+
+    with db_cursor() as (connection, cursor):
+        for i, date in enumerate(test_dates):
+            action = matrix_test_data[i % len(matrix_test_data)]
+            cursor.execute(sql, (emma_account_id, action[0], action[1], action[2], date))
+
+    print(f"Created {len(test_dates)} matrix test entries for Emma")
+        
     # Sarah's actions (account_id = 3)
     sarah_actions = [
         ("walk", "travel", 20, challenge1_id, "url6"),
