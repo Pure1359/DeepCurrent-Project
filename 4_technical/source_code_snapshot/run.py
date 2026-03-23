@@ -6,8 +6,10 @@ from set_up.database_setup import *
 load_dotenv("secret.env")
 
 app = create_app()
+deleterecord()
 default_actionType_data()
 defaultDatabase()
+
 
 
 if __name__ == '__main__':

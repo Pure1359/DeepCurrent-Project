@@ -116,7 +116,7 @@ def list_all_challenges():
         if owned_group:
             owned_group_id = owned_group["group_id"]
 
-        #Get group challenge IDs that this user's owned group has joined
+        #Get group challenge IDs that this users owned group has joined
         group_joined_ids = []
         if owned_group_id:
             cursor.execute("SELECT challenge_id FROM GroupParticipation WHERE group_id = %s", (owned_group_id,))
@@ -142,20 +142,59 @@ def get_challenges_for_category():
 @user_bp.route("/get_weekly_co2e_saving", methods = ["POST"])
 def get_user_weekly_saving():
     account_id = session.get("account_id")
-    result = get_weekly_saved(account_id)
+    data = request.get_json()
+    category = data.get("category") if data else None
+    result = get_weekly_saved(account_id, category)
     return jsonify({"total_saving":result})
 
 @user_bp.route("/get_monthly_co2e_saving", methods = ["POST"])
 def get_user_monthly_saving():
     account_id = session.get("account_id")
-    result = get_monthly_saved(account_id)
+    data = request.get_json()
+    category = data.get("category") if data else None
+    result = get_monthly_saved(account_id, category)
     return jsonify({"total_saving":result})
 
 @user_bp.route("/get_yearly_co2e_saving", methods = ["POST"])
 def get_user_yearly_saving():
     account_id = session.get("account_id")
-    result = get_yearly_saved(account_id)
+    data = request.get_json()
+    category = data.get("category") if data else None
+    result = get_yearly_saved(account_id, category)
     return jsonify({"total_saving":result})
+
+@user_bp.route("/get_food_types", methods=["POST"])
+def get_food_types():
+    sql = "SELECT actionName FROM ActionType WHERE category = 'food' ORDER BY actionName ASC"
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql)
+        result = cursor.fetchall()
+    return jsonify([row["actionName"] for row in result])
+
+@user_bp.route("/get_all_active_challenges", methods=["POST"])
+def get_all_active_challenges_route():
+    result = get_all_active_challenges()
+    return jsonify(result)
+
+@user_bp.route("/get_individual_leaderboard", methods=["POST"])
+def get_individual_leaderboard():
+    data = request.get_json()
+    challenge_id = data.get("challenge_id")
+    try:
+        result = challenge_leaderboard_individual(challenge_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@user_bp.route("/get_group_leaderboard", methods=["POST"])
+def get_group_leaderboard():
+    data = request.get_json()
+    challenge_id = data.get("challenge_id")
+    try:
+        result = challenge_leaderboard_group(challenge_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @user_bp.route("/create_group", methods = ["POST"])
