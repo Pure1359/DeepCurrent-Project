@@ -41,7 +41,8 @@ def test_api_log_action_success(new_client_function, module_scope_database):
     assert data["action_id"] is not None
 
 def test_api_join_challenge_then_submit_awards_challenge_action(new_client_function, module_scope_database, populated_database):
-    api_login(new_client_function, "e.watson@exeter.ac.uk", "password123")
+    # Use John who hasn't joined any challenges in the fixture
+    api_login(new_client_function, "jdsiki@fakemail.com", "johndoe123")
 
     with db_cursor() as (_conn, cur):
         cur.execute("SELECT challenge_id FROM Challenge ORDER BY challenge_id ASC LIMIT 1")

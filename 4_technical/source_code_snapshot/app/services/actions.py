@@ -50,7 +50,7 @@ def log_travel(account_id, name, category, quantity, challenge_id = None, eviden
         if challenge_id is not None and evidence_url is not None:
             inserted_evidence_id = insert_evidence_record(cursor, action_log_id, None, evidence_url, current_time)
             inserted_decision_id = insert_decision_record(cursor,inserted_evidence_id, None, "pending", None, None)
-            challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved)
+            challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved, account_id)
         elif challenge_id is not None and evidence_url is None:
             raise ValueError("Can not submit to challenge with no evidence")
 
@@ -88,7 +88,7 @@ def log_food(account_id, name, category, quantity, challenge_id = None, evidence
         if challenge_id is not None and evidence_url is not None:
             inserted_evidence_id = insert_evidence_record(cursor, action_log_id, None, evidence_url, current_time)
             inserted_decision_id = insert_decision_record(cursor,inserted_evidence_id, None, "pending", None, None)
-            challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved)
+            challenge_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved, account_id)
         elif challenge_id is not None and evidence_url is None:
             raise ValueError("Can not submit to challenge with no evidence")
 
@@ -110,15 +110,36 @@ def insert_decision_record(cursor:DictCursor, evidence_id, reviewer_id, decision
 
 
 #Find the challenge that is eligible to be applied to
-def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id, co2e_saved):
+def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id, co2e_saved, account_id):
 
-    insertion = """INSERT INTO ChallengeAction(challenge_id, group_id, log_id, point_awarded) VALUES (%s, %s, %s, %s)"""
+    #Find out the challenge type (Personal or Group)
+    check_type = """SELECT challenge_type FROM Challenge WHERE challenge_id = %s"""
+    cursor.execute(check_type, (challenge_id,))
+    challenge = cursor.fetchone()
+    if challenge is None:
+        raise ValueError(f"Challenge {challenge_id} does not exist")
 
-    points_awarded = co2e_saved
-    
-    #Prototype support individual only no need for group now
     group_id = None
 
+    if challenge["challenge_type"] == "Group":
+        #For group challenges, check if user's group has joined this challenge
+        check_group_joined = """SELECT gp.group_id FROM GroupParticipation gp
+                                JOIN AccountGroup ag ON ag.group_id = gp.group_id
+                                WHERE gp.challenge_id = %s AND ag.account_id = %s"""
+        cursor.execute(check_group_joined, (challenge_id, account_id))
+        group_result = cursor.fetchone()
+        if group_result is None:
+            raise ValueError(f"Your group has not joined challenge {challenge_id}")
+        group_id = group_result["group_id"]
+    else:
+        #For personal challenges, check if user has joined individually
+        check_joined = """SELECT challenge_id FROM IndividualParticipation WHERE challenge_id = %s AND account_id = %s"""
+        cursor.execute(check_joined, (challenge_id, account_id))
+        if cursor.fetchone() is None:
+            raise ValueError(f"You have not joined challenge {challenge_id}")
+
+    insertion = """INSERT INTO ChallengeAction(challenge_id, group_id, log_id, point_awarded) VALUES (%s, %s, %s, %s)"""
+    points_awarded = co2e_saved
     cursor.execute(insertion, (challenge_id, group_id, action_log_id, points_awarded))
     return cursor.lastrowid
 

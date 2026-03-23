@@ -4,7 +4,7 @@ from flask import template_rendered
 import pytest
 import sqlite3
 from app.services.users_service import create_account, create_user
-from app.services.challenges import create_challenge
+from app.services.challenges import create_challenge, join_challenge_individual
 from app.services.actions import log_action
 from app import create_app
 from app.db_config import db_cursor
@@ -152,18 +152,29 @@ def default_actionType_data():
 def production_setup(james_id = 2):
     start_date = datetime.now()
     end_date = start_date + timedelta(days=30)
-    challenge1_id = create_challenge(james_id, "travel", "let walk", start_date, end_date, "walk as much as you can")
-    challenge2_id = create_challenge(james_id, "food", "Green Eat", start_date, end_date, "Eat vegetarian food")
-    
+    challenge1_id = create_challenge(james_id, "Personal", "let walk", start_date, end_date, "walk as much as you can")
+    challenge2_id = create_challenge(james_id, "Personal", "Green Eat", start_date, end_date, "Eat vegetarian food")
+
     past_start = datetime.now() - timedelta(days=60)
     past_end = datetime.now() - timedelta(days=30)
-    challenge3_id = create_challenge(james_id, "travel", "Expired Challenge", past_start, past_end, "This challenge has ended")
-    
+    challenge3_id = create_challenge(james_id, "Personal", "Expired Challenge", past_start, past_end, "This challenge has ended")
+
     future_start = datetime.now() + timedelta(days=30)
     future_end = datetime.now() + timedelta(days=60)
-    challenge4_id = create_challenge(james_id, "food", "Future Challenge", future_start, future_end, "This challenge hasn't started yet")
+    challenge4_id = create_challenge(james_id, "Personal", "Future Challenge", future_start, future_end, "This challenge hasn't started yet")
 
-    challenge5_id = create_challenge(james_id, "food", "Low Carbon Meals", start_date, end_date, "Log your meals and try to keep CO2e low")
+    challenge5_id = create_challenge(james_id, "Personal", "Low Carbon Meals", start_date, end_date, "Log your meals and try to keep CO2e low")
+
+    # Additional personal challenges
+    create_challenge(james_id, "Personal", "Cycle to Campus", start_date, end_date, "Cycle instead of driving for a week")
+    create_challenge(james_id, "Personal", "Meat-Free Monday", start_date, end_date, "Eat no meat every Monday this month")
+
+    # Group challenges
+    create_challenge(james_id, "Group", "Hall Energy Saver", start_date, end_date, "Reduce your hall energy usage as a team")
+    create_challenge(james_id, "Group", "Green Commute Team", start_date, end_date, "Log the most eco-friendly commutes as a group")
+    create_challenge(james_id, "Group", "Zero Waste Week", start_date, end_date, "Produce the least waste as a group this week")
+    create_challenge(james_id, "Group", "Team Veggie Challenge", start_date, end_date, "Log the most vegetarian meals as a group")
+    create_challenge(james_id, "Group", "Campus Walk-Off", start_date, end_date, "Walk the most km as a group this month")
 
     emma_actions = [
         ("walk", "travel", 2, challenge1_id, "https://www.youtube.com/"),
@@ -181,6 +192,9 @@ def production_setup(james_id = 2):
     ]
 
     emma_account_id = 1
+    join_challenge_individual(challenge1_id, emma_account_id)
+    join_challenge_individual(challenge2_id, emma_account_id)
+    join_challenge_individual(challenge5_id, emma_account_id)
     for action_name, category, quantity, challenge_id, evidence_url in emma_actions:
         log_action(emma_account_id, action_name, category, quantity, challenge_id, evidence_url)
     
@@ -198,6 +212,8 @@ def production_setup(james_id = 2):
     ]
     
     sarah_account_id = 3
+    join_challenge_individual(challenge1_id, sarah_account_id)
+    join_challenge_individual(challenge2_id, sarah_account_id)
     for action_name, category, quantity, challenge_id, evidence_url in sarah_actions:
         log_action(sarah_account_id, action_name, category, quantity, challenge_id, evidence_url)
 

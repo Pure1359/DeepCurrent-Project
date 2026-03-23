@@ -13,6 +13,7 @@ from custom_error.Challenge_Exception import *
 from custom_error.Group_Exception import *
 from app.services.groups import *
 from app.services.challenges import *
+from app.services.challenges import get_all_active_challenges, get_challenge_for_user as get_challenge_for_user_service
 
 #need to do required login 
 user_bp = Blueprint("user", __name__)
@@ -98,13 +99,46 @@ def join_challenge():
 @user_bp.route("/get_challenge_for_user", methods = ["POST"])
 def get_challenge_for_user():
     account_id = session.get("account_id")
-    get_challenge = """SELECT challenge_id FROM IndividualParticipation WHERE account_id = %s"""
+    challenge_result = get_challenge_for_user_service(account_id)
+    return jsonify(challenge_result)
+
+@user_bp.route("/get_all_challenges", methods = ["POST"])
+def list_all_challenges():
+    account_id = session.get("account_id")
+    challenges = get_all_active_challenges()
+    joined_ids = [row["challenge_id"] for row in get_challenge_for_user_service(account_id)]
+
+    #Find what group this user owns (if any)
+    owned_group_id = None
     with db_cursor() as (connection, cursor):
-        cursor.execute(get_challenge, (account_id,))
-        challenge_result = cursor.fetchall()    
-        response = jsonify(challenge_result)
-        return response
+        cursor.execute("SELECT group_id FROM UserGroup WHERE group_creator_id = %s", (account_id,))
+        owned_group = cursor.fetchone()
+        if owned_group:
+            owned_group_id = owned_group["group_id"]
+
+        #Get group challenge IDs that this user's owned group has joined
+        group_joined_ids = []
+        if owned_group_id:
+            cursor.execute("SELECT challenge_id FROM GroupParticipation WHERE group_id = %s", (owned_group_id,))
+            group_joined_ids = [row["challenge_id"] for row in cursor.fetchall()]
+
+    for c in challenges:
+        if c["challenge_type"] == "Personal":
+            c["joined"] = c["challenge_id"] in joined_ids
+        else:
+            c["joined"] = c["challenge_id"] in group_joined_ids
+        c["owned_group_id"] = owned_group_id
+
+    return jsonify(challenges)
     
+@user_bp.route("/get_challenges_for_category", methods = ["POST"])
+def get_challenges_for_category():
+    account_id = session.get("account_id")
+    data = request.get_json()
+    category = data.get("category")
+    challenges = get_user_active_challenges_by_category(account_id)
+    return jsonify(challenges)
+
 @user_bp.route("/get_weekly_co2e_saving", methods = ["POST"])
 def get_user_weekly_saving():
     account_id = session.get("account_id")
@@ -131,7 +165,7 @@ def user_create_group():
     account_id = session.get("account_id")
     try:
         group_id = UserCreateGroup(account_id, group_name)
-    except DuplicateGroupName as error:
+    except (DuplicateGroupName, UserAlreadyJoinGroup) as error:
         error_message = str(error)
         return make_response(jsonify(error = error_message), 409)
 
@@ -159,11 +193,11 @@ def user_leave_group():
         UserLeaveGroup(account_id, group_id)
     except LeaveGroupError as error:
         error_message = str(error)
-        return make_response(jsonify(error = error_message)), 409
+        return make_response(jsonify(error = error_message), 409)
     
     return jsonify({"success" : True, "message" : "Successfully leave the group"}), 200
 
-@user_bp.route("get_group_memeber", methods = ["POST"])
+@user_bp.route("/get_group_member", methods = ["POST"])
 def get_group_member():
     data = request.get_json()
     group_id = data.get("group_id")
@@ -171,13 +205,13 @@ def get_group_member():
 
     return jsonify({"success" : True, "member" : member_list}), 200
 
-@user_bp.route("get_user_groups", methods = ["POST"])
+@user_bp.route("/get_user_groups", methods = ["POST"])
 def get_user_groups():
     account_id = session.get("account_id")
     group_list = getUserGroups(account_id)
     return jsonify({"success" : True, "member" : group_list}), 200
 
-@user_bp.route("join_group_challenge", methods = ["POST"])
+@user_bp.route("/join_group_challenge", methods = ["POST"])
 def join_group_challenge():
     account_id = session.get("account_id")
     data = request.get_json()
@@ -188,7 +222,17 @@ def join_group_challenge():
         return {"success" :True, "message":f"Successfully added the group to challenge : {challenge_id}"}, 200
     except (GroupPermissionError, ChallengeIdNotFound, GroupAlreadyJoinChallenge, InvalidChallengeDate) as error:
         error_message = str(error)
-        return make_response(jsonify(error = error_message)), 409
+        return make_response(jsonify(error = error_message), 409)
+
+@user_bp.route("/get_all_groups", methods = ["POST"])
+def list_all_groups():
+    account_id = session.get("account_id")
+    groups = getAllGroups()
+    user_groups = getUserGroups(account_id)
+    for group in groups:
+        group["is_member"] = group["group_name"] in user_groups
+        group["is_owner"] = group["group_creator_id"] == account_id
+    return jsonify(groups)
 
 @user_bp.route("/get_category_stats", methods=["POST"])
 def get_category_stats():

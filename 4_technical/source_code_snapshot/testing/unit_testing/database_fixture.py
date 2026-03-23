@@ -83,7 +83,7 @@ def populated_database(new_client_module, module_scope_database):
     end_date = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
     
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "travel",
+        "challenge_type": "Personal",
         "title": "let walk",
         "start_date": start_date,
         "end_date": end_date,
@@ -91,7 +91,7 @@ def populated_database(new_client_module, module_scope_database):
     })
     
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "food",
+        "challenge_type": "Personal",
         "title": "Green Eat",
         "start_date": start_date,
         "end_date": end_date,
@@ -103,7 +103,7 @@ def populated_database(new_client_module, module_scope_database):
     past_end = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
     
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "travel",
+        "challenge_type": "Personal",
         "title": "Expired Challenge",
         "start_date": past_start,
         "end_date": past_end,
@@ -115,7 +115,7 @@ def populated_database(new_client_module, module_scope_database):
     future_end = (datetime.now() + timedelta(days=60)).strftime("%Y-%m-%d")
     
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "food",
+        "challenge_type": "Personal",
         "title": "Future Challenge",
         "start_date": future_start,
         "end_date": future_end,
@@ -124,7 +124,7 @@ def populated_database(new_client_module, module_scope_database):
 
     # Create active food challenge for food action testing (challenge_id will be 5)
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "food",
+        "challenge_type": "Personal",
         "title": "Low Carbon Meals",
         "start_date": start_date,
         "end_date": end_date,
@@ -134,12 +134,17 @@ def populated_database(new_client_module, module_scope_database):
     # Logout
     new_client_module.post("/logout")
     
-    # Login as Emma to create actions
+    # Login as Emma to join challenges and create actions
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
         "password": "password123"
     }, follow_redirects=True)
-    
+
+    # Emma joins challenges 1, 2, and 5
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 1})
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 2})
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 5})
+
     # Emma's actions
     actions_emma = [
         {"action_name": "walk", "category": "travel", "quantity": 2, "challenge_id": 1, "evidence_url": "url1"},
@@ -162,12 +167,16 @@ def populated_database(new_client_module, module_scope_database):
     # Logout Emma
     new_client_module.post("/logout")
     
-    # Login as Sarah
+    # Login as Sarah to join challenges and create actions
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
         "password": "student789"
     }, follow_redirects=True)
-    
+
+    # Sarah joins challenges 1 and 2
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 1})
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 2})
+
     # Sarah's actions
     actions_sarah = [
         {"action_name": "walk", "category": "travel", "quantity": 20, "challenge_id": 1, "evidence_url": "url6"},
