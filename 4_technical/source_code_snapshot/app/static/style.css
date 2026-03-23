@@ -7,6 +7,7 @@
 @import url(information.css);
 @import url(chart-wrapper.css);
 @import url(mobile-nav-bar.css);
+@import url(matrix.css);
 
 html,
 body {
@@ -25,7 +26,8 @@ body {
   justify-items: self-start;
   min-height: 100vh;
 }
-/* moderator inbox btn */
+/* moderatot inbox btn */
+.profile-icon,
 .moderator-inboxbtn {
   width: 48px;
   gap: 10px;
@@ -1019,9 +1021,28 @@ select {
 
   .dashboard-graph-left,
   .dashboard-graph-right,
-  #graph-container,
-  #matrix-wrrapper {
+  #graph-container {
     width: 100%;
+  }
+  #matrix-wrrapper {
+    justify-items: baseline;
+    width: 100%;
+  }
+  .day {
+    width: 5px;
+    height: 5px;
+  }
+  .matrix {
+    height: fit-content;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 7px);
+    grid-template-columns: repeat(54, 5px);
+    column-gap: 1.6px;
+    row-gap: 1.6px;
+  }
+  .months {
+    grid-template-columns: repeat(54, 5px);
   }
 
   .card-grid {
@@ -1351,6 +1372,26 @@ select {
     font-size: 15px;
     padding: 10px 12px;
   }
+  #matrix-wrrapper {
+    justify-items: baseline;
+    width: 100%;
+  }
+  .day {
+    width: 5px;
+    height: 5px;
+  }
+  .matrix {
+    height: fit-content;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 7px);
+    grid-template-columns: repeat(54, 5px);
+    column-gap: 1.6px;
+    row-gap: 1.6px;
+  }
+  .months {
+    grid-template-columns: repeat(54, 5px);
+  }
 }
 .meter {
   position: relative;
@@ -1600,7 +1641,7 @@ select {
   padding: 50px 60px;
   background: #eeeeee;
   border-radius: 30px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
@@ -1627,8 +1668,6 @@ select {
 .food-bg {
   width: 300px;
 }
-
-
 
 .top-text {
   font-size: 22px;
@@ -1682,8 +1721,6 @@ select {
   align-items: center;
   gap: 20px;
 }
-
-
 
 .no-btn {
   padding: 12px 40px;

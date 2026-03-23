@@ -1,11 +1,9 @@
-body {
-  font-family: Inter, system-ui, sans-serif;
-  padding: 40px;
-}
-
 .calendar {
   display: grid;
   grid-template-rows: 20px auto;
+  border: solid;
+  border-width: 1.2px;
+  border-radius: 4px;
 }
 
 .months {
@@ -18,6 +16,7 @@ body {
 }
 
 .matrix {
+  height: fit-content;
   display: grid;
   grid-auto-flow: column;
   grid-template-rows: repeat(7, 7px);

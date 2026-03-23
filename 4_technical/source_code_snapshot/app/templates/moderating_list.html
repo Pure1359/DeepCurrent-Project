@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-</head>
-<body>
-  <div class="moderating-list-card">
-    <div class="moderating-list-header">
-      <h2>Moderating List</h2>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="/4_technical/source_code_snapshot/app/static/style.css"
+    />
+  </head>
+  <body>
+    <div class="moderating-list-card">
+      <div class="moderating-list-header">
+        <h2>Moderating List</h2>
+      </div>
+
+      <table class="moderating-list-table">
+        <tr>
+          <td class="action">Cycling Streak</td>
+          <td class="approved">Approved</td>
+        </tr>
+
+        <tr>
+          <td class="action">Cycling Streak</td>
+          <td class="approved">Approved</td>
+        </tr>
+
+        <tr>
+          <td class="action">Cycling Streak</td>
+          <td class="rejected">Rejected</td>
+          <td class="reason">Reason:</td>
+        </tr>
+      </table>
     </div>
-
-    <table class="moderating-list-table">
-      <tr>
-        <td class="action">Cycling Streak</td>
-        <td class="approved">Approved</td>
-      </tr>
-
-      <tr>
-        <td class="action">Cycling Streak</td>
-        <td class="approved">Approved</td>
-      </tr>
-
-      <tr>
-        <td class="action">Cycling Streak</td>
-        <td class="rejected">Rejected</td>
-        <td class="reason">Reason:</td>
-      </tr>
-    </table>
-  </div>
-</body>
+  </body>
 </html>

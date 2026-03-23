@@ -81,5 +81,27 @@ def get_total_action_quantity_by_type(account_id):
         result = cursor.fetchall()
         return {row["action_type"]: row["total_quantity"] for row in result}
 
+# Get daily savings for the current year
+def get_yearly_daily_savings(account_id):
+    temp_today = datetime.now()
+    start_of_year = temp_today.replace(day=1, month=1)
+    end_of_year = datetime(day=31, month=12, year=temp_today.year)
 
-    
+    sql = """
+        SELECT 
+            DATE(log_date) as date,
+            SUM(co2e_saved) as total
+        FROM ActionLog 
+        WHERE submitted_by = ?
+        AND DATE(log_date) BETWEEN DATE(?) AND DATE(?)
+        GROUP BY DATE(log_date)
+    """
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id, start_of_year, end_of_year))
+        rows = cursor.fetchall()
+        print(f"Matrix rows found: {rows}")
+        result = {}
+        for row in rows:
+            result[str(row["date"])] = float(row["total"]) if row["total"] else 0
+        return result
