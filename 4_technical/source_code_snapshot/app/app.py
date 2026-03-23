@@ -4,9 +4,10 @@ import bcrypt
 from datetime import datetime, timezone
 
 # Import Database Functions from services/
-from app.services.users_service import create_user, create_account, update_last_active
+from app.services.users_service import create_user, create_account, update_last_active, get_yearly_daily_savings
 from app.services.auth import get_account_by_email_for_login, verify_password
 from app.services.auth import derive_role
+
 
 # Instance for application is created in __init__.py
 
@@ -126,10 +127,28 @@ def challenge():
 
 @bp.route("/moderator-evidence")
 def moderator_evidence():
+    if session.get("user_type") != "moderator":
+        abort(403)
     return render_template("mod-evidence.html")
+
+@bp.route("/moderator-dashboard")
+def moderator_dashboard():
+    if session.get("user_type") != "moderator":
+        abort(403)
+    return render_template("moderating_list.html")
+
+@bp.get("/get_yearly_savings")
+def get_yearly_savings():
+    account_id = require_login()
+    if not account_id:
+        return {"error": "Not logged in"}, 401
+    
+    data = get_yearly_daily_savings(account_id)
+    return {"savings": data}
 
 # Route to handle logout
 @bp.post("/logout")
 def logout():
     session.clear()
     return redirect(url_for("app.login"))
+
