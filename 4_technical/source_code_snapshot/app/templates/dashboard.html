@@ -50,15 +50,11 @@
             />
           </div>
 
-          <div class="form-row">
-            <label>Challenge ID (Optional)</label>
-            <div class="challenge-id-input">
-              <input
-                type="number"
-                id="challenge-id"
-                placeholder="Leave empty if none"
-              />
-            </div>
+          <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label>Submit to Challenge (Optional)</label>
+            <select id="challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
+              <option value="">None</option>
+            </select>
           </div>
 
           <button type="submit" class="submit-btn">Submit</button>
@@ -201,6 +197,9 @@
                   src="{{ url_for('static', filename='Resource/moderator-inbox.svg') }}"
                   alt="Moderator Inbox"
                 />
+              </button>
+              <button class="review-button" onclick="window.location.href='{{ url_for('moderator.create_challenge_page') }}'" style="font-size: 14px; padding: 8px 20px;">
+                + Create Challenge
               </button>
             {% endif %}
           </div>
@@ -487,13 +486,13 @@
             <input type="url" id="energy-evidence-url" placeholder="https://example.com/image.jpg">
           </div>
     
-          <div class="form-row">
-            <label>Challenge ID (Optional)</label>
-            <div class="challenge-id-input">
-              <input type="number" id="energy-challenge-id" placeholder="Leave empty if none">
-            </div>
+          <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label>Submit to Challenge (Optional)</label>
+            <select id="energy-challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
+              <option value="">None</option>
+            </select>
           </div>
-    
+
           <button type="submit" class="submit-btn">Submit</button>
         </form>
       </div>
@@ -606,17 +605,6 @@
             <p id="impact-calculation">0 × 0 = 0 kg CO₂e</p>
           </div>
 
-          <div class="challenge-form-question">
-            <label>Is this a challenge based action?</label>
-          </div>
-
-          <div class="challenge-form-answer">
-            <select id="impact-challenge">
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
-          </div>
-
           <div class="achievement-text">
             <p>To add to overall achievement just submit</p>
           </div>
@@ -679,7 +667,25 @@
       const addButton = document.querySelector("#action_log_button");
       const actionLogOverlay = document.getElementById("dashboard-overlay");
 
+      async function populateChallengeDropdown(selectId, category) {
+        const select = document.getElementById(selectId);
+        select.innerHTML = '<option value="">None</option>';
+        const res = await fetch('/user_access/get_challenges_for_category', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ category: category })
+        });
+        const challenges = await res.json();
+        challenges.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.challenge_id;
+          opt.textContent = c.title;
+          select.appendChild(opt);
+        });
+      }
+
       addButton.addEventListener("click", () => {
+        populateChallengeDropdown('challenge-id', 'travel');
         actionLogOverlay.style.display = "flex";
       });
 
@@ -691,7 +697,18 @@
 
       const travelForm = document.querySelector(".travel_form");
 
-      travelForm.addEventListener("submit", async (e) => {
+      const actionNameMap = {
+        train: "train",
+        bus: "bus",
+        car: "car",
+        bike: "bike",
+        walk: "walk",
+      };
+
+      // Store pending action data so the impact card can submit it
+      window.pendingTravelAction = null;
+
+      travelForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
         const travelType = document
@@ -710,14 +727,6 @@
           return;
         }
 
-        const actionNameMap = {
-          train: "train",
-          bus: "bus",
-          car: "car",
-          bike: "bike",
-          walk: "walk",
-        };
-
         const requestData = {
           action_name: actionNameMap[travelType] || "walk",
           category: "travel",
@@ -732,73 +741,33 @@
           requestData.evidence_url = evidenceUrl;
         }
 
-        try {
-          const response = await fetch("/user_access/submit_action", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-          });
+        // Store for later submission by impact card
+        window.pendingTravelAction = requestData;
 
-          const data = await response.json();
+        // Preview the impact (using known co2e factors)
+        const co2eFactors = { train: 0.5, bus: 0.9, car: 0.4, bike: 0.8, walk: 0.7 };
+        const factor = co2eFactors[travelType] || 0.5;
+        const estimatedSaved = (factor * distance).toFixed(2);
 
-          if (response.ok) {
-            const co2Factor = data.co2e_factor;
-            const quantity = data.quantity;
-            const totalSaved = (co2Factor * quantity).toFixed(2);
+        document.getElementById(
+          "impact-title"
+        ).textContent = `${travelType} Journey - Impact Comparison`;
 
-            document.getElementById(
-              "impact-title"
-            ).textContent = `${travelType} Journey - Impact Comparison`;
+        document.getElementById(
+          "impact-distance"
+        ).textContent = `Distance Travelled: ${distance} km`;
 
-            // Show distance input
-            document.getElementById(
-              "impact-distance"
-            ).textContent = `Distance Travelled: ${quantity} km`;
+        document.getElementById(
+          "impact-factor"
+        ).textContent = `Emission Factor: ${factor} kg CO₂e per km`;
 
-            // Show emission factor
-            document.getElementById(
-              "impact-factor"
-            ).textContent = `Emission Factor: ${co2Factor} kg CO₂e per km`;
+        document.getElementById(
+          "impact-calculation"
+        ).textContent = `${factor} × ${distance} km = ${estimatedSaved} kg CO2e`;
 
-            // Show calculation
-            document.getElementById(
-              "impact-calculation"
-            ).textContent = `${co2Factor} × ${quantity} km = ${totalSaved} kg CO2e`;
-
-            // Update your congrats card values
-            document.getElementById(
-              "co2e-result"
-            ).textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
-
-            document.getElementById(
-              "points-result"
-            ).textContent = `${Math.round(
-              totalSaved
-            )} points added to your total score`;
-
-            // Hide the action log overlay
-            actionLogOverlay.style.display = "none";
-
-            // Show Impact Comparison overlay
-            document
-              .getElementById("impact-overlay")
-              .classList.remove("hidden");
-
-            // Store value for congrats
-            window.latestSavedAmount = totalSaved;
-
-            // Reset the form
-            travelForm.reset();
-            loadDashboardData();
-          } else {
-            alert("Error: " + (data.error || "Failed to log action"));
-          }
-        } catch (error) {
-          console.error("Network error:", error);
-          alert("Failed to submit action. Please try again.");
-        }
+        // Hide the action log overlay, show impact card
+        actionLogOverlay.style.display = "none";
+        document.getElementById("impact-overlay").classList.remove("hidden");
       });
 
       async function loadDashboardData() {
@@ -883,21 +852,46 @@
       const impactSubmitBtn = document.getElementById("impactSubmitBtn");
       const impactOverlay = document.getElementById("impact-overlay");
 
-      impactSubmitBtn.addEventListener("click", () => {
-        init();
-        impactOverlay.classList.add("hidden");
+      impactSubmitBtn.addEventListener("click", async () => {
+        if (!window.pendingTravelAction) {
+          alert("No action to submit");
+          return;
+        }
 
-        const saved = window.latestSavedAmount || 0;
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.pendingTravelAction),
+          });
 
-        document.getElementById(
-          "co2e-result"
-        ).textContent = `You saved ${saved} kg CO2e, Well Done!`;
+          const data = await response.json();
 
-        document.getElementById("points-result").textContent = `${Math.round(
-          saved
-        )} points added to your total score`;
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
 
-        congratsOverlay.classList.remove("hidden");
+            document.getElementById(
+              "co2e-result"
+            ).textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+
+            document.getElementById("points-result").textContent = `${Math.round(
+              totalSaved
+            )} points added to your total score`;
+
+            impactOverlay.classList.add("hidden");
+            congratsOverlay.classList.remove("hidden");
+
+            window.pendingTravelAction = null;
+            travelForm.reset();
+            loadDashboardData();
+            init();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
       });
 
       /* Close Impact Overlay */
@@ -988,6 +982,7 @@
 
       /* Show energyOverlay when the + button is clicked */
       energyActionBtn.addEventListener("click", () => {
+        populateChallengeDropdown('energy-challenge-id', 'energy');
         energyOverlay.style.display = "flex";
       });
 
