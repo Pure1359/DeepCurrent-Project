@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Food Log Card</title>
+<link rel="stylesheet" href="/4_technical/source_code_snapshot/app/static/style.css">
+</head>
+
+<body>
+    <div class="overlay">
+
+        <div class="foodcard_3">
+      
+          <div class="back-btn">
+            <img src="/4_technical/source_code_snapshot/app/static/Resource/back.svg">
+          </div>
+      
+          <div class="bg-icon">
+            <img class="food-bg" src="/4_technical/source_code_snapshot/app/static/Resource/foodcardbg.svg">
+          </div>
+      
+          <p class="top-text">
+            Upload a evidence to support your food log to be considered as a 
+            official point score(challenges requires evidence).
+          </p>
+      
+          <div class="upload-section">
+
+            <input type="file" id="fileInput" accept="image/*" hidden>
+          
+            <label for="fileInput" class="upload-btn">
+              <img class="upload-icon" src="/4_technical/source_code_snapshot/app/static/Resource/upload.svg">
+              <h2>Upload Evidence</h2>
+            </label>
+          
+            <img id="preview" class="preview-img" />
+          
+          </div>
+      
+          <div class="question">
+            <p>Is this a challenged based action?</p>
+      
+            <div class="dropdown-select">
+              <select>
+                <option>Choose</option>
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </div>
+          </div>
+      
+          <div class="button-group">
+            <button class="submit-btn">Submit Evidence</button>
+            <button class="no-btn">No Evidence</button>
+          </div>
+      
+        </div>
+      
+      </div>
+</body>
+</html>

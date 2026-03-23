@@ -10,11 +10,11 @@ Faker.seed(42)
 # change this to local file path 
 DB_PATH = "C:\\Users\\Kkyua\\Desktop\\UoE\\Year 2\\Sem 2\\Team Project\\DeepCurrent-Project\\4_technical\\source_code_snapshot\\sqlite_database\\mydb.sqlite"   
 
-NUM_USERS = 120
-NUM_GROUPS = 20
-NUM_CHALLENGES = 40
-NUM_ACTION_LOGS = 220
-NUM_MOD_REQUESTS = 25
+NUM_USERS = 500
+NUM_GROUPS = 40
+NUM_CHALLENGES = 80
+NUM_ACTION_LOGS = 600
+NUM_MOD_REQUESTS = 60
 
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
@@ -59,6 +59,9 @@ def clear_tables():
             pass
     cursor.execute("PRAGMA foreign_keys = ON;")
     conn.commit()
+    
+# Uncomoment the following line if you want to clear existing data before seeding new data
+clear_tables()
 
 # 1. Users
 user_ids = []
