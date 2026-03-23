@@ -125,10 +125,6 @@ def dashboard():
 def challenge():
     return render_template("challenge.html")
 
-@bp.route("/leaderboard")
-def leaderboard():
-    return render_template("ranktable.html")
-
 # Route to handle moderator evidence page
 @bp.route("/moderator-evidence")
 def moderator_evidence():

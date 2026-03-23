@@ -122,7 +122,7 @@ def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id, co2e_save
     group_id = None
 
     if challenge["challenge_type"] == "Group":
-        #For group challenges, check if users group has joined this challenge
+        #For group challenges, check if user's group has joined this challenge
         check_group_joined = """SELECT gp.group_id FROM GroupParticipation gp
                                 JOIN AccountGroup ag ON ag.group_id = gp.group_id
                                 WHERE gp.challenge_id = %s AND ag.account_id = %s"""
