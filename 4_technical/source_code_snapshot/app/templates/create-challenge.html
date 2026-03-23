@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Challenge - Moderator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+
+<div class="moderating-card">
+
+    <div class="moderating-header">
+        <h2>Create a New Challenge</h2>
+    </div>
+
+    <div class="moderating-body">
+        <form id="create-challenge-form">
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="challenge-title">Title</label>
+                    <input type="text" id="challenge-title" placeholder="e.g. Cycle to Work Week" required style="width: 300px;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="challenge-type">Challenge Type</label>
+                    <select id="challenge-type" required style="padding: 12px 18px; border-radius: 25px; border: 2px solid #ccc; font-size: 12px;">
+                        <option value="">-- Select --</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Group">Group</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="start-date">Start Date</label>
+                    <input type="date" id="start-date" required style="width: 200px;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="end-date">End Date</label>
+                    <input type="date" id="end-date" required style="width: 200px;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="challenge-rules">Rules</label>
+                    <textarea id="challenge-rules" placeholder="Describe the challenge rules..." rows="3" style="width: 300px; padding: 12px 18px; border-radius: 15px; border: 2px solid #ccc; font-size: 12px; resize: vertical;"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row" style="justify-content: center; margin-top: 20px;">
+                <button type="submit" class="review-button">Create Challenge</button>
+            </div>
+
+        </form>
+
+        <div id="challenge-message" style="text-align: center; margin-top: 16px; display: none;"></div>
+    </div>
+
+</div>
+
+<script>
+    const form = document.getElementById('create-challenge-form');
+    const messageDiv = document.getElementById('challenge-message');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('challenge-title').value.trim();
+        const challengeType = document.getElementById('challenge-type').value;
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        const rules = document.getElementById('challenge-rules').value.trim();
+
+        if (!title || !challengeType || !startDate || !endDate) {
+            showMessage('Please fill in all required fields.', false);
+            return;
+        }
+
+        if (new Date(endDate) <= new Date(startDate)) {
+            showMessage('End date must be after start date.', false);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('challenge_type', challengeType);
+        formData.append('start_date', startDate);
+        formData.append('end_date', endDate);
+        formData.append('rule', rules);
+
+        try {
+            const response = await fetch('/moderator_access/create_challenge', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(`Challenge created successfully! (ID: ${data.challenge_id})`, true);
+                form.reset();
+            } else {
+                showMessage('Error: ' + (data.error || 'Failed to create challenge'), false);
+            }
+        } catch (error) {
+            console.error('Failed to create challenge:', error);
+            showMessage('Failed to create challenge. Please try again.', false);
+        }
+    });
+
+    function showMessage(text, success) {
+        messageDiv.style.display = 'block';
+        messageDiv.textContent = text;
+        messageDiv.style.color = success ? '#2f5d56' : '#ff383c';
+        messageDiv.style.fontWeight = 'bold';
+    }
+</script>
+
+</body>
+</html>

@@ -25,9 +25,8 @@ body {
   justify-items: self-start;
   min-height: 100vh;
 }
-/* moderatot inbox btn */
-.header-right,
-button {
+/* moderator inbox btn */
+.moderator-inboxbtn {
   width: 48px;
   gap: 10px;
   height: 40px;
