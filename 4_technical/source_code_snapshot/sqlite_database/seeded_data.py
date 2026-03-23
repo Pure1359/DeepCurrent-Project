@@ -8,7 +8,7 @@ random.seed(42)
 Faker.seed(42)
 
 # change this to local file path 
-DB_PATH = "C:\\Users\\Kkyua\\Desktop\\UoE\\Year 2\\Sem 2\\Team Project\\DeepCurrent-Project\\4_technical\\source_code_snapshot\\sqlite_database\\mydb.sqlite"   
+DB_PATH = "mydb.sqlite"   
 
 NUM_USERS = 500
 NUM_GROUPS = 40
@@ -243,7 +243,7 @@ challenge_meta = {}
 
 for _ in range(NUM_CHALLENGES):
     created_by = safe_choice(account_ids)
-    challenge_type = random.choice(["individual", "group"])
+    challenge_type = random.choice(["Personal", "Group"])
     title = fake.sentence(nb_words=4)[:50]
     start_dt = fake.date_time_between(start_date="-120d", end_date="-20d")
     end_dt = start_dt + timedelta(days=random.randint(7, 30))
@@ -274,7 +274,7 @@ for _ in range(NUM_CHALLENGES):
 # 8. IndividualParticipation
 individual_pairs = set()
 for challenge_id in challenge_ids:
-    if challenge_meta[challenge_id]["challenge_type"] != "individual":
+    if challenge_meta[challenge_id]["challenge_type"] != "Personal":
         continue
 
     participants = random.sample(account_ids, random.randint(5, min(20, len(account_ids))))
@@ -296,7 +296,7 @@ for challenge_id in challenge_ids:
 # 9. GroupParticipation
 group_pairs = set()
 for challenge_id in challenge_ids:
-    if challenge_meta[challenge_id]["challenge_type"] != "group":
+    if challenge_meta[challenge_id]["challenge_type"] != "Group":
         continue
 
     participants = random.sample(group_ids, random.randint(3, min(8, len(group_ids))))
@@ -359,7 +359,7 @@ used_pairs = set()
 for challenge_id in challenge_ids:
     ctype = challenge_meta[challenge_id]["challenge_type"]
 
-    if ctype == "individual":
+    if ctype == "Personal":
         valid_accounts = challenge_to_individual_accounts.get(challenge_id, [])
         valid_logs = [lid for lid in log_ids if log_owner[lid] in valid_accounts]
         selected_logs = random.sample(valid_logs, min(len(valid_logs), random.randint(5, 15)))
