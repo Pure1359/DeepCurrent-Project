@@ -125,16 +125,27 @@ def dashboard():
 def challenge():
     return render_template("challenge.html")
 
+# Route to handle moderator evidence page
 @bp.route("/moderator-evidence")
 def moderator_evidence():
-    if session.get("user_type") != "moderator":
+    account_id = require_login()
+    if not account_id:
+        return redirect(url_for("app.login"))
+    
+    if session.get("account_role") != "moderator":
         abort(403)
     return render_template("mod-evidence.html")
 
+# Route to handle moderator dashboard
 @bp.route("/moderator-dashboard")
 def moderator_dashboard():
-    if session.get("user_type") != "moderator":
+    account_id = require_login()
+    if not account_id:
+        return redirect(url_for("app.login"))
+    
+    if session.get("account_role") != "moderator":
         abort(403)
+    
     return render_template("moderating_list.html")
 
 @bp.get("/get_yearly_savings")
