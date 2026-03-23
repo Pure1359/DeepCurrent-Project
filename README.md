@@ -1,5 +1,5 @@
-# Project
+# Deep Current Project
 
 The main documentation lives here:
 
-- [Full README](child-folder/README.md)
+- [Full README](4_technical/source_code_project/README.md)
