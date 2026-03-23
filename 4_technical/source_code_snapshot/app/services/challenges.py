@@ -22,15 +22,16 @@ def require_active_challenge(cursor, challenge_id: int) -> dict[str, any]:
     if challenge is None:
         raise ChallengeIdNotFound(f"The Challenge with ID: {challenge_id} does not exists in database")
 
-    # Check if challenge is active
-    start_date = challenge["start_date"]
-    end_date = challenge["end_date"]
+    start_date = _parse_date(challenge["start_date"])
+    end_date = _parse_date(challenge["end_date"])
     now = datetime.now()
+
+    # Check if challenge is active
     if start_date and start_date > now:
         raise InvalidChallengeDate("The challenge is currently not active")
     if end_date and end_date < now:
         raise InvalidChallengeDate("The challenge is currently not active")
-    
+
     return challenge
 
 def create_challenge(created_by, challenge_type, title, start_date, end_date, rules):
@@ -159,12 +160,13 @@ def challenge_leaderboard_individual(challenge_id: int, limit: int = 10):
                 u.first_name,
                 u.last_name,
                 COALESCE(SUM(ca.point_awarded), 0) AS points,
-                COALESCE(SUM(al.co2e_saved), 0) AS total_co2e_saved,
-                COUNT(DISTINCT al.log_id) AS actions_count
+                COALESCE(SUM(CASE WHEN ca.log_id IS NOT NULL THEN al.co2e_saved ELSE 0 END), 0) AS total_co2e_saved,
+                COUNT(DISTINCT ca.log_id) AS actions_count
             FROM IndividualParticipation ip
             INNER JOIN Accounts a ON ip.account_id = a.account_id
             INNER JOIN Users u ON a.user_id = u.user_id
-            LEFT JOIN ActionLog al ON al.submitted_by = a.account_id
+            LEFT JOIN ActionLog al
+                ON al.submitted_by = a.account_id
             LEFT JOIN ChallengeAction ca
                 ON ca.log_id = al.log_id
                 AND ca.challenge_id = ip.challenge_id
@@ -176,9 +178,6 @@ def challenge_leaderboard_individual(challenge_id: int, limit: int = 10):
             """,
             (challenge_id, limit),
         )
-
-        # Returns a ranked list of (account_id, points, total CO2e saved, action count)
-        # Only counts individual challenge scoring (ChallengeAction where groupd_id IS NULL)
         return cursor.fetchall()
 
 def challenge_leaderboard_group(challenge_id: int, limit: int = 10):
@@ -190,20 +189,29 @@ def challenge_leaderboard_group(challenge_id: int, limit: int = 10):
                 ug.group_id,
                 ug.group_name,
                 ug.group_creator_id,
-                COUNT(DISTINCT ag.account_id) AS member_count,
+                (
+                    SELECT COUNT(*)
+                    FROM AccountGroup ag
+                    WHERE ag.group_id = ug.group_id
+                ) AS member_count,
                 COALESCE(SUM(ca.point_awarded), 0) AS points,
                 COALESCE(SUM(al.co2e_saved), 0) AS total_co2e_saved,
-                COUNT(DISTINCT ca.log_id) AS actions_count
+                COUNT(DISTINCT ca.log_id) AS actions_count,
+                COALESCE(SUM(ca.point_awarded), 0) * 1.0 /
+                    NULLIF((
+                        SELECT COUNT(*)
+                        FROM AccountGroup ag2
+                        WHERE ag2.group_id = ug.group_id
+                    ), 0) AS average_points
             FROM GroupParticipation gp
             INNER JOIN UserGroup ug ON gp.group_id = ug.group_id
-            LEFT JOIN AccountGroup ag ON ug.group_id = ag.group_id
             LEFT JOIN ChallengeAction ca
                 ON ca.challenge_id = gp.challenge_id
                 AND ca.group_id = gp.group_id
             LEFT JOIN ActionLog al ON ca.log_id = al.log_id
             WHERE gp.challenge_id = %s
             GROUP BY ug.group_id, ug.group_name, ug.group_creator_id
-            ORDER BY points DESC, total_co2e_saved DESC, actions_count DESC, ug.group_id ASC
+            ORDER BY average_points DESC, points DESC, total_co2e_saved DESC, ug.group_id ASC
             LIMIT %s
             """,
             (challenge_id, limit),

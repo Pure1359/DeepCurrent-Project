@@ -70,8 +70,3 @@ def test_normal_user_leave_group(new_client_function, module_scope_database, pop
         cursor.execute(sql, (1, account_id))
         result = cursor.fetchall()
         assert len(result) == 0
-
-
-@pytest.mark.skip(reason = "Leaderboard not implemented yet")
-def test_group_leaderboard():
-    pass
