@@ -289,9 +289,6 @@
               needle.style.transform =
                   `translateX(-50%) rotate(${angle}deg)`
           }
-          
-          updateMeter(159)
-          
           </script>
             <p id="matrix-caption-leftside">
               Colours show the total estimated carbon impact of your actions
@@ -831,6 +828,10 @@
             }
           );
           const weeklyData = await weeklyResponse.json();
+          const weeklySaving = weeklyData.total_saving || 0;
+          // Update meter with weekly savings
+          updateMeter(weeklySaving);
+          document.querySelector(".meter .number").textContent = weeklySaving.toFixed(1);
 
           const yearlyResponse = await fetch(
             "/user_access/get_yearly_co2e_saving",
