@@ -89,7 +89,7 @@ def log_simple_action(account_id, name, category, quantity, challenge_id = None,
     current_time = datetime.now()
     co2e_saved = 0
 
-    sqlActionType = """SELECT * FROM ActionTYPE
+    sqlActionType = """SELECT * FROM ActionType
                        WHERE actionName = %s AND category = %s
                     """
 
@@ -173,7 +173,7 @@ def log_food(account_id, name, category, quantity, challenge_id = None, evidence
     food_text = ""
     co2e_saved = 0
     last_actionType_id = None
-    sqlActionType = """SELECT * FROM ActionTYPE
+    sqlActionType = """SELECT * FROM ActionType
                        WHERE actionName = %s AND category = 'food'
                     """
     sqlActionLog = """INSERT INTO ActionLog(submitted_by, actionType_id, log_date, quantity, co2e_saved) VALUES (%s, %s, %s, %s, %s)"""
