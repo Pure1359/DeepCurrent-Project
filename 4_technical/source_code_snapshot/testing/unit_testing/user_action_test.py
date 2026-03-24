@@ -210,7 +210,7 @@ def test_log_food_co2e_saved(new_client_module, module_scope_database, populated
 
         assert action_log is not None
         assert action_log["submitted_by"] == 1
-        assert action_log["quantity"] == "Broccoli:0.3 Chicken:0.5 Potatoes:0.4"
+        assert action_log["quantity"] == "Broccoli:0.3,Chicken:0.5,Potatoes:0.4"
         assert action_log["co2e_saved"] == pytest.approx(expected_co2e)
         assert result["co2e_saved"] == pytest.approx(expected_co2e)
 

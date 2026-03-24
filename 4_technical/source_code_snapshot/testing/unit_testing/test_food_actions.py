@@ -77,7 +77,7 @@ def test_log_multi_ingredient_food_co2e_and_format(new_client_module, module_sco
 
         assert action_log is not None
         assert action_log["submitted_by"] == account_id
-        assert action_log["quantity"] == "Broccoli:0.3 Chicken:0.5 Potatoes:0.4"
+        assert action_log["quantity"] == "Broccoli:0.3,Chicken:0.5,Potatoes:0.4"
         assert action_log["co2e_saved"] == expected_co2e
         assert result["co2e_saved"] == expected_co2e
 
