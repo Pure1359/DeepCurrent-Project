@@ -181,7 +181,7 @@ def log_food(account_id, name, category, quantity, challenge_id = None, evidence
     with db_cursor() as (connection, cursor):
         # quantity is a list of (ingredient_name, kg) tuples
         for food_name, kg in quantity:
-            food_text += f"{food_name}:{kg} "
+            food_text += f"{food_name}:{kg},"
             cursor.execute(sqlActionType, (food_name,))
             return_record = cursor.fetchone()
             if return_record is None:
@@ -189,7 +189,7 @@ def log_food(account_id, name, category, quantity, challenge_id = None, evidence
             last_actionType_id = return_record["actionType_id"]
             co2e_factor = return_record["co2e_factor"]
             co2e_saved = co2e_saved + (co2e_factor * kg)
-        cursor.execute(sqlActionLog, (account_id, last_actionType_id, current_time, food_text.strip(), co2e_saved))
+        cursor.execute(sqlActionLog, (account_id, last_actionType_id, current_time, food_text.rstrip(","), co2e_saved))
         action_log_id = cursor.lastrowid
         inserted_decision_id = None
         inserted_evidence_id = None
