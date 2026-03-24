@@ -83,6 +83,17 @@
           />
           <span class="label">Challenges</span>
         </div>
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('app.leaderboard') }}'"
+        >
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/group.svg') }}"
+            alt="Leaderboard"
+          />
+          <span class="label">Leaderboard</span>
+        </div>
         {% if session.get('account_role') == "moderator" %}
         <div 
           class="nav-item" 
@@ -366,7 +377,7 @@
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
-              <button class="add-button">+</button>
+              <button id="food-action-btn" class="add-button">+</button>
             </div>
           </div>
         </div>
@@ -591,6 +602,37 @@
           A standard higher-carbon shopping basket used as a benchmark for
           comparison
         </p>
+      </div>
+    </div>
+
+    <!-- Food Action Input Overlay -->
+    <div id="food-overlay" class="overlay-wrapper hidden">
+      <div class="action_log_card">
+        <form class="food_form">
+          <div class="form-row">
+            <label>Search and add ingredients (max 5)</label>
+            <div style="position: relative;">
+              <input type="text" id="food-search" placeholder="Type ingredient name..." autocomplete="off" style="width: 100%; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;" />
+              <div id="food-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"></div>
+            </div>
+          </div>
+
+          <div id="food-ingredient-list" style="display: flex; flex-direction: column; gap: 8px; margin: 8px 0; min-height: 8px;"></div>
+
+          <div class="form-row">
+            <label>Evidence URL (Optional)</label>
+            <input type="url" id="food-evidence-url" placeholder="https://example.com/image.jpg">
+          </div>
+
+          <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label>Submit to Challenge (Optional)</label>
+            <select id="food-challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
+              <option value="">None</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
       </div>
     </div>
 
@@ -1056,6 +1098,7 @@
             congratsOverlay.classList.remove("hidden");
             wasteForm.reset();
             loadDashboardData();
+            init();
           } else {
             alert("Error: " + (data.error || "Failed to log action"));
           }
@@ -1128,6 +1171,7 @@
             congratsOverlay.classList.remove("hidden");
             energyForm.reset();
             loadDashboardData();
+            init();
           } else {
             alert("Error: " + (data.error || "Failed to log action"));
           }
@@ -1136,6 +1180,138 @@
           alert("Failed to submit action. Please try again.");
         }
       });
+      /* Food Action Form */
+      const foodActionBtn = document.getElementById("food-action-btn");
+      const foodOverlay = document.getElementById("food-overlay");
+      const foodForm = document.querySelector(".food_form");
+      const foodSearch = document.getElementById("food-search");
+      const foodSuggestions = document.getElementById("food-suggestions");
+      let foodTypes = [];
+
+      foodActionBtn.addEventListener("click", async () => {
+        if (foodTypes.length === 0) {
+          const res = await fetch("/user_access/get_food_types", { method: "POST", headers: { "Content-Type": "application/json" } });
+          foodTypes = await res.json();
+        }
+        populateChallengeDropdown("food-challenge-id", "food");
+        foodOverlay.style.display = "flex";
+      });
+
+      foodOverlay.addEventListener("click", (e) => {
+        if (e.target === foodOverlay) {
+          foodOverlay.style.display = "none";
+        }
+      });
+
+      foodSearch.addEventListener("input", () => {
+        const query = foodSearch.value.toLowerCase().trim();
+        foodSuggestions.innerHTML = "";
+        if (!query) { foodSuggestions.style.display = "none"; return; }
+
+        const matches = foodTypes.filter(name => name.toLowerCase().includes(query)).slice(0, 8);
+        if (matches.length === 0) { foodSuggestions.style.display = "none"; return; }
+
+        matches.forEach(name => {
+          const item = document.createElement("div");
+          item.textContent = name;
+          item.style.cssText = "padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 15px;";
+          item.addEventListener("mouseenter", () => item.style.background = "#f5f5f5");
+          item.addEventListener("mouseleave", () => item.style.background = "");
+          item.addEventListener("click", () => {
+            addFoodIngredient(name);
+            foodSearch.value = "";
+            foodSuggestions.style.display = "none";
+          });
+          foodSuggestions.appendChild(item);
+        });
+        foodSuggestions.style.display = "block";
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!foodSearch.contains(e.target) && !foodSuggestions.contains(e.target)) {
+          foodSuggestions.style.display = "none";
+        }
+      });
+
+      function addFoodIngredient(name) {
+        const list = document.getElementById("food-ingredient-list");
+        if (list.children.length >= 5) {
+          alert("Maximum 5 ingredients per meal");
+          return;
+        }
+        const row = document.createElement("div");
+        row.className = "distance-input";
+        row.dataset.name = name;
+        row.innerHTML = `
+          <span style="flex: 1; font-size: 15px;">${name}</span>
+          <input type="number" placeholder="0.0" step="0.1" min="0.01" required style="width: 80px; padding: 8px; border: none; border-bottom: 2px solid #aaa; outline: none; font-size: 15px;" />
+          <span>KG</span>
+          <button type="button" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; padding: 0 4px;" onclick="this.parentElement.remove()">×</button>
+        `;
+        list.appendChild(row);
+      }
+
+      foodForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const list = document.getElementById("food-ingredient-list");
+        const rows = Array.from(list.children);
+
+        if (rows.length === 0) {
+          alert("Please add at least one ingredient");
+          return;
+        }
+
+        const ingredients = [];
+        for (const row of rows) {
+          const name = row.dataset.name;
+          const kg = parseFloat(row.querySelector("input").value);
+          if (!kg || kg <= 0) {
+            alert(`Please enter a valid quantity for ${name}`);
+            return;
+          }
+          ingredients.push([name, kg]);
+        }
+
+        const evidenceUrl = document.getElementById("food-evidence-url").value.trim();
+        const challengeId = document.getElementById("food-challenge-id").value.trim();
+
+        const formData = {
+          action_name: "food",
+          category: "food",
+          quantity: ingredients,
+          evidence_url: evidenceUrl || null,
+          challenge_id: challengeId ? parseInt(challengeId) : null,
+        };
+
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            foodOverlay.style.display = "none";
+            congratsOverlay.classList.remove("hidden");
+            list.innerHTML = "";
+            foodForm.reset();
+            loadDashboardData();
+            init();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
+      });
+
     </script>
     <script src="{{ url_for('static', filename='wrapper-script.js') }}"></script>
     <script src="{{ url_for('static', filename='matrix.js') }}"></script>
