@@ -2,6 +2,7 @@ from app.db_config import db_cursor
 from flask import Response, jsonify, session, abort
 from datetime import datetime, timedelta
 from pymysql.cursors import DictCursor
+from app.services.badges import check_and_award_badges
 import hashlib
 
 # Define limits for anti-gaming checks
@@ -152,7 +153,8 @@ def log_simple_action(account_id, name, category, quantity, challenge_id = None,
                 raise ValueError("Can not submit to challenge with no evidence")
             if not flags:
                 challenge_action_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved, account_id)
-        
+                check_and_award_badges(account_id)
+
         return {
             "action_log_id" : action_log_id,
             "evidence_id" : inserted_evidence_id,
@@ -211,6 +213,7 @@ def log_food(account_id, name, category, quantity, challenge_id = None, evidence
 
         if challenge_id is not None:
             challenge_action_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved, account_id)
+            check_and_award_badges(account_id)
 
         return {
             "action_log_id": action_log_id,
@@ -408,6 +411,7 @@ def run_antigaming_checks(cursor: DictCursor, account_id, action_type_id, action
             SELECT COUNT(*) AS cnt
             FROM ActionLog al
             JOIN ActionType at ON at.actionType_id = al.actionType_id
+            JOIN ChallengeAction ca ON ca.log_id = al.log_id
             WHERE al.submitted_by = %s
               AND DATE(al.log_date) = DATE(%s)
               AND LOWER(at.actionName) = %s

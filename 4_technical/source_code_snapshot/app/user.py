@@ -14,6 +14,7 @@ from custom_error.Group_Exception import *
 from app.services.groups import *
 from app.services.challenges import *
 from app.services.challenges import get_all_active_challenges, get_challenge_for_user as get_challenge_for_user_service
+from app.services.badges import get_user_badges
 
 #need to do required login 
 user_bp = Blueprint("user", __name__)
@@ -195,6 +196,13 @@ def get_group_leaderboard():
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
+@user_bp.route("/get_my_badges", methods=["POST"])
+def get_my_badges():
+    account_id = session.get("account_id")
+    result = get_user_badges(account_id)
+    return jsonify(result)
 
 
 @user_bp.route("/create_group", methods = ["POST"])

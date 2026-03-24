@@ -147,6 +147,15 @@ CREATE TABLE "AntiGamingRule" (
         "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE "UserBadge" (
+        "badge_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "account_id" INTEGER NOT NULL,
+        "badge_type" VARCHAR(20) NOT NULL,
+        "awarded_at" DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE("account_id", "badge_type"),
+        FOREIGN KEY("account_id") REFERENCES "Accounts" ("account_id")
+);
+
 CREATE TABLE "AntiGamingFlag" (
         "flag_id" INTEGER PRIMARY KEY AUTOINCREMENT,
         "action_log_id" INTEGER NOT NULL,
