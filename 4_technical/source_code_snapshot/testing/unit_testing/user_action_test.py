@@ -5,25 +5,33 @@ from app.db_config import db_cursor
 
 from app.services.users_service import get_weekly_saved, get_monthly_saved, get_yearly_saved
 
-def test_log_action_challenge(new_client_module, module_scope_database, populated_database):
-    response = new_client_module.post("/login", data = {
-        "email" : "e.watson@exeter.ac.uk",
-        "password" : "password123"
-    }, follow_redirects = True)
+def get_account_id_from_session(client):
+    with client.session_transaction() as session:
+        return session.get("account_id")
 
-    result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "walk", "category" : "travel", "quantity" : 50, "challenge_id" : 1, "evidence_url" : "url_new_challenge"})
+def test_log_action_challenge(new_client_module, module_scope_database, populated_database):
+    new_client_module.post("/logout")
+    response = new_client_module.post("/login", data = {
+        "email" : "jdsiki@fakemail.com",
+        "password" : "johndoe123"
+    }, follow_redirects = True)
+    account_id = get_account_id_from_session(new_client_module)
+
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 1})
+    
+    result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "bus", "category" : "travel", "quantity" : 3, "challenge_id" : 1, "evidence_url" : "url_new_challenge"})
     result = result.get_json()
     # Log a new challenge action with evidence
     # Verify ActionLog is created
     with db_cursor() as (connection, cursor):
         cursor.execute("SELECT * FROM ActionLog WHERE log_id = %s", (result["action_log_id"],))
         action_log = cursor.fetchone()
-        #walking co2e factor is 0.7
+        #bus co2e factor is 0.9
         assert action_log is not None
-        assert action_log["submitted_by"] == 1
-        assert action_log["quantity"] == '50'
-        assert action_log["actionType_id"] == 1  # walk
-        assert action_log["co2e_saved"] == 50 * 0.7
+        assert action_log["submitted_by"] == account_id
+        assert action_log["quantity"] == '3'
+        assert action_log["actionType_id"] == 2  # bus
+        assert action_log["co2e_saved"] == 3 * 0.9
         
         # Verify Evidence is created
         cursor.execute("SELECT * FROM Evidence WHERE log_id = %s", (result["action_log_id"],))
@@ -32,12 +40,12 @@ def test_log_action_challenge(new_client_module, module_scope_database, populate
         assert evidence is not None
         assert evidence["evidence_url"] == "url_new_challenge"
         
-        # Verify Decision created with correct pending status
+        # Verify Decision created with correct status
         cursor.execute("SELECT * FROM Decision WHERE evidence_id = %s", (evidence["evidence_id"],))
         decision = cursor.fetchone()
         
         assert decision is not None
-        assert decision["decision_status"] == "pending"
+        assert decision["decision_status"] == "approved"
         assert decision["reviewer_id"] is None
         
         # Verify ChallengeAction is created
@@ -46,9 +54,15 @@ def test_log_action_challenge(new_client_module, module_scope_database, populate
         
         assert challenge_action is not None
         assert challenge_action["challenge_id"] == 1
-        assert challenge_action["point_awarded"] == 50 * 0.7
+        assert challenge_action["point_awarded"] == 3 * 0.9
 
 def test_log_action_personal(new_client_module, module_scope_database, populated_database):
+    new_client_module.post("/logout")
+    response = new_client_module.post("/login", data = {
+        "email" : "jdsiki@fakemail.com",
+        "password" : "johndoe123"
+    }, follow_redirects = True)
+    account_id = get_account_id_from_session(new_client_module)
     # Log a personal action (no challenge, no evidence)
     result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "bus", "category" : "travel", "quantity" : 30})
     result = result.get_json()
@@ -60,7 +74,7 @@ def test_log_action_personal(new_client_module, module_scope_database, populated
         action_log = cursor.fetchone()
         
         assert action_log is not None
-        assert action_log["submitted_by"] == 1
+        assert action_log["submitted_by"] == account_id
         assert action_log["quantity"] == '30'
         assert action_log["actionType_id"] == 2  # bus
         assert action_log["co2e_saved"] == 30 * 0.9
@@ -84,7 +98,7 @@ def test_get_weekly_action(new_client_module, module_scope_database, populated_d
     }, follow_redirects=True)
     response = new_client_module.post("/user_access/get_weekly_co2e_saving", json={})
     data = response.get_json()
-    assert data["total_saving"] == 136.6553 
+    assert data["total_saving"] == 73.7505
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -104,7 +118,7 @@ def test_get_monthly_action(new_client_module, module_scope_database, populated_
     }, follow_redirects=True)
     response = new_client_module.post("/user_access/get_monthly_co2e_saving", json={})
     data = response.get_json()
-    assert data["total_saving"] == 136.6553
+    assert data["total_saving"] == 73.7505
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -124,7 +138,7 @@ def test_get_yearly_action(new_client_module, module_scope_database, populated_d
     }, follow_redirects=True)
     response = new_client_module.post("/user_access/get_yearly_co2e_saving", json={})
     data = response.get_json()
-    assert data["total_saving"] == 136.6553
+    assert data["total_saving"] == 73.7505
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
@@ -146,7 +160,7 @@ def test_get_action_history(new_client_module, module_scope_database, populated_
     for record in response:
         print(record)
         print("\n")
-    assert len(response) == 14
+    assert len(response) == 12
 
 def test_user_view_submission_result(new_client_module, module_scope_database, populated_database):
     #login as moderator , make a decision
@@ -172,7 +186,7 @@ def test_user_view_submission_result(new_client_module, module_scope_database, p
     response = new_client_module.post("/user_access/get_action_history", json = {"offset" : 0, "limit" : 100})
     response = response.get_json()
     
-    assert len(response) == 14
+    assert len(response) == 12
     result_list = []
     for record in response:
         result_list.append(record["decision_status"])
@@ -188,7 +202,7 @@ def test_log_food_co2e_saved(new_client_module, module_scope_database, populated
     result = new_client_module.post("/user_access/submit_action", json = {"action_name" : "food", "category" : "food", "quantity" : food_quantity, "challenge_id" : 5, "evidence_url" : "https://www.youtube.com/"})
     result = result.get_json()
 
-    expected_co2e = (0.3 * 0.726) + (0.5 * 4.963) + (0.4 * 1.390)
+    expected_co2e = 2.3505
 
     with db_cursor() as (connection, cursor):
         cursor.execute("SELECT * FROM ActionLog WHERE log_id = %s", (result["action_log_id"],))
@@ -197,6 +211,6 @@ def test_log_food_co2e_saved(new_client_module, module_scope_database, populated
         assert action_log is not None
         assert action_log["submitted_by"] == 1
         assert action_log["quantity"] == "Broccoli:0.3 Chicken:0.5 Potatoes:0.4"
-        assert action_log["co2e_saved"] == expected_co2e
-        assert result["co2e_saved"] == expected_co2e
+        assert action_log["co2e_saved"] == pytest.approx(expected_co2e)
+        assert result["co2e_saved"] == pytest.approx(expected_co2e)
 

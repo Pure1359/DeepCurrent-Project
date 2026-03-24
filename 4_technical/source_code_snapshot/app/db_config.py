@@ -31,7 +31,7 @@ class SQLiteDictCursor:
             return self.cursor.execute(sql)
         return self.cursor.execute(sql, tuple(params))
     
-    def execturemany(self, sql, sequence_of_params: Iterable[Iterable[Any]]):
+    def executemany(self, sql, sequence_of_params: Iterable[Iterable[Any]]):
         sql = sql.replace("%s", "?")
         return self.cursor.executemany(sql, [tuple(p) for p in sequence_of_params])
 

@@ -150,7 +150,7 @@ def moderator_dashboard():
     if session.get("account_role") != "moderator":
         abort(403)
     
-    return render_template("moderating_list.html")
+    return render_template("moderator-request.html")
 
 @bp.get("/get_yearly_savings")
 def get_yearly_savings():

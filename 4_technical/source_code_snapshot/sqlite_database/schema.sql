@@ -83,6 +83,7 @@ CREATE TABLE "Evidence" (
         "evidence_type" VARCHAR(50) NULL  ,
         "evidence_url" TEXT NULL  ,
         "evidence_date" DATETIME NULL,
+        "file_hash" VARCHAR(128) NULL,
         FOREIGN KEY("log_id") REFERENCES "ActionLog" ("log_id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
@@ -134,4 +135,30 @@ CREATE TABLE "Users" (
         "user_type" VARCHAR(50) NOT NULL  ,
         "course" VARCHAR(50) NULL  ,
         "department" VARCHAR(50) NULL
+);
+
+CREATE TABLE "AntiGamingRule" (
+        "rule_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "rule_code" VARCHAR(50) NOT NULL UNIQUE,
+        "rule_name" VARCHAR(100) NOT NULL,
+        "severity" VARCHAR(20) NOT NULL,
+        "is_blocking" TINYINT NOT NULL DEFAULT 0,
+        "enabled" TINYINT NOT NULL DEFAULT 1,
+        "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "AntiGamingFlag" (
+        "flag_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "action_log_id" INTEGER NOT NULL,
+        "account_id" INTEGER NOT NULL,
+        "rule_code" VARCHAR(50) NOT NULL,
+        "severity" VARCHAR(20) NOT NULL,
+        "status" VARCHAR(20) NOT NULL DEFAULT 'open',
+        "reason" TEXT NOT NULL,
+        "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP,
+        "reviewed_by" INTEGER NULL,
+        "reviewed_at" DATETIME NULL,
+        FOREIGN KEY("action_log_id") REFERENCES "ActionLog" ("log_id"),
+        FOREIGN KEY("account_id") REFERENCES "Accounts" ("account_id"),
+        FOREIGN KEY("reviewed_by") REFERENCES "Accounts" ("account_id")
 );

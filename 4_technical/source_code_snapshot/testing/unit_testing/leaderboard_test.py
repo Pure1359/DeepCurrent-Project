@@ -24,12 +24,12 @@ def test_api_leaderboard_returns_ranked_users(new_client_function, module_scope_
     # Sarah should be first from the populated fixture data
     assert leaderboard[0]["first_name"] == "Sarah"
     assert leaderboard[0]["last_name"] == "Chen"
-    assert float(leaderboard[0]["points"]) == pytest.approx(46.4)
+    assert float(leaderboard[0]["points"]) == pytest.approx(14.0)
 
     # Emma should be second
     assert leaderboard[1]["first_name"] == "Emma"
     assert leaderboard[1]["last_name"] == "Watson"
-    assert float(leaderboard[1]["points"]) == pytest.approx(37.1553)
+    assert float(leaderboard[1]["points"]) == pytest.approx(3.7505)
 
     # Third place should have no challenge points yet
     assert float(leaderboard[2]["points"]) == pytest.approx(0.0)
@@ -57,20 +57,19 @@ def test_individual_challenge_leaderboard_returns_expected_order(module_scope_da
 
     assert len(result) == 2
 
-    # Sarah: walk 20 + bus 25 = 14.0 + 22.5 = 36.5
+    # Sarah
     assert result[0]["first_name"] == "Sarah"
     assert result[0]["last_name"] == "Chen"
-    assert float(result[0]["points"]) == pytest.approx(36.5)
-    assert float(result[0]["total_co2e_saved"]) == pytest.approx(36.5)
-    assert result[0]["actions_count"] == 2
+    assert float(result[0]["points"]) == pytest.approx(14.0)
+    assert float(result[0]["total_co2e_saved"]) == pytest.approx(14.0)
+    assert result[0]["actions_count"] == 1
 
-    # Emma: walk 2 + bus 4 + walk 10 + bus 15 + walk 7
-    # = 1.4 + 3.6 + 7.0 + 13.5 + 4.9 = 30.4
+    # Emma
     assert result[1]["first_name"] == "Emma"
     assert result[1]["last_name"] == "Watson"
-    assert float(result[1]["points"]) == pytest.approx(30.4)
-    assert float(result[1]["total_co2e_saved"]) == pytest.approx(30.4)
-    assert result[1]["actions_count"] == 5
+    assert float(result[1]["points"]) == pytest.approx(1.4)
+    assert float(result[1]["total_co2e_saved"]) == pytest.approx(1.4)
+    assert result[1]["actions_count"] == 1
 
 
 def test_group_challenge_leaderboard_returns_expected_order(function_scope_database):

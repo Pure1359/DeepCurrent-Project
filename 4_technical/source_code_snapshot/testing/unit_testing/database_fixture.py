@@ -11,6 +11,26 @@ from app.db_config import db_cursor
 from datetime import datetime, timedelta
 from set_up.database_setup import *
 
+def seed_antigaming_rules():
+    with db_cursor() as (connection, cursor):
+        cursor.execute("DELETE FROM AntiGamingRule")
+        rules = [
+            ("duplicate_submission", "Duplicate submission in short time window", "high", 1, 1),
+            ("unrealistic_frequency", "Too many repeated actions in a day", "medium", 0, 1),
+            ("contradictory_log", "Contradictory actions logged in the same day", "medium", 0, 1),
+            ("suspicious_quantity", "Quantity exceeds expected range", "medium", 0, 1),
+            ("impossible_quantity", "Quantity exceeds hard maximum", "high", 1, 1),
+            ("reused_evidence", "Evidence reused across submissions", "medium", 0, 1),
+            ("challenge_farming", "Challenge score farming pattern detected", "medium", 0, 1),
+        ]
+        cursor.executemany(
+            """
+            INSERT INTO AntiGamingRule(rule_code, rule_name, severity, is_blocking, enabled)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            rules
+        )
+
 @pytest.fixture()
 def function_scope_database():
     print("DELETION")
@@ -23,6 +43,7 @@ def function_scope_database():
     cursor = conn.cursor()
     default_actionType_data()
     defaultDatabase()
+    seed_antigaming_rules()
     
     yield
     #turn off the foreign key to make dropping table easier and get all table name
@@ -52,6 +73,7 @@ def module_scope_database():
     cursor = conn.cursor()
     default_actionType_data()
     defaultDatabase()
+    seed_antigaming_rules()
    
     yield
     #turn off the foreign key to make dropping table easier and get all table name

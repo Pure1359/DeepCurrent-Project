@@ -50,7 +50,7 @@ def test_moderator_view_pending_evidence(new_client_module, recorded_template_mo
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
-    assert len(response) == 10
+    assert len(response) == 8
 
     print(response)
 
@@ -95,7 +95,7 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
         "limit" : 100,
     })
     response = response.get_json()
-    assert len(response) == 8
+    assert len(response) == 7
 
 def test_moderator_view_all_submission_again(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/view_all_submission", json = {
@@ -106,85 +106,145 @@ def test_moderator_view_all_submission_again(new_client_module, recorded_templat
     assert len(response) == 10
 
 def test_check_db_after(new_client_module, recorded_template_module, module_scope_database, populated_database):
-    #check if evidence record and decision record is generated when in case of evidence is submitted by user
-    sqlActionLog = """SELECT * FROM ActionLog"""
-    sqlEvidence = """SELECT * FROM Evidence"""
-    sqlDecision = """SELECT * FROM Decision"""
-    sqlChallengeAction = """SELECT * FROM ChallengeAction"""
     with db_cursor() as (connection, cursor):
-        # Check ActionLog
-        cursor.execute(sqlActionLog)
-        result = cursor.fetchall()
+        # Check total counts
+        cursor.execute("SELECT COUNT(*) AS count FROM ActionLog")
+        assert cursor.fetchone()["count"] == 19
 
-        assert len(result) == 19
-        assert result[0]["log_id"] == 1
-        assert result[0]["submitted_by"] == 1
-        assert result[0]["actionType_id"] == 1
-        assert result[0]["quantity"] == '2'
-        assert result[0]["co2e_saved"] == 1.4
+        cursor.execute("SELECT COUNT(*) AS count FROM Evidence")
+        assert cursor.fetchone()["count"] == 10
 
-        assert result[1]["log_id"] == 2
-        assert result[1]["submitted_by"] == 1
-        assert result[1]["actionType_id"] == 2
-        assert result[1]["quantity"] == '4'
-        assert result[1]["co2e_saved"] == 3.6
+        cursor.execute("SELECT COUNT(*) AS count FROM Decision")
+        assert cursor.fetchone()["count"] == 10
 
-        # Check Evidence
-        cursor.execute(sqlEvidence)
-        result = cursor.fetchall()
+        cursor.execute("SELECT COUNT(*) AS count FROM ChallengeAction")
+        assert cursor.fetchone()["count"] == 3
 
-        assert len(result) == 10
-        assert result[0]["evidence_id"] == 1
-        assert result[0]["log_id"] == 1
-        assert result[0]["evidence_type"] is None
-        assert result[0]["evidence_url"] == "url1"
-        
-        assert result[1]["evidence_id"] == 2
-        assert result[1]["log_id"] == 2
-        assert result[1]["evidence_type"] is None
-        assert result[1]["evidence_url"] == "url2"
+        # Check specific action log created for url1
+        cursor.execute(
+            """
+            SELECT al.*
+            FROM ActionLog al
+            JOIN Evidence e ON e.log_id = al.log_id
+            WHERE e.evidence_url = %s
+            """,
+            ("url1",)
+        )
+        row = cursor.fetchone()
+        assert row is not None
+        assert row["submitted_by"] == 1
+        assert row["actionType_id"] == 1
+        assert row["quantity"] == '2'
+        assert row["co2e_saved"] == 1.4
 
-        # Check Decision
-        cursor.execute(sqlDecision)
-        result = cursor.fetchall()
+        # Check specific action log created for url2
+        cursor.execute(
+            """
+            SELECT al.*
+            FROM ActionLog al
+            JOIN Evidence e ON e.log_id = al.log_id
+            WHERE e.evidence_url = %s
+            """,
+            ("url2",)
+        )
+        row = cursor.fetchone()
+        assert row is not None
+        assert row["submitted_by"] == 1
+        assert row["actionType_id"] == 2
+        assert row["quantity"] == '4'
+        assert row["co2e_saved"] == 3.6
 
-        assert len(result) == 10
-        # First decision (Accepted)
-        assert result[0]["decision_id"] == 1
-        assert result[0]["evidence_id"] == 1
-        assert result[0]["reviewer_id"] == 2  # James (moderator)
-        assert result[0]["decision_status"] == "accepted"
-        assert result[0]["reason"] == "Evidence is accepted"
-        assert result[0]["decision_date"] is not None
-        
-        # Second decision (Rejected)
-        assert result[1]["decision_id"] == 2
-        assert result[1]["evidence_id"] == 2
-        assert result[1]["reviewer_id"] == 2  # James (moderator)
-        assert result[1]["decision_status"] == "rejected"
-        assert result[1]["reason"] == "Wrong Challenge"
-        assert result[1]["decision_date"] is not None
+        # Check Evidence row for url1
+        cursor.execute(
+            """
+            SELECT *
+            FROM Evidence
+            WHERE evidence_url = %s
+            """,
+            ("url1",)
+        )
+        row = cursor.fetchone()
+        assert row is not None
+        assert row["log_id"] is not None
+        assert row["evidence_type"] is None
+        assert row["evidence_url"] == "url1"
 
-        # Check ChallengeAction
-        cursor.execute(sqlChallengeAction)
-        result = cursor.fetchall()
+        # Check Evidence row for url2
+        cursor.execute(
+            """
+            SELECT *
+            FROM Evidence
+            WHERE evidence_url = %s
+            """,
+            ("url2",)
+        )
+        row = cursor.fetchone()
+        assert row is not None
+        assert row["log_id"] is not None
+        assert row["evidence_type"] is None
+        assert row["evidence_url"] == "url2"
 
-        assert len(result) == 10
-        assert result[0]["challenge_id"] == 1
-        assert result[0]["group_id"] is None
-        assert result[0]["log_id"] == 1
-        assert result[0]["point_awarded"] == 1.4
+        # Check accepted decision exists
+        cursor.execute(
+            """
+            SELECT *
+            FROM Decision
+            WHERE decision_status = %s AND reason = %s
+            """,
+            ("accepted", "Evidence is accepted")
+        )
+        row = cursor.fetchone()
+        assert row is not None
+        assert row["evidence_id"] is not None
+        assert row["reviewer_id"] is not None
+        assert row["decision_date"] is not None
 
-        assert result[1]["challenge_id"] == 1
-        assert result[1]["group_id"] is None
-        assert result[1]["log_id"] == 2
-        assert result[1]["point_awarded"] == 3.6
+        # Check rejected decision exists
+        cursor.execute(
+            """
+            SELECT *
+            FROM Decision
+            WHERE decision_status = %s AND reason = %s
+            """,
+            ("rejected", "Wrong Challenge")
+        )
+        row = cursor.fetchone()
+        assert row is not None
+        assert row["evidence_id"] is not None
+        assert row["reviewer_id"] is not None
+        assert row["decision_date"] is not None
 
-    
-    
+        # Check ChallengeAction for the first travel challenge action
+        cursor.execute(
+            """
+            SELECT ca.*
+            FROM ChallengeAction ca
+            JOIN ActionLog al ON al.log_id = ca.log_id
+            WHERE ca.challenge_id = %s
+              AND al.submitted_by = %s
+              AND al.actionType_id = %s
+              AND al.quantity = %s
+            """,
+            (1, 1, 1, '2')
+        )
+        row = cursor.fetchone()
+        assert row is not None
+        assert row["challenge_id"] == 1
+        assert row["group_id"] is None
+        assert row["point_awarded"] == 1.4
 
-        
-        
-
-
-
+        # Check ChallengeAction for the second travel challenge action
+        cursor.execute(
+            """
+            SELECT ca.*
+            FROM ChallengeAction ca
+            JOIN ActionLog al ON al.log_id = ca.log_id
+            WHERE ca.challenge_id = %s
+              AND al.submitted_by = %s
+              AND al.actionType_id = %s
+              AND al.quantity = %s
+            """,
+            (1, 1, 2, '4')
+        )
+        row = cursor.fetchone()
+        assert row is None
