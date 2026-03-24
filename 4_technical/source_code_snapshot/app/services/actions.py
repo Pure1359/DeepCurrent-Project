@@ -271,7 +271,7 @@ def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id, co2e_save
     return cursor.lastrowid
 
 def get_action_history(account_id):
-    sql = """SELECT 
+    sql = """SELECT
                 actionName,
                 category,
                 challenge_id,
@@ -281,6 +281,7 @@ def get_action_history(account_id):
                 evidence_type,
                 evidence_date,
                 ActionLog.log_date,
+                ActionLog.co2e_saved AS saved,
                 decision_status,
                 unit
             FROM ActionLog
