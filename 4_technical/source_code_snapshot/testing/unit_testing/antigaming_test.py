@@ -318,6 +318,31 @@ def test_flagged_submission_with_evidence_creates_decision_record(new_client_fun
         assert row["evidence_id"] is not None
         assert row["decision_status"] == "pending"
 
+def test_train_8000km_flagged_impossible(new_client_function, module_scope_database):
+    new_client_function.post("/logout")
+    login_as_emma(new_client_function)
+    account_id = get_account_id_from_session(new_client_function)
+
+    response = new_client_function.post("/user_access/submit_action", json={
+        "action_name": "train",
+        "category": "travel",
+        "quantity": 8000,
+        "challenge_id": None,
+        "evidence_url": None
+    })
+    assert response.status_code == 200
+
+    latest_log = get_latest_log_for_account_and_action(account_id, "train", "travel")
+    assert latest_log is not None
+
+    flags = get_flags_for_log(latest_log["log_id"])
+    flag_codes = [flag["rule_code"] for flag in flags]
+    assert "impossible_quantity" in flag_codes
+
+    flag = next(f for f in flags if f["rule_code"] == "impossible_quantity")
+    assert flag["severity"] == "high"
+
+
 def test_antigaming_rules_are_seeded(new_client_function, module_scope_database):
     with db_cursor() as (connection, cursor):
         cursor.execute("SELECT COUNT(*) AS count FROM AntiGamingRule")

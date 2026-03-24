@@ -67,7 +67,8 @@ def clear_tables():
         "Accounts",
         "Users",
         "AntiGamingFlag",
-        "AntiGamingRule"
+        "AntiGamingRule",
+        "UserBadge"
     ]
     cursor.execute("PRAGMA foreign_keys = OFF;")
     for table in tables:
@@ -253,14 +254,14 @@ CONTRADICTIONS = {
 }
 
 challenge_specs = [
-    ("Personal", "Cycle & Walk Week", 40, 19, "Log low-carbon commuting actions. Evidence required for prizes."),
-    ("Personal", "Veggie Lunch Sprint", 38, 12, "Submit vegetarian-friendly food swaps. Evidence required."),
-    ("Personal", "Laundry Switch-Up", 34, 10, "Use cold wash and air dry more often. Evidence optional."),
-    ("Personal", "Zero Waste Week", 28, 7, "Track recycling and composting actions. Evidence required."),
-    ("Group", "Hall vs Hall Commute Cup", 42, 21, "Groups compete on verified commuting points. Evidence required."),
-    ("Group", "Society Energy Saver", 36, 14, "Reduce heating and lighting use as a team."),
-    ("Group", "Circular Campus Challenge", 30, 10, "Recycling-focused team challenge with moderation."),
-    ("Group", "Term Finale Carbon League", 24, 18, "Overall seasonal leaderboard challenge across groups."),
+    ("Personal", "Cycle & Walk Week", 40, 55, "Log low-carbon commuting actions. Evidence required for prizes."),
+    ("Personal", "Veggie Lunch Sprint", 38, 50, "Submit vegetarian-friendly food swaps. Evidence required."),
+    ("Personal", "Laundry Switch-Up", 34, 45, "Use cold wash and air dry more often. Evidence optional."),
+    ("Personal", "Zero Waste Week", 28, 40, "Track recycling and composting actions. Evidence required."),
+    ("Group", "Hall vs Hall Commute Cup", 42, 55, "Groups compete on verified commuting points. Evidence required."),
+    ("Group", "Society Energy Saver", 36, 50, "Reduce heating and lighting use as a team."),
+    ("Group", "Circular Campus Challenge", 30, 45, "Recycling-focused team challenge with moderation."),
+    ("Group", "Term Finale Carbon League", 24, 40, "Overall seasonal leaderboard challenge across groups."),
 ]
 
 group_names = [
@@ -787,9 +788,7 @@ for log_id in frequency_logs[-12:]:
 contradiction_log_ids = [lid for lid in edge_case_log_ids if log_datetime[lid].hour in {8} or log_datetime[lid].hour in {8,9}]
 start = 24 + 28
 contradiction_section = edge_case_log_ids[start:start+20]
-for log_id in contradiction_section[1::2]:
-    account_id = log_owner[log_id]
-    flag_rows.append((log_id, account_id, "contradictory_log", "medium", "open", "Travel mode contradicts another logged action on the same day.", ts(2, 14, log_id % 60, 0), None, None))
+# contradictory_log flags removed — check now only applies to ChallengeAction submissions
 
 # Quantity flags
 quantity_section = edge_case_log_ids[start+20:start+20+16]
@@ -820,6 +819,36 @@ for row in flag_rows:
     )
     add_seed_scenario(row[2], "antigaming_flag", "AntiGamingFlag", cursor.lastrowid, row[5])
 
+
+# Badge test: seed one user with 180 consecutive days of challenge submissions
+# This lets you immediately verify all 4 badge tiers (week/month/super/legend)
+streak_account_id = account_ids[12]
+streak_challenge_id = challenge_ids[0]
+walk_action_id = action_lookup[("walk", "travel")]
+walk_factor = action_type_meta[walk_action_id]["co2e_factor"]
+
+for day_offset in range(180):
+    log_dt = BASE_NOW - timedelta(days=179 - day_offset)
+    log_dt = log_dt.replace(hour=8, minute=0, second=0)
+    quantity = 5
+    co2e = round(quantity * walk_factor, 3)
+    cursor.execute(
+        "INSERT INTO ActionLog(submitted_by, actionType_id, log_date, quantity, co2e_saved) VALUES (?, ?, ?, ?, ?)",
+        (streak_account_id, walk_action_id, log_dt.strftime("%Y-%m-%d %H:%M:%S"), quantity, co2e),
+    )
+    streak_log_id = cursor.lastrowid
+    cursor.execute(
+        "INSERT INTO ChallengeAction(challenge_id, group_id, log_id, point_awarded) VALUES (?, ?, ?, ?)",
+        (streak_challenge_id, None, streak_log_id, co2e),
+    )
+
+# Seed badges for participant013 based on their 180-day streak
+badge_now = BASE_NOW.strftime("%Y-%m-%d %H:%M:%S")
+for days_needed, badge_type in [(7, "week"), (30, "month"), (60, "super"), (180, "legend")]:
+    cursor.execute(
+        "INSERT OR IGNORE INTO UserBadge(account_id, badge_type, awarded_at) VALUES (?, ?, ?)",
+        (streak_account_id, badge_type, badge_now),
+    )
 
 # Summary
 conn.commit()

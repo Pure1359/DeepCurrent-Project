@@ -103,7 +103,6 @@ def test_join_challenge_not_started(new_client_module, module_scope_database, po
 
 def test_join_multiple_challenges(new_client_module, module_scope_database, populated_database):
     #check to see if user can join many challenge
-    #Use Jack (account_id=5) who hasn't joined any challenges
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "jamike@goodmail.com",
