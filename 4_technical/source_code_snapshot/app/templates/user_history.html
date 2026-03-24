@@ -53,7 +53,7 @@
             const response = await fetch('/user_access/get_action_history', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({offset: 0, limit: 100})
+                body: JSON.stringify({offset: 0, limit: 9999})
             });
 
             const actions = await response.json();
@@ -68,12 +68,10 @@
             
             actions.forEach(action => {
                 const row = document.createElement('tr');
-                const date = action.evidence_date ? new Date(action.evidence_date).toLocaleDateString() : 'N/A';
+                const date = action.evidence_date ? new Date(action.evidence_date).toLocaleDateString() : (action.log_date ? new Date(action.log_date).toLocaleDateString() : 'N/A');
                 
-                // Calculate CO2e saved
-                const co2eSaved = action.co2e_factor && action.quantity 
-                    ? (action.co2e_factor * action.quantity).toFixed(2) 
-                    : '0.00';
+                // Use saved value from DB directly
+                const co2eSaved = parseFloat(action.saved || 0).toFixed(2);
                 
                 // Challenge ID display
                 const challengeHtml = action.challenge_id ? `#${action.challenge_id}` : '<span style="color: gray;">None</span>';

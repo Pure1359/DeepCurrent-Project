@@ -94,9 +94,15 @@
           />
           <span class="label">Leaderboard</span>
         </div>
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('user.moderator_list') }}'"
+        >
+          <span class="label">Action History</span>
+        </div>
         {% if session.get('account_role') == "moderator" %}
-        <div 
-          class="nav-item" 
+        <div
+          class="nav-item"
             onclick="window.location.href='{{ url_for('app.moderator_dashboard') }}'">
           <img
             class="icon"
@@ -704,6 +710,87 @@
       </div>
     </div>
 
+    <!-- Energy Impact Comparison Overlay -->
+    <div id="energy-impact-overlay" class="congrats-overlay hidden">
+      <div class="impact-comparison-container">
+        <div class="back-button" id="closeEnergyImpact">X</div>
+
+        <div class="content-container">
+          <div class="type-and-distance">
+            <p id="energy-impact-title">Energy Action - Impact Comparison</p>
+            <p id="energy-impact-quantity">Quantity: 0</p>
+          </div>
+
+          <div class="calculation">
+            <p id="energy-impact-factor">Factor: 0 kg CO₂e per unit</p>
+            <p id="energy-impact-calculation">0 × 0 = 0 kg CO₂e</p>
+          </div>
+
+          <div class="achievement-text">
+            <p>To add to overall achievement just submit</p>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="energyImpactSubmitBtn">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Waste Impact Comparison Overlay -->
+    <div id="waste-impact-overlay" class="congrats-overlay hidden">
+      <div class="impact-comparison-container">
+        <div class="back-button" id="closeWasteImpact">X</div>
+
+        <div class="content-container">
+          <div class="type-and-distance">
+            <p id="waste-impact-title">Waste Action - Impact Comparison</p>
+            <p id="waste-impact-quantity">Quantity: 0 kg</p>
+          </div>
+
+          <div class="calculation">
+            <p id="waste-impact-factor">Factor: 0 kg CO₂e per kg</p>
+            <p id="waste-impact-calculation">0 × 0 = 0 kg CO₂e</p>
+          </div>
+
+          <div class="achievement-text">
+            <p>To add to overall achievement just submit</p>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="wasteImpactSubmitBtn">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Food Impact Comparison Overlay -->
+    <div id="food-impact-overlay" class="congrats-overlay hidden">
+      <div class="impact-comparison-container">
+        <div class="back-button" id="closeFoodImpact">X</div>
+
+        <div class="content-container">
+          <div class="type-and-distance">
+            <p id="food-impact-title">Food - Impact Comparison</p>
+          </div>
+
+          <div id="food-impact-breakdown"></div>
+
+          <div class="calculation">
+            <p id="food-impact-total">Total: 0 kg CO₂e</p>
+          </div>
+
+          <div class="achievement-text">
+            <p>To add to overall achievement just submit</p>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="foodImpactSubmitBtn">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Congrats Card with Calculation Overlay -->
     <div id="congrats-overlay" class="congrats-overlay hidden">
       <div class="congrats-card-container">
@@ -793,8 +880,12 @@
         walk: "walk",
       };
 
-      // Store pending action data so the impact card can submit it
+      // Store pending action data so the impact cards can submit them
       window.pendingTravelAction = null;
+      window.pendingEnergyAction = null;
+      window.pendingWasteAction = null;
+      window.pendingFoodAction = null;
+      window.foodFactors = {};
 
       travelForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -833,8 +924,8 @@
         window.pendingTravelAction = requestData;
 
         // Preview the impact (using known co2e factors)
-        const co2eFactors = { train: 0.5, bus: 0.9, car: 0.4, bike: 0.8, walk: 0.7 };
-        const factor = co2eFactors[travelType] || 0.5;
+        const co2eFactors = { walk: 0.137, bike: 0.137, bus: 0.106, train: 0.094, car: 0 };
+        const factor = co2eFactors[travelType] || 0;
         const estimatedSaved = (factor * distance).toFixed(2);
 
         document.getElementById(
@@ -997,6 +1088,124 @@
         document.getElementById("impact-overlay").classList.add("hidden");
       });
 
+      /* Energy Impact Card — Submit & Close */
+      document.getElementById("energyImpactSubmitBtn").addEventListener("click", async () => {
+        if (!window.pendingEnergyAction) { alert("No action to submit"); return; }
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.pendingEnergyAction),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            document.getElementById("energy-impact-overlay").classList.add("hidden");
+            congratsOverlay.classList.remove("hidden");
+            window.pendingEnergyAction = null;
+            energyForm.reset();
+            loadDashboardData();
+            init();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
+      });
+
+      document.getElementById("closeEnergyImpact").addEventListener("click", () => {
+        document.getElementById("energy-impact-overlay").classList.add("hidden");
+      });
+
+      document.getElementById("energy-impact-overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("energy-impact-overlay")) {
+          document.getElementById("energy-impact-overlay").classList.add("hidden");
+        }
+      });
+
+      /* Waste Impact Card — Submit & Close */
+      document.getElementById("wasteImpactSubmitBtn").addEventListener("click", async () => {
+        if (!window.pendingWasteAction) { alert("No action to submit"); return; }
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.pendingWasteAction),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            document.getElementById("waste-impact-overlay").classList.add("hidden");
+            congratsOverlay.classList.remove("hidden");
+            window.pendingWasteAction = null;
+            wasteForm.reset();
+            loadDashboardData();
+            init();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
+      });
+
+      document.getElementById("closeWasteImpact").addEventListener("click", () => {
+        document.getElementById("waste-impact-overlay").classList.add("hidden");
+      });
+
+      document.getElementById("waste-impact-overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("waste-impact-overlay")) {
+          document.getElementById("waste-impact-overlay").classList.add("hidden");
+        }
+      });
+
+      /* Food Impact Card — Submit & Close */
+      document.getElementById("foodImpactSubmitBtn").addEventListener("click", async () => {
+        if (!window.pendingFoodAction) { alert("No action to submit"); return; }
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.pendingFoodAction),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            document.getElementById("food-impact-overlay").classList.add("hidden");
+            congratsOverlay.classList.remove("hidden");
+            window.pendingFoodAction = null;
+            document.getElementById("food-ingredient-list").innerHTML = "";
+            foodForm.reset();
+            loadDashboardData();
+            init();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
+      });
+
+      document.getElementById("closeFoodImpact").addEventListener("click", () => {
+        document.getElementById("food-impact-overlay").classList.add("hidden");
+      });
+
+      document.getElementById("food-impact-overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("food-impact-overlay")) {
+          document.getElementById("food-impact-overlay").classList.add("hidden");
+        }
+      });
+
       /* Open Travel Info Card */
       const travelInfoBtn = document.getElementById("travel-info-btn");
       const travelInfoOverlay = document.getElementById("travel-info-overlay");
@@ -1089,7 +1298,10 @@
         }
       });
 
-      wasteForm.addEventListener("submit", async (e) => {
+      const wasteCo2eFactors = { "recycle-paper": 1.0, "recycle-cardboard": 1.0, "recycle-plastic": 1.2, "recycle-glass": 0.3, "recycle-aluminium": 9.5, "recycle-steel": 1.5, "compost-food": 0.5 };
+      const wasteActionLabels = { "recycle-paper": "Recycle Paper", "recycle-cardboard": "Recycle Cardboard", "recycle-plastic": "Recycle Plastic", "recycle-glass": "Recycle Glass", "recycle-aluminium": "Recycle Aluminium", "recycle-steel": "Recycle Steel", "compost-food": "Compost Food" };
+
+      wasteForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
         const actionType = document.getElementById("waste-action-type").value;
@@ -1110,31 +1322,18 @@
           challenge_id: challengeId ? parseInt(challengeId) : null,
         };
 
-        try {
-          const response = await fetch("/user_access/submit_action", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          });
+        window.pendingWasteAction = formData;
 
-          const data = await response.json();
+        const factor = wasteCo2eFactors[actionType] || 0;
+        const estimatedSaved = (factor * quantity).toFixed(2);
 
-          if (response.ok) {
-            const totalSaved = data.co2e_saved.toFixed(2);
-            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
-            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
-            wasteOverlay.style.display = "none";
-            congratsOverlay.classList.remove("hidden");
-            wasteForm.reset();
-            loadDashboardData();
-            init();
-          } else {
-            alert("Error: " + (data.error || "Failed to log action"));
-          }
-        } catch (error) {
-          console.error("Network error:", error);
-          alert("Failed to submit action. Please try again.");
-        }
+        document.getElementById("waste-impact-title").textContent = `${wasteActionLabels[actionType] || actionType} - Impact Comparison`;
+        document.getElementById("waste-impact-quantity").textContent = `Quantity: ${quantity} KG`;
+        document.getElementById("waste-impact-factor").textContent = `Emission Factor: ${factor} kg CO₂e per KG`;
+        document.getElementById("waste-impact-calculation").textContent = `${factor} × ${quantity} KG = ${estimatedSaved} kg CO₂e`;
+
+        wasteOverlay.style.display = "none";
+        document.getElementById("waste-impact-overlay").classList.remove("hidden");
       });
 
       /* Open Energy form when buttonis clicked  */
@@ -1161,8 +1360,11 @@
         }
       });
 
-      /* Form processing when submit button is pressed */
-      energyForm.addEventListener("submit", async (e) => {
+      /* Form processing when submit button is pressed — show impact card */
+      const energyCo2eFactors = { heating: 0.148, lights: 0.01056, "cold-wash": 0.176, "air-dry": 0.725 };
+      const energyActionLabels = { heating: "Turn heating down", lights: "Switch off lights", "cold-wash": "Cold wash", "air-dry": "Air dry clothes" };
+
+      energyForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
         const actionType = document.getElementById("energy-action-type").value;
@@ -1183,31 +1385,19 @@
           challenge_id: challengeId ? parseInt(challengeId) : null,
         };
 
-        try {
-          const response = await fetch("/user_access/submit_action", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          });
+        window.pendingEnergyAction = formData;
 
-          const data = await response.json();
+        const factor = energyCo2eFactors[actionType] || 0;
+        const unitLabel = energyUnitMap[actionType] || "HR";
+        const estimatedSaved = (factor * quantity).toFixed(2);
 
-          if (response.ok) {
-            const totalSaved = data.co2e_saved.toFixed(2);
-            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
-            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
-            energyOverlay.style.display = "none";
-            congratsOverlay.classList.remove("hidden");
-            energyForm.reset();
-            loadDashboardData();
-            init();
-          } else {
-            alert("Error: " + (data.error || "Failed to log action"));
-          }
-        } catch (error) {
-          console.error("Network error:", error);
-          alert("Failed to submit action. Please try again.");
-        }
+        document.getElementById("energy-impact-title").textContent = `${energyActionLabels[actionType] || actionType} - Impact Comparison`;
+        document.getElementById("energy-impact-quantity").textContent = `Quantity: ${quantity} ${unitLabel}`;
+        document.getElementById("energy-impact-factor").textContent = `Emission Factor: ${factor} kg CO₂e per ${unitLabel}`;
+        document.getElementById("energy-impact-calculation").textContent = `${factor} × ${quantity} ${unitLabel} = ${estimatedSaved} kg CO₂e`;
+
+        energyOverlay.style.display = "none";
+        document.getElementById("energy-impact-overlay").classList.remove("hidden");
       });
       /* Food Action Form */
       const foodActionBtn = document.getElementById("food-action-btn");
@@ -1221,6 +1411,10 @@
         if (foodTypes.length === 0) {
           const res = await fetch("/user_access/get_food_types", { method: "POST", headers: { "Content-Type": "application/json" } });
           foodTypes = await res.json();
+        }
+        if (Object.keys(window.foodFactors).length === 0) {
+          const res = await fetch("/user_access/get_food_types_with_factors", { method: "POST", headers: { "Content-Type": "application/json" } });
+          window.foodFactors = await res.json();
         }
         populateChallengeDropdown("food-challenge-id", "food");
         foodOverlay.style.display = "flex";
@@ -1280,7 +1474,7 @@
         list.appendChild(row);
       }
 
-      foodForm.addEventListener("submit", async (e) => {
+      foodForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
         const list = document.getElementById("food-ingredient-list");
@@ -1313,32 +1507,29 @@
           challenge_id: challengeId ? parseInt(challengeId) : null,
         };
 
-        try {
-          const response = await fetch("/user_access/submit_action", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          });
+        window.pendingFoodAction = formData;
 
-          const data = await response.json();
+        // Build breakdown using fetched factors
+        const breakdownEl = document.getElementById("food-impact-breakdown");
+        breakdownEl.innerHTML = "";
+        let totalEstimated = 0;
 
-          if (response.ok) {
-            const totalSaved = data.co2e_saved.toFixed(2);
-            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
-            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
-            foodOverlay.style.display = "none";
-            congratsOverlay.classList.remove("hidden");
-            list.innerHTML = "";
-            foodForm.reset();
-            loadDashboardData();
-            init();
-          } else {
-            alert("Error: " + (data.error || "Failed to log action"));
-          }
-        } catch (error) {
-          console.error("Network error:", error);
-          alert("Failed to submit action. Please try again.");
+        for (const [name, kg] of ingredients) {
+          const factor = window.foodFactors[name] || 0;
+          const saved = factor * kg;
+          totalEstimated += saved;
+
+          const line = document.createElement("div");
+          line.className = "calculation";
+          line.innerHTML = `<p>${name}: ${factor} × ${kg} KG = ${saved.toFixed(2)} kg CO₂e</p>`;
+          breakdownEl.appendChild(line);
         }
+
+        document.getElementById("food-impact-title").textContent = "Food Meal - Impact Comparison";
+        document.getElementById("food-impact-total").textContent = `Total: ${totalEstimated.toFixed(2)} kg CO₂e`;
+
+        foodOverlay.style.display = "none";
+        document.getElementById("food-impact-overlay").classList.remove("hidden");
       });
 
     </script>
