@@ -36,9 +36,7 @@ def moderator_history():
 def view_submission_list():
     data = request.get_json()
     offset = data.get("offset", 0)
-    limit = data.get("limit", 60)
-    offset = 0
-    limit = 100
+    limit = data.get("limit", 999999)
     #validate data type in url parameter
     try:
         offset = int(offset)
@@ -52,9 +50,7 @@ def view_submission_list():
 def view_all_submission():
     data = request.get_json()
     offset = data.get("offset", 0)
-    limit = data.get("limit", 60)
-    offset = 0
-    limit = 100
+    limit = data.get("limit", 999999)
 
     try:
         offset = int(offset)

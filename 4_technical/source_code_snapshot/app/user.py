@@ -38,13 +38,8 @@ def moderator_list():
 @user_bp.route("/get_action_history", methods = ["POST"])
 def list_action_history():
     
-    data = request.get_json()
-    offset = data.get("offset", 0)
-    offset = 0
-    limit = 100
-    limit = data.get("limit", 30)
     account_id = session.get("account_id")
-    return get_action_history(account_id, limit, offset)
+    return get_action_history(account_id)
 
 #The app.service.actions already implement automatic challenge distribution
 @user_bp.route("/submit_action",  methods = ["POST"])
@@ -171,6 +166,14 @@ def get_food_types():
         cursor.execute(sql)
         result = cursor.fetchall()
     return jsonify([row["actionName"] for row in result])
+
+@user_bp.route("/get_food_types_with_factors", methods=["POST"])
+def get_food_types_with_factors():
+    sql = "SELECT actionName, co2e_factor FROM ActionType WHERE category = 'food'"
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql)
+        result = cursor.fetchall()
+    return jsonify({row["actionName"]: row["co2e_factor"] for row in result})
 
 @user_bp.route("/get_all_active_challenges", methods=["POST"])
 def get_all_active_challenges_route():
