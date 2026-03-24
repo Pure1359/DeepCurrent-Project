@@ -166,6 +166,21 @@ body::after {
   background-size: 120px;
   background-blend-mode: color-dodge;
 }
+.card_leaderboard {
+  border: 2px solid #153a39;
+  background-color: #fcfbfc;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  box-sizing: border-box;
+  background-image: url(Resource/eco.svg);
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  background-size: 120px;
+  background-blend-mode: color-dodge;
+}
 
 .card-header {
   display: flex;
@@ -590,7 +605,7 @@ select {
 }
 
 .moderating-card {
-  width: 900px;
+  width: 1200px;
   background: white;
   border-radius: 16px;
   border: 0.8px solid #153a39;
@@ -607,6 +622,24 @@ select {
 
 .moderating-body {
   padding: 24px;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-bottom: 2px solid #aaa;
+  outline: none;
+  min-width: 240px;
+  background: transparent;
 }
 
 .moderating-table {

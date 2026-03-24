@@ -34,6 +34,7 @@
                 <th>Quantity</th>
                 <th>Evidence</th>
                 <th>Date</th>
+                <th>Flags</th>
                 <th colspan="2">Review</th>
               </tr>
             </thead>
@@ -165,12 +166,17 @@
               quantityCell = `<td>${submission.quantity} ${submission.unit}</td>`;
             }
 
+            const flagsCell = submission.flags
+              ? `<td style="color: #c0392b; font-weight: 600; font-size: 12px;">${submission.flags}</td>`
+              : `<td style="color: gray;">None</td>`;
+
             row.innerHTML = `
                     <td>${submission.actionName}</td>
                     <td>${submission.category}</td>
                     ${quantityCell}
                     <td><a href="${submission.evidence_url}" target="_blank">View</a></td>
                     <td>${date}</td>
+                    ${flagsCell}
                     <td><button class="review-button approve-btn" data-evidence-id="${evidenceId}">Approve</button></td>
                     <td><button class="review-button reject-btn" data-evidence-id="${evidenceId}">Reject</button></td>
                 `;
