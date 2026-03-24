@@ -640,6 +640,7 @@ select {
 
 .evidence-container {
   width: 928px;
+  padding-top: 24px;
   background: white;
   padding-bottom: 38px;
   border-radius: 16px;

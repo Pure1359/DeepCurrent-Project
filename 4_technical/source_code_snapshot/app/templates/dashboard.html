@@ -299,9 +299,6 @@
               needle.style.transform =
                   `translateX(-50%) rotate(${angle}deg)`
           }
-          
-          updateMeter(159)
-          
           </script>
             <p id="matrix-caption-leftside">
               Colours show the total estimated carbon impact of your actions
@@ -887,6 +884,46 @@
           const results = await Promise.all(categories.map(c => fetchSaving(c)));
 
           categories.forEach((cat, i) => updateCard(cards[i], results[i]));
+          
+          const monthlyResponse = await fetch(
+            "/user_access/get_monthly_co2e_saving",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+          const monthlyData = await monthlyResponse.json();
+
+          const progressValue = monthlyData.total_saving || 0;
+          document.getElementById("progress-value").textContent =
+            progressValue.toFixed(1);
+          document.getElementById(
+            "co2e-message"
+          ).textContent = `You saved ${progressValue.toFixed(
+            1
+          )} kg CO2e this month`;
+
+          const weeklyResponse = await fetch(
+            "/user_access/get_weekly_co2e_saving",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+          const weeklyData = await weeklyResponse.json();
+          const weeklySaving = weeklyData.total_saving || 0;
+          // Update meter with weekly savings
+          updateMeter(weeklySaving);
+          document.querySelector(".meter .number").textContent = weeklySaving.toFixed(1);
+          // Set impact category text based on which category had the highest monthly saving
+          const yearlyResponse = await fetch(
+            "/user_access/get_yearly_co2e_saving",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+          const yearlyData = await yearlyResponse.json();
 
           const totalMonthly = results.reduce((sum, r) => sum + r.monthly, 0);
           document.getElementById("progress-value").textContent = totalMonthly.toFixed(1);
