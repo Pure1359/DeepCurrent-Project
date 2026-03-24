@@ -6,7 +6,6 @@ from set_up.database_setup import *
 load_dotenv("secret.env")
 
 app = create_app()
-default_actionType_data()
 defaultDatabase()
 
 
