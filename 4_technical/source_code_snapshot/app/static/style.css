@@ -166,6 +166,21 @@ body::after {
   background-size: 120px;
   background-blend-mode: color-dodge;
 }
+.card_leaderboard {
+  border: 2px solid #153a39;
+  background-color: #fcfbfc;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  box-sizing: border-box;
+  background-image: url(Resource/eco.svg);
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  background-size: 120px;
+  background-blend-mode: color-dodge;
+}
 
 .card-header {
   display: flex;

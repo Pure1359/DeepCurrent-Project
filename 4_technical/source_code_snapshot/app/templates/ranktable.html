@@ -4,27 +4,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Leaderboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
     <script src="{{ url_for('static', filename='JavaScript.js') }}"></script>
   </head>
 
   <body>
     <div class="sidebar">
       <nav class="navbar">
-        <div class="nav-item" onclick="window.location.href='{{ url_for('app.dashboard') }}'">
-          <img class="icon" src="{{ url_for('static', filename='Resource/home.svg') }}" alt="home" />
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('app.dashboard') }}'"
+        >
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/home.svg') }}"
+            alt="home"
+          />
           <span class="label">Home</span>
         </div>
-        <div class="nav-item" onclick="window.location.href='{{ url_for('app.challenge') }}'">
-          <img class="icon" src="{{ url_for('static', filename='Resource/chalange.svg') }}" alt="Challenges" />
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('app.challenge') }}'"
+        >
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/chalange.svg') }}"
+            alt="Challenges"
+          />
           <span class="label">Challenges</span>
         </div>
-        <div class="nav-item" onclick="window.location.href='{{ url_for('app.leaderboard') }}'">
-          <img class="icon" src="{{ url_for('static', filename='Resource/group.svg') }}" alt="Leaderboard" />
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('app.leaderboard') }}'"
+        >
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/group.svg') }}"
+            alt="Leaderboard"
+          />
           <span class="label">Leaderboard</span>
         </div>
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/notifications.svg') }}" alt="Notifications" />
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/notifications.svg') }}"
+            alt="Notifications"
+          />
           <span class="label">Notifications</span>
         </div>
       </nav>
@@ -45,23 +73,71 @@
 
       <div class="spacer"></div>
 
-      <div class="card-grid" style="display: flex; flex-direction: column; gap: 16px; padding: 0 24px;">
-
-        <div style="display: flex; gap: 12px;">
-          <button id="tab-individual" class="submit-btn" onclick="switchTab('individual')">Individual</button>
-          <button id="tab-group" class="submit-btn" onclick="switchTab('group')" style="background: #aaa;">Group</button>
+      <div
+        class="card-grid"
+        style="
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          padding: 0 24px;
+        "
+      >
+        <div style="display: flex; gap: 12px">
+          <button
+            id="tab-individual"
+            class="submit-btn"
+            onclick="switchTab('individual')"
+          >
+            Individual
+          </button>
+          <button
+            id="tab-group"
+            class="submit-btn"
+            onclick="switchTab('group')"
+            style="background: #aaa"
+          >
+            Group
+          </button>
         </div>
 
         <!-- Individual Tab -->
         <div id="panel-individual">
-          <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div
+            class="card_leaderboard"
+            style="
+              padding: 16px;
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+              "
+            >
               <label><strong>Filter by Personal Challenge:</strong></label>
-              <select id="individual-challenge-select" style="padding: 8px 12px; font-size: 15px; border: none; border-bottom: 2px solid #aaa; outline: none; min-width: 260px;">
+              <select
+                id="individual-challenge-select"
+                style="
+                  padding: 8px 12px;
+                  font-size: 15px;
+                  border: none;
+                  border-bottom: 2px solid #aaa;
+                  outline: none;
+                  min-width: 260px;
+                "
+              >
                 <option value="">-- Global (all challenges) --</option>
               </select>
             </div>
-            <table class="rank-table" style="width: 100%; border-collapse: collapse;">
+            <table
+              class="rank-table"
+              style="width: 100%; border-collapse: collapse"
+            >
               <thead>
                 <tr>
                   <th>Rank</th>
@@ -72,22 +148,54 @@
                 </tr>
               </thead>
               <tbody id="individual-tbody">
-                <tr><td colspan="5" style="text-align:center; padding: 16px;">Loading...</td></tr>
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 16px">
+                    Loading...
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
 
         <!-- Group Tab -->
-        <div id="panel-group" style="display: none;">
-          <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div id="panel-group" style="display: none">
+          <div
+            class="card"
+            style="
+              padding: 16px;
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+              "
+            >
               <label><strong>Select Group Challenge:</strong></label>
-              <select id="group-challenge-select" style="padding: 8px 12px; font-size: 15px; border: none; border-bottom: 2px solid #aaa; outline: none; min-width: 260px;">
+              <select
+                id="group-challenge-select"
+                style="
+                  padding: 8px 12px;
+                  font-size: 15px;
+                  border: none;
+                  border-bottom: 2px solid #aaa;
+                  outline: none;
+                  min-width: 260px;
+                "
+              >
                 <option value="">-- Select a challenge --</option>
               </select>
             </div>
-            <table class="rank-table" style="width: 100%; border-collapse: collapse;">
+            <table
+              class="rank-table"
+              style="width: 100%; border-collapse: collapse"
+            >
               <thead>
                 <tr>
                   <th>Rank</th>
@@ -100,12 +208,15 @@
                 </tr>
               </thead>
               <tbody id="group-tbody">
-                <tr><td colspan="7" style="text-align:center; padding: 16px;">Select a challenge to view the group leaderboard.</td></tr>
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 16px">
+                    Select a challenge to view the group leaderboard.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -114,24 +225,35 @@
       const navbar = document.getElementsByClassName("navbar")[0];
       toggle.addEventListener("click", () => {
         navbar.classList.toggle("closed");
-        navbar.style.width = navbar.classList.contains("closed") ? "60px" : "200px";
+        navbar.style.width = navbar.classList.contains("closed")
+          ? "60px"
+          : "200px";
       });
 
       function switchTab(tab) {
-        document.getElementById("panel-individual").style.display = tab === "individual" ? "block" : "none";
-        document.getElementById("panel-group").style.display = tab === "group" ? "block" : "none";
-        document.getElementById("tab-individual").style.background = tab === "individual" ? "" : "#aaa";
-        document.getElementById("tab-group").style.background = tab === "group" ? "" : "#aaa";
+        document.getElementById("panel-individual").style.display =
+          tab === "individual" ? "block" : "none";
+        document.getElementById("panel-group").style.display =
+          tab === "group" ? "block" : "none";
+        document.getElementById("tab-individual").style.background =
+          tab === "individual" ? "" : "#aaa";
+        document.getElementById("tab-group").style.background =
+          tab === "group" ? "" : "#aaa";
       }
 
       async function loadChallenges() {
-        const res = await fetch("/user_access/get_all_active_challenges", { method: "POST", headers: { "Content-Type": "application/json" } });
+        const res = await fetch("/user_access/get_all_active_challenges", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
         const challenges = await res.json();
 
-        const individualSelect = document.getElementById("individual-challenge-select");
+        const individualSelect = document.getElementById(
+          "individual-challenge-select"
+        );
         const groupSelect = document.getElementById("group-challenge-select");
 
-        challenges.forEach(c => {
+        challenges.forEach((c) => {
           const opt = document.createElement("option");
           opt.value = c.challenge_id;
           opt.textContent = c.title;
@@ -145,63 +267,79 @@
 
       async function loadGlobalLeaderboard() {
         const tbody = document.getElementById("individual-tbody");
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:16px;">Loading...</td></tr>';
+        tbody.innerHTML =
+          '<tr><td colspan="5" style="text-align:center; padding:16px;">Loading...</td></tr>';
         const res = await fetch("/api/dashboard/leaderboard?limit=20");
         const data = await res.json();
-        renderIndividualRows(data.leaderboard.map((row, i) => ({
-          rank: i + 1,
-          name: row.first_name + " " + row.last_name,
-          points: row.points,
-          total_co2e_saved: null,
-          actions_count: null
-        })));
+        renderIndividualRows(
+          data.leaderboard.map((row, i) => ({
+            rank: i + 1,
+            name: row.first_name + " " + row.last_name,
+            points: row.points,
+            total_co2e_saved: null,
+            actions_count: null,
+          }))
+        );
       }
 
       async function loadIndividualLeaderboard(challengeId) {
         const tbody = document.getElementById("individual-tbody");
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:16px;">Loading...</td></tr>';
+        tbody.innerHTML =
+          '<tr><td colspan="5" style="text-align:center; padding:16px;">Loading...</td></tr>';
         const res = await fetch("/user_access/get_individual_leaderboard", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ challenge_id: parseInt(challengeId) })
+          body: JSON.stringify({ challenge_id: parseInt(challengeId) }),
         });
         const data = await res.json();
         if (data.error) {
           tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:red;">${data.error}</td></tr>`;
           return;
         }
-        renderIndividualRows(data.map((row, i) => ({
-          rank: i + 1,
-          name: row.first_name + " " + row.last_name,
-          points: row.points,
-          total_co2e_saved: row.total_co2e_saved,
-          actions_count: row.actions_count
-        })));
+        renderIndividualRows(
+          data.map((row, i) => ({
+            rank: i + 1,
+            name: row.first_name + " " + row.last_name,
+            points: row.points,
+            total_co2e_saved: row.total_co2e_saved,
+            actions_count: row.actions_count,
+          }))
+        );
       }
 
       function renderIndividualRows(rows) {
         const tbody = document.getElementById("individual-tbody");
         if (rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:16px;">No data yet.</td></tr>';
+          tbody.innerHTML =
+            '<tr><td colspan="5" style="text-align:center; padding:16px;">No data yet.</td></tr>';
           return;
         }
-        tbody.innerHTML = rows.map(r => `
+        tbody.innerHTML = rows
+          .map(
+            (r) => `
           <tr>
             <td>${r.rank}</td>
             <td>${r.name}</td>
             <td>${parseFloat(r.points || 0).toFixed(2)}</td>
-            <td>${r.total_co2e_saved !== null ? parseFloat(r.total_co2e_saved).toFixed(2) : "-"}</td>
+            <td>${
+              r.total_co2e_saved !== null
+                ? parseFloat(r.total_co2e_saved).toFixed(2)
+                : "-"
+            }</td>
             <td>${r.actions_count !== null ? r.actions_count : "-"}</td>
-          </tr>`).join("");
+          </tr>`
+          )
+          .join("");
       }
 
       async function loadGroupLeaderboard(challengeId) {
         const tbody = document.getElementById("group-tbody");
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:16px;">Loading...</td></tr>';
+        tbody.innerHTML =
+          '<tr><td colspan="7" style="text-align:center; padding:16px;">Loading...</td></tr>';
         const res = await fetch("/user_access/get_group_leaderboard", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ challenge_id: parseInt(challengeId) })
+          body: JSON.stringify({ challenge_id: parseInt(challengeId) }),
         });
         const data = await res.json();
         if (data.error) {
@@ -209,10 +347,13 @@
           return;
         }
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:16px;">No groups have joined this challenge yet.</td></tr>';
+          tbody.innerHTML =
+            '<tr><td colspan="7" style="text-align:center; padding:16px;">No groups have joined this challenge yet.</td></tr>';
           return;
         }
-        tbody.innerHTML = data.map((row, i) => `
+        tbody.innerHTML = data
+          .map(
+            (row, i) => `
           <tr>
             <td>${i + 1}</td>
             <td>${row.group_name}</td>
@@ -221,22 +362,28 @@
             <td>${parseFloat(row.average_points || 0).toFixed(2)}</td>
             <td>${parseFloat(row.total_co2e_saved || 0).toFixed(2)}</td>
             <td>${row.actions_count}</td>
-          </tr>`).join("");
+          </tr>`
+          )
+          .join("");
       }
 
-      document.getElementById("individual-challenge-select").addEventListener("change", (e) => {
-        if (e.target.value === "") {
-          loadGlobalLeaderboard();
-        } else {
-          loadIndividualLeaderboard(e.target.value);
-        }
-      });
+      document
+        .getElementById("individual-challenge-select")
+        .addEventListener("change", (e) => {
+          if (e.target.value === "") {
+            loadGlobalLeaderboard();
+          } else {
+            loadIndividualLeaderboard(e.target.value);
+          }
+        });
 
-      document.getElementById("group-challenge-select").addEventListener("change", (e) => {
-        if (e.target.value !== "") {
-          loadGroupLeaderboard(e.target.value);
-        }
-      });
+      document
+        .getElementById("group-challenge-select")
+        .addEventListener("change", (e) => {
+          if (e.target.value !== "") {
+            loadGroupLeaderboard(e.target.value);
+          }
+        });
 
       window.addEventListener("load", async () => {
         await loadChallenges();
