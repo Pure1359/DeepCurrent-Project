@@ -105,8 +105,8 @@ def get_yearly_daily_savings(account_id):
             DATE(log_date) as date,
             SUM(co2e_saved) as total
         FROM ActionLog 
-        WHERE submitted_by = ?
-        AND DATE(log_date) BETWEEN DATE(?) AND DATE(?)
+        WHERE submitted_by = %s
+        AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)
         GROUP BY DATE(log_date)
     """
 

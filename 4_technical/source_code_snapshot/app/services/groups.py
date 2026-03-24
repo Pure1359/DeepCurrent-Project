@@ -1,19 +1,8 @@
-import sqlite3
 from typing import Any, Literal
 from flask import Response, jsonify
 from app.db_config import db_cursor
 from datetime import datetime
 from custom_error.Group_Exception import *
-
-# Placeholder for now
-# Create functions that have to do with groups
-# Follow templates in users.py and auth.py
-# Some Ideas:
-# create_group
-# add_account_to_group
-# list_group_members
-# remove_account_from_group
-# get_group_id
 
 def UserCreateGroup(account_id, group_name) -> int | DuplicateGroupName:
     time: datetime = datetime.now()
