@@ -411,7 +411,6 @@ def run_antigaming_checks(cursor: DictCursor, account_id, action_type_id, action
             SELECT COUNT(*) AS cnt
             FROM ActionLog al
             JOIN ActionType at ON at.actionType_id = al.actionType_id
-            JOIN ChallengeAction ca ON ca.log_id = al.log_id
             WHERE al.submitted_by = %s
               AND DATE(al.log_date) = DATE(%s)
               AND LOWER(at.actionName) = %s
