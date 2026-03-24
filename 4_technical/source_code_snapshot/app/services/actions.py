@@ -270,7 +270,7 @@ def apply_to_challenge(cursor:DictCursor, challenge_id, action_log_id, co2e_save
     cursor.execute(insertion, (challenge_id, group_id, action_log_id, points_awarded))
     return cursor.lastrowid
 
-def get_action_history(account_id, limit, offset):
+def get_action_history(account_id):
     sql = """SELECT 
                 actionName,
                 category,
@@ -280,6 +280,7 @@ def get_action_history(account_id, limit, offset):
                 evidence_url,
                 evidence_type,
                 evidence_date,
+                ActionLog.log_date,
                 decision_status,
                 unit
             FROM ActionLog
@@ -292,12 +293,11 @@ def get_action_history(account_id, limit, offset):
             LEFT JOIN ChallengeAction
                 ON ChallengeAction.log_id = ActionLog.log_id
             WHERE submitted_by = %s
-            ORDER BY evidence_date DESC
-            LIMIT %s OFFSET %s
+            ORDER BY ActionLog.log_date DESC
          """
-     
+
     with db_cursor() as (connection, cursor):
-        cursor.execute(sql, (account_id, limit, offset))
+        cursor.execute(sql, (account_id,))
         action_list = cursor.fetchall()
         return jsonify(action_list)
     
