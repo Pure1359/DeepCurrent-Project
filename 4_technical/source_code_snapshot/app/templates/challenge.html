@@ -23,6 +23,11 @@
         </div>
 
         <div class="nav-item">
+          <img class="icon" src="{{ url_for('static', filename='Resource/group.svg') }}" alt="Group" />
+          <span class="label">Group</span>
+        </div>
+
+        <div class="nav-item">
           <img
             class="icon"
             src="{{ url_for('static', filename='Resource/notifications.svg') }}"
@@ -137,6 +142,10 @@
         let currentFilter = 'all';
         document.querySelectorAll(".tab").forEach((tab) => {
           tab.addEventListener("click", function () {
+            if (this.dataset.tab === 'history') {
+              window.location.href = "{{ url_for('user.moderator_list') }}";
+              return;
+            }
             document
               .querySelectorAll(".tab")
               .forEach((t) => t.classList.remove("active"));
