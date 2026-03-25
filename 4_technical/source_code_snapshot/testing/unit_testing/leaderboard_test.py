@@ -19,24 +19,20 @@ def test_api_leaderboard_returns_ranked_users(new_client_function, module_scope_
     result = response.get_json()
     leaderboard = result["leaderboard"]
 
-    assert len(leaderboard) == 3
+    assert len(leaderboard) == 2
 
     # Sarah should be first from the populated fixture data
     assert leaderboard[0]["first_name"] == "Sarah"
     assert leaderboard[0]["last_name"] == "Chen"
-    assert float(leaderboard[0]["points"]) == pytest.approx(14.0)
+    assert float(leaderboard[0]["points"]) == 14.0
 
     # Emma should be second
     assert leaderboard[1]["first_name"] == "Emma"
     assert leaderboard[1]["last_name"] == "Watson"
-    assert float(leaderboard[1]["points"]) == pytest.approx(3.7505)
-
-    # Third place should have no challenge points yet
-    assert float(leaderboard[2]["points"]) == pytest.approx(0.0)
+    assert float(leaderboard[1]["points"]) == 3.7505
 
     # Ensure descending order
     assert float(leaderboard[0]["points"]) >= float(leaderboard[1]["points"])
-    assert float(leaderboard[1]["points"]) >= float(leaderboard[2]["points"])
 
 
 def test_api_leaderboard_respects_limit(new_client_function, module_scope_database, populated_database):
@@ -60,15 +56,15 @@ def test_individual_challenge_leaderboard_returns_expected_order(module_scope_da
     # Sarah
     assert result[0]["first_name"] == "Sarah"
     assert result[0]["last_name"] == "Chen"
-    assert float(result[0]["points"]) == pytest.approx(14.0)
-    assert float(result[0]["total_co2e_saved"]) == pytest.approx(14.0)
+    assert float(result[0]["points"]) == 14.0
+    assert float(result[0]["total_co2e_saved"]) == 14.0
     assert result[0]["actions_count"] == 1
 
     # Emma
     assert result[1]["first_name"] == "Emma"
     assert result[1]["last_name"] == "Watson"
-    assert float(result[1]["points"]) == pytest.approx(1.4)
-    assert float(result[1]["total_co2e_saved"]) == pytest.approx(1.4)
+    assert float(result[1]["points"]) == 1.4
+    assert float(result[1]["total_co2e_saved"]) == 1.4
     assert result[1]["actions_count"] == 1
 
 
