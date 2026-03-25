@@ -91,5 +91,10 @@
         </div>
       </form>
     </div>
+    {% if error %}
+    <script>
+      alert("{{ error }}");
+    </script>
+    {% endif %}
   </body>
 </html>
