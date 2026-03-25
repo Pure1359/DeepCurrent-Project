@@ -147,12 +147,11 @@ def log_simple_action(account_id, name, category, quantity, challenge_id = None,
         if flags:
             create_antigaming_flags(cursor, action_log_id, account_id, flags)
 
-        # Only award challenge points immediately if not flagged
         if challenge_id is not None:
             if evidence_url is None:
                 raise ValueError("Can not submit to challenge with no evidence")
+            challenge_action_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved, account_id)
             if not flags:
-                challenge_action_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved, account_id)
                 check_and_award_badges(account_id)
 
         return {
@@ -195,7 +194,34 @@ def log_food(account_id, name, category, quantity, challenge_id = None, evidence
         inserted_evidence_id = None
         challenge_action_id = None
 
-        evidence_hash = _hash_evidence_value(evidence_url)
+        total_kg = sum(kg for _, kg in quantity)
+        food_flags = []
+
+        if total_kg > 20:
+            food_flags.append({
+                "rule_code": "impossible_quantity",
+                "severity": "high",
+                "reason": f"Food total quantity {total_kg} kg exceeds hard limit of 20 kg."
+            })
+        elif total_kg > 10:
+            food_flags.append({
+                "rule_code": "suspicious_quantity",
+                "severity": "medium",
+                "reason": f"Food total quantity {total_kg} kg exceeds soft limit of 10 kg."
+            })
+
+        flags, evidence_hash = run_antigaming_checks(
+            cursor=cursor,
+            account_id=account_id,
+            action_type_id=last_actionType_id,
+            action_name=name,
+            category=category,
+            quantity=food_text.rstrip(","),
+            log_date=current_time,
+            evidence_url=evidence_url,
+            challenge_id=challenge_id
+        )
+        flags = flags + food_flags
 
         if challenge_id is not None and evidence_url is None:
             raise ValueError("Can not submit to challenge with no evidence")
@@ -209,11 +235,22 @@ def log_food(account_id, name, category, quantity, challenge_id = None, evidence
                 current_time,
                 evidence_hash
             )
-            inserted_decision_id = insert_decision_record(cursor, inserted_evidence_id, None, "pending", None, None)
+            inserted_decision_id = insert_decision_record(
+                cursor,
+                inserted_evidence_id,
+                None,
+                "pending" if flags else "approved",
+                None if flags else current_time,
+                "Auto-flagged for moderator review." if flags else "Auto-approved at submission."
+            )
+
+        if flags:
+            create_antigaming_flags(cursor, action_log_id, account_id, flags)
 
         if challenge_id is not None:
             challenge_action_id = apply_to_challenge(cursor, challenge_id, action_log_id, co2e_saved, account_id)
-            check_and_award_badges(account_id)
+            if not flags:
+                check_and_award_badges(account_id)
 
         return {
             "action_log_id": action_log_id,
@@ -221,7 +258,8 @@ def log_food(account_id, name, category, quantity, challenge_id = None, evidence
             "decision_id": inserted_decision_id,
             "challenge_id": challenge_id,
             "challenge_action_id": challenge_action_id,
-            "co2e_saved": co2e_saved
+            "co2e_saved": co2e_saved,
+            "flags": flags
         }
     # quantity is a list of (ingredient_name, kg) tuples   
 
@@ -338,6 +376,9 @@ def leaderboard(limit):
         JOIN Users u ON u.user_id = a.user_id
         LEFT JOIN ActionLog al ON al.submitted_by = a.account_id
         LEFT JOIN ChallengeAction ca ON ca.log_id = al.log_id
+        LEFT JOIN Evidence e ON e.log_id = al.log_id
+        LEFT JOIN Decision d ON d.evidence_id = e.evidence_id
+        WHERE d.decision_status IN ('approved', 'accepted')
         GROUP BY a.account_id, u.first_name, u.last_name
         ORDER BY points DESC
         LIMIT %s
