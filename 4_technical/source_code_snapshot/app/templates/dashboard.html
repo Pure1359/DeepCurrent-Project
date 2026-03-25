@@ -1467,7 +1467,7 @@
         row.dataset.name = name;
         row.innerHTML = `
           <span style="flex: 1; font-size: 15px;">${name}</span>
-          <input type="number" placeholder="0.0" step="0.1" min="0.01" required style="width: 80px; padding: 8px; border: none; border-bottom: 2px solid #aaa; outline: none; font-size: 15px;" />
+          <input type="number" placeholder="0.0" step="any" min="0.01" required style="width: 80px; padding: 8px; border: none; border-bottom: 2px solid #aaa; outline: none; font-size: 15px;" />
           <span>KG</span>
           <button type="button" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; padding: 0 4px;" onclick="this.parentElement.remove()">×</button>
         `;
