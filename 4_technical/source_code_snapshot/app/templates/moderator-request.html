@@ -157,9 +157,11 @@
             let quantityCell;
             if (submission.category === "food") {
               const totalKg = submission.quantity
-                .trim()
-                .split(" ")
-                .reduce((sum, item) => sum + parseFloat(item.split(":")[1]), 0);
+                .split(",")
+                .reduce(
+                  (sum, item) => sum + parseFloat(item.split(":").pop()),
+                  0
+                );
               const roundedKg = parseFloat(totalKg.toPrecision(3));
               quantityCell = `<td>${roundedKg} KG <button class="expand-btn" data-quantity="${submission.quantity}">Expand</button></td>`;
             } else {
@@ -243,12 +245,14 @@
       }
 
       function openFoodModal(quantityStr) {
-        const items = quantityStr.trim().split(" ");
+        const items = quantityStr.split(",");
         const tbody = document.getElementById("food-modal-body");
         tbody.innerHTML = "";
 
         items.forEach((item) => {
-          const [name, kg] = item.split(":");
+          const lastColon = item.lastIndexOf(":");
+          const name = item.substring(0, lastColon).trim();
+          const kg = item.substring(lastColon + 1).trim();
           const row = document.createElement("tr");
           row.innerHTML = `
                 <td>${name}</td>
