@@ -171,7 +171,10 @@ def challenge_leaderboard_individual(challenge_id: int, limit: int = 10):
                 ON ca.log_id = al.log_id
                 AND ca.challenge_id = ip.challenge_id
                 AND ca.group_id IS NULL
+            LEFT JOIN Evidence e ON e.log_id = al.log_id
+            LEFT JOIN Decision d ON d.evidence_id = e.evidence_id
             WHERE ip.challenge_id = %s
+              AND d.decision_status IN ('approved', 'accepted')
             GROUP BY a.account_id, a.username, u.first_name, u.last_name
             ORDER BY points DESC, total_co2e_saved DESC, actions_count DESC, a.account_id ASC
             LIMIT %s
@@ -209,7 +212,10 @@ def challenge_leaderboard_group(challenge_id: int, limit: int = 10):
                 ON ca.challenge_id = gp.challenge_id
                 AND ca.group_id = gp.group_id
             LEFT JOIN ActionLog al ON ca.log_id = al.log_id
+            LEFT JOIN Evidence e ON e.log_id = al.log_id
+            LEFT JOIN Decision d ON d.evidence_id = e.evidence_id
             WHERE gp.challenge_id = %s
+              AND d.decision_status IN ('approved', 'accepted')
             GROUP BY ug.group_id, ug.group_name, ug.group_creator_id
             ORDER BY average_points DESC, points DESC, total_co2e_saved DESC, ug.group_id ASC
             LIMIT %s

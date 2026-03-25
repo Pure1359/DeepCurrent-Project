@@ -100,11 +100,11 @@ conn.commit()
 
 # Reference data
 action_types = [
-    ("walk", "travel", "KM", 0.137),
-    ("bus", "travel", "KM", 0.106),
-    ("bike", "travel", "KM", 0.137),
-    ("train", "travel", "KM", 0.094),
-    ("car", "travel", "KM", 0),
+    ("walk", "travel", "KM", 0.167),
+    ("bus", "travel", "KM", 0.063),
+    ("bike", "travel", "KM", 0.167),
+    ("train", "travel", "KM", 0.131),
+    ("car", "travel", "KM", 0.0),
     ("Pepper | sweet | red | raw", "food", "KG", 1.045),
     ("Tomato | ripe | raw", "food", "KG", 0.456),
     ("Squash | raw", "food", "KG", 0.863),
@@ -225,17 +225,18 @@ action_types = [
     ("Vegan burgers | soy based", "food", "KG", 0.708),
     ("Vegan sausages | soy based", "food", "KG", 0.796),
     ("Vegan mince | pea based", "food", "KG", 0.710),
-    ("cold-wash", "energy", "Load", 0.176),
-    ("air-dry", "energy", "Load", 0.725),
-    ("heating", "energy", "HR", 0.148),
-    ("lights", "energy", "HR", 0.01056),
-    ("recycle-paper", "waste", "KG", 1.0),
-    ("recycle-cardboard", "waste", "KG", 1.0),
-    ("recycle-plastic", "waste", "KG", 1.2),
-    ("recycle-glass", "waste", "KG", 0.3),
-    ("recycle-aluminium", "waste", "KG", 9.5),
-    ("recycle-steel", "waste", "KG", 1.5),
-    ("compost-food", "waste", "KG", 0.5),
+    ("cold-wash", "energy", "Load", 0.0932),
+    ("air-dry",   "energy", "Load", 0.9317),
+    ("heating",   "energy", "HR",   0.1666),
+    ("lights",    "energy", "HR",   0.00559),
+    ("recycle-paper",      "waste", "KG", 0.2950),
+    ("recycle-cardboard",  "waste", "KG", 0.1016),
+    ("recycle-plastic",    "waste", "KG", 1.5984),
+    ("recycle-glass",      "waste", "KG", 0.5796),
+    ("recycle-aluminium",  "waste", "KG", 8.1164),
+    ("recycle-steel",      "waste", "KG", 1.1282),
+    ("compost-food",       "waste", "KG", 0.0550)
+    
 ]
 
 TRAVEL_ACTIONS = ["walk", "bus", "bike", "train", "car"]
@@ -798,6 +799,33 @@ for idx, evidence_id in enumerate(evidence_ids[:TARGET_DECISIONS]):
         add_seed_scenario("moderation_rejection", "moderation_case", "Decision", cursor.lastrowid, "Rejected moderation example for invalid or duplicate evidence.")
     elif status == "pending":
         add_seed_scenario("moderation_pending", "moderation_case", "Decision", cursor.lastrowid, "Pending moderation example for review queues.")
+
+# Ensure every edge-case log has Evidence + pending Decision so it appears on the moderator dashboard
+for idx, log_id in enumerate(edge_case_log_ids):
+    if log_id in evidence_for_log:
+        continue
+    url = f"https://evidence.example/flagged/{log_id}_{idx}.jpg"
+    file_hash = hash_value(url)
+    ev_type = ["photo", "receipt", "screenshot"][idx % 3]
+    ev_dt = (log_datetime[log_id] + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
+    cursor.execute(
+        """
+        INSERT INTO Evidence(log_id, evidence_type, evidence_url, evidence_date, file_hash)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (log_id, ev_type, url, ev_dt, file_hash),
+    )
+    evidence_id = cursor.lastrowid
+    evidence_ids.append(evidence_id)
+    evidence_for_log[log_id].append(evidence_id)
+    reviewer_id = moderator_ids[idx % len(moderator_ids)]
+    cursor.execute(
+        """
+        INSERT INTO Decision(evidence_id, reviewer_id, decision_status, decision_date, reason)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (evidence_id, reviewer_id, "pending", None, "Awaiting moderator review for flagged submission."),
+    )
 
 # Anti-gaming flags for edge cases
 flag_rows = []

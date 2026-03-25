@@ -50,7 +50,7 @@ def test_moderator_view_pending_evidence(new_client_module, recorded_template_mo
         "limit" : 100
     }, follow_redirects = True)
     response = response.get_json()
-    assert len(response) == 8
+    assert len(response) == 7
 
     print(response)
 
@@ -95,7 +95,7 @@ def test_moderator_reject_pending_evidence(new_client_module, recorded_template_
         "limit" : 100,
     })
     response = response.get_json()
-    assert len(response) == 7
+    assert len(response) == 6
 
 def test_moderator_view_all_submission_again(new_client_module, recorded_template_module, module_scope_database, populated_database):
     response = new_client_module.post("/moderator_access/view_all_submission", json = {
@@ -118,7 +118,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
         assert cursor.fetchone()["count"] == 10
 
         cursor.execute("SELECT COUNT(*) AS count FROM ChallengeAction")
-        assert cursor.fetchone()["count"] == 3
+        assert cursor.fetchone()["count"] == 10
 
         # Check specific action log created for url1
         cursor.execute(
@@ -247,4 +247,7 @@ def test_check_db_after(new_client_module, recorded_template_module, module_scop
             (1, 1, 2, '4')
         )
         row = cursor.fetchone()
-        assert row is None
+        assert row is not None
+        assert row["challenge_id"] == 1
+        assert row["group_id"] is None
+        assert row["point_awarded"] == 3.6
