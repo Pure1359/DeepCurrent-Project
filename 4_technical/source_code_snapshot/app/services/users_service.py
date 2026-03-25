@@ -27,53 +27,127 @@ def update_last_active(account_id, last_active):
     with db_cursor() as (connection, cursor):
         cursor.execute(sql, (last_active, account_id))
 
-def get_weekly_saved(account_id):
+def get_weekly_saved(account_id, category=None):
     today = datetime.now()
     start_of_week = today - timedelta(days = today.weekday()) #Monday
     end_of_week = start_of_week + timedelta(days = 6) #Sunday
 
-    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)"""
+    if category:
+        sql = """SELECT SUM(ActionLog.co2e_saved) FROM ActionLog
+                 JOIN ActionType ON ActionLog.actionType_id = ActionType.actionType_id
+                 LEFT JOIN Evidence ON Evidence.log_id = ActionLog.log_id
+                 LEFT JOIN Decision ON Decision.evidence_id = Evidence.evidence_id
+                 WHERE ActionLog.submitted_by = %s AND ActionType.category = %s
+                 AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)
+                 AND (Decision.decision_status IS NULL OR Decision.decision_status != 'Rejected')"""
+        params = (account_id, category, start_of_week, end_of_week)
+    else:
+        sql = """SELECT SUM(ActionLog.co2e_saved) FROM ActionLog
+                 LEFT JOIN Evidence ON Evidence.log_id = ActionLog.log_id
+                 LEFT JOIN Decision ON Decision.evidence_id = Evidence.evidence_id
+                 WHERE ActionLog.submitted_by = %s
+                 AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)
+                 AND (Decision.decision_status IS NULL OR Decision.decision_status != 'Rejected')"""
+        params = (account_id, start_of_week, end_of_week)
     with db_cursor() as (connection, cursor):
-        cursor.execute(sql, (account_id, start_of_week, end_of_week))
+        cursor.execute(sql, params)
         result = cursor.fetchone()
         if result is not None:
-            return result["SUM(co2e_saved)"]
+            return result["SUM(ActionLog.co2e_saved)"]
         else:
             return 0
 
-def get_monthly_saved(account_id):
+def get_monthly_saved(account_id, category=None):
     temp_today = datetime.now()
     start_of_month = temp_today.replace(day = 1)
     last_date_of_month = monthrange(temp_today.year, temp_today.month)[1]
     end_of_month = datetime(temp_today.year, temp_today.month, last_date_of_month)
 
-    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)"""
-
+    if category:
+        sql = """SELECT SUM(ActionLog.co2e_saved) FROM ActionLog
+                 JOIN ActionType ON ActionLog.actionType_id = ActionType.actionType_id
+                 LEFT JOIN Evidence ON Evidence.log_id = ActionLog.log_id
+                 LEFT JOIN Decision ON Decision.evidence_id = Evidence.evidence_id
+                 WHERE ActionLog.submitted_by = %s AND ActionType.category = %s
+                 AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)
+                 AND (Decision.decision_status IS NULL OR Decision.decision_status != 'Rejected')"""
+        params = (account_id, category, start_of_month, end_of_month)
+    else:
+        sql = """SELECT SUM(ActionLog.co2e_saved) FROM ActionLog
+                 LEFT JOIN Evidence ON Evidence.log_id = ActionLog.log_id
+                 LEFT JOIN Decision ON Decision.evidence_id = Evidence.evidence_id
+                 WHERE ActionLog.submitted_by = %s
+                 AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)
+                 AND (Decision.decision_status IS NULL OR Decision.decision_status != 'Rejected')"""
+        params = (account_id, start_of_month, end_of_month)
     with db_cursor() as (connection, cursor):
-        cursor.execute(sql, (account_id, start_of_month, end_of_month))
+        cursor.execute(sql, params)
         result = cursor.fetchone()
         if result is not None:
-            return result["SUM(co2e_saved)"]
+            return result["SUM(ActionLog.co2e_saved)"]
         else:
             return 0
 
-def get_yearly_saved(account_id):
+def get_yearly_saved(account_id, category=None):
     temp_today = datetime.now()
     start_of_year = temp_today.replace(day = 1, month=1)
     end_of_year = datetime(day = 31, month=12, year = temp_today.year)
 
-    sql = """SELECT SUM(co2e_saved) FROM ActionLog WHERE submitted_by = %s AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)"""
-
+    if category:
+        sql = """SELECT SUM(ActionLog.co2e_saved) FROM ActionLog
+                 JOIN ActionType ON ActionLog.actionType_id = ActionType.actionType_id
+                 LEFT JOIN Evidence ON Evidence.log_id = ActionLog.log_id
+                 LEFT JOIN Decision ON Decision.evidence_id = Evidence.evidence_id
+                 WHERE ActionLog.submitted_by = %s AND ActionType.category = %s
+                 AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)
+                 AND (Decision.decision_status IS NULL OR Decision.decision_status != 'Rejected')"""
+        params = (account_id, category, start_of_year, end_of_year)
+    else:
+        sql = """SELECT SUM(ActionLog.co2e_saved) FROM ActionLog
+                 LEFT JOIN Evidence ON Evidence.log_id = ActionLog.log_id
+                 LEFT JOIN Decision ON Decision.evidence_id = Evidence.evidence_id
+                 WHERE ActionLog.submitted_by = %s
+                 AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)
+                 AND (Decision.decision_status IS NULL OR Decision.decision_status != 'Rejected')"""
+        params = (account_id, start_of_year, end_of_year)
     with db_cursor() as (connection, cursor):
-        cursor.execute(sql, (account_id, start_of_year, end_of_year))
+        cursor.execute(sql, params)
         result = cursor.fetchone()
         if result is not None:
-            return result["SUM(co2e_saved)"]
+            return result["SUM(ActionLog.co2e_saved)"]
         else:
             return 0
 
 
+def get_total_action_quantity_by_type(account_id):
+    sql = """SELECT action_type, SUM(quantity) as total_quantity FROM ActionLog WHERE submitted_by = %s GROUP BY action_type"""
 
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id,))
+        result = cursor.fetchall()
+        return {row["action_type"]: row["total_quantity"] for row in result}
 
+# Get daily savings for the current year
+def get_yearly_daily_savings(account_id):
+    temp_today = datetime.now()
+    start_of_year = temp_today.replace(day=1, month=1)
+    end_of_year = datetime(day=31, month=12, year=temp_today.year)
 
-    
+    sql = """
+        SELECT 
+            DATE(log_date) as date,
+            SUM(co2e_saved) as total
+        FROM ActionLog 
+        WHERE submitted_by = %s
+        AND DATE(log_date) BETWEEN DATE(%s) AND DATE(%s)
+        GROUP BY DATE(log_date)
+    """
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id, start_of_year, end_of_year))
+        rows = cursor.fetchall()
+        print(f"Matrix rows found: {rows}")
+        result = {}
+        for row in rows:
+            result[str(row["date"])] = float(row["total"]) if row["total"] else 0
+        return result

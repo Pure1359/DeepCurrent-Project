@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Carbon Intensity Meter</title>
+<link rel="stylesheet" href="/4_technical/source_code_snapshot/app/static/style.css">
+</head>
+
+<body>
+
+    <div class="meter">
+
+        <img src="/4_technical/source_code_snapshot/app/static/Resource/metertemp.svg" class="meter-bg">
+    
+        <div class="needle" id="needle"></div>
+    
+        <div class="meter-text">
+            <div class="number">159</div>
+            <div>gCO₂/kWh (MODERATE)</div>
+        </div>
+    
+    </div>
+
+<script>
+
+    function updateMeter(value){
+    
+        const minValue = 0
+        const maxValue = 280
+    
+        const minAngle = -105
+        const maxAngle = 105
+    
+        const ratio = (value - minValue) / (maxValue - minValue)
+    
+        const angle = minAngle + ratio * (maxAngle - minAngle)
+    
+        const needle = document.getElementById("needle")
+    
+        needle.style.transform =
+            `translateX(-50%) rotate(${angle}deg)`
+    }
+    
+    updateMeter(159)
+    
+    </script>
+    
+    

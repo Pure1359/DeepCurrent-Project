@@ -11,6 +11,26 @@ from app.db_config import db_cursor
 from datetime import datetime, timedelta
 from set_up.database_setup import *
 
+def seed_antigaming_rules():
+    with db_cursor() as (connection, cursor):
+        cursor.execute("DELETE FROM AntiGamingRule")
+        rules = [
+            ("duplicate_submission", "Duplicate submission in short time window", "high", 1, 1),
+            ("unrealistic_frequency", "Too many repeated actions in a day", "medium", 0, 1),
+            ("contradictory_log", "Contradictory actions logged in the same day", "medium", 0, 1),
+            ("suspicious_quantity", "Quantity exceeds expected range", "medium", 0, 1),
+            ("impossible_quantity", "Quantity exceeds hard maximum", "high", 1, 1),
+            ("reused_evidence", "Evidence reused across submissions", "medium", 0, 1),
+            ("challenge_farming", "Challenge score farming pattern detected", "medium", 0, 1),
+        ]
+        cursor.executemany(
+            """
+            INSERT INTO AntiGamingRule(rule_code, rule_name, severity, is_blocking, enabled)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            rules
+        )
+
 @pytest.fixture()
 def function_scope_database():
     print("DELETION")
@@ -23,6 +43,7 @@ def function_scope_database():
     cursor = conn.cursor()
     default_actionType_data()
     defaultDatabase()
+    seed_antigaming_rules()
     
     yield
     #turn off the foreign key to make dropping table easier and get all table name
@@ -52,6 +73,7 @@ def module_scope_database():
     cursor = conn.cursor()
     default_actionType_data()
     defaultDatabase()
+    seed_antigaming_rules()
    
     yield
     #turn off the foreign key to make dropping table easier and get all table name
@@ -83,7 +105,7 @@ def populated_database(new_client_module, module_scope_database):
     end_date = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
     
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "travel",
+        "challenge_type": "Personal",
         "title": "let walk",
         "start_date": start_date,
         "end_date": end_date,
@@ -91,7 +113,7 @@ def populated_database(new_client_module, module_scope_database):
     })
     
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "food",
+        "challenge_type": "Personal",
         "title": "Green Eat",
         "start_date": start_date,
         "end_date": end_date,
@@ -103,7 +125,7 @@ def populated_database(new_client_module, module_scope_database):
     past_end = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
     
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "travel",
+        "challenge_type": "Personal",
         "title": "Expired Challenge",
         "start_date": past_start,
         "end_date": past_end,
@@ -115,22 +137,36 @@ def populated_database(new_client_module, module_scope_database):
     future_end = (datetime.now() + timedelta(days=60)).strftime("%Y-%m-%d")
     
     new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "food",
+        "challenge_type": "Personal",
         "title": "Future Challenge",
         "start_date": future_start,
         "end_date": future_end,
         "rule": "This challenge hasn't started yet"
     })
-    
+
+    # Create active food challenge for food action testing (challenge_id will be 5)
+    new_client_module.post("/moderator_access/create_challenge", data={
+        "challenge_type": "Personal",
+        "title": "Low Carbon Meals",
+        "start_date": start_date,
+        "end_date": end_date,
+        "rule": "Log your meals and try to keep CO2e low"
+    })
+
     # Logout
     new_client_module.post("/logout")
     
-    # Login as Emma to create actions
+    # Login as Emma to join challenges and create actions
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
         "password": "password123"
     }, follow_redirects=True)
-    
+
+    # Emma joins challenges 1, 2, and 5
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 1})
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 2})
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 5})
+
     # Emma's actions
     actions_emma = [
         {"action_name": "walk", "category": "travel", "quantity": 2, "challenge_id": 1, "evidence_url": "url1"},
@@ -141,9 +177,10 @@ def populated_database(new_client_module, module_scope_database):
         {"action_name": "walk", "category": "travel", "quantity": 8, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 12, "challenge_id": None, "evidence_url": None},
         {"action_name": "walk", "category": "travel", "quantity": 3, "challenge_id": None, "evidence_url": None},
-        {"action_name": "walk", "category": "travel", "quantity": 7, "challenge_id": 1, "evidence_url": None},
+        {"action_name": "walk", "category": "travel", "quantity": 7, "challenge_id": 1, "evidence_url": "url_walk7"},
         {"action_name": "walk", "category": "travel", "quantity": 4, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 18, "challenge_id": None, "evidence_url": None},
+        {"action_name": "food", "category": "food", "quantity": [("Broccoli", 0.3), ("Chicken", 0.5), ("Potatoes", 0.4)], "challenge_id": 5, "evidence_url": "url_food1"},
     ]
     
     for action in actions_emma:
@@ -152,19 +189,23 @@ def populated_database(new_client_module, module_scope_database):
     # Logout Emma
     new_client_module.post("/logout")
     
-    # Login as Sarah
+    # Login as Sarah to join challenges and create actions
     new_client_module.post("/login", data={
         "email": "s.chen@exeter.ac.uk",
         "password": "student789"
     }, follow_redirects=True)
-    
+
+    # Sarah joins challenges 1 and 2
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 1})
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 2})
+
     # Sarah's actions
     actions_sarah = [
         {"action_name": "walk", "category": "travel", "quantity": 20, "challenge_id": 1, "evidence_url": "url6"},
         {"action_name": "bus", "category": "travel", "quantity": 25, "challenge_id": 1, "evidence_url": "url7"},
         {"action_name": "walk", "category": "travel", "quantity": 6, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 9, "challenge_id": None, "evidence_url": None},
-        {"action_name": "bus", "category": "travel", "quantity": 11, "challenge_id": 2, "evidence_url": None},
+        {"action_name": "bus", "category": "travel", "quantity": 11, "challenge_id": 2, "evidence_url": "url_bus11"},
         {"action_name": "walk", "category": "travel", "quantity": 13, "challenge_id": None, "evidence_url": None},
         {"action_name": "bus", "category": "travel", "quantity": 22, "challenge_id": None, "evidence_url": None},
     ]

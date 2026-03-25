@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
     <script src="{{ url_for('static', filename='JavaScript.js') }}"></script>
   </head>
 
@@ -26,21 +29,32 @@
           <div class="form-row">
             <label>Distance</label>
             <div class="distance-input">
-              <input type="number" id="distance" placeholder="0.0" step="0.1" min="0" required />
+              <input
+                type="number"
+                id="distance"
+                placeholder="0.0"
+                step="0.1"
+                min="0"
+                required
+              />
               <span>KM</span>
             </div>
           </div>
 
           <div class="form-row">
             <label>Evidence URL (Optional)</label>
-            <input type="url" id="evidence-url" placeholder="https://example.com/image.jpg">
+            <input
+              type="url"
+              id="evidence-url"
+              placeholder="https://example.com/image.jpg"
+            />
           </div>
 
-          <div class="form-row">
-            <label>Challenge ID (Optional)</label>
-            <div class="challenge-id-input">
-              <input type="number" id="challenge-id" placeholder="Leave empty if none">
-            </div>
+          <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label>Submit to Challenge (Optional)</label>
+            <select id="challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
+              <option value="">None</option>
+            </select>
           </div>
 
           <button type="submit" class="submit-btn">Submit</button>
@@ -50,28 +64,129 @@
     <div class="sidebar">
       <nav class="navbar">
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/home.svg') }}" alt="home" />
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/home.svg') }}"
+            alt="home"
+          />
           <span class="label">Home</span>
         </div>
 
-        <div class="nav-item" onclick="window.location.href='{{ url_for('app.challenge') }}'">
-          <img class="icon" src="{{ url_for('static', filename='Resource/chalange.svg') }}" alt="Challenges" />
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('app.challenge') }}'"
+        >
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/chalange.svg') }}"
+            alt="Challenges"
+          />
           <span class="label">Challenges</span>
         </div>
-
-        <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/group.svg') }}" alt="Group" />
-          <span class="label">Group</span>
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('app.leaderboard') }}'"
+        >
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/group.svg') }}"
+            alt="Leaderboard"
+          />
+          <span class="label">Leaderboard</span>
         </div>
-
+        <div
+          class="nav-item"
+          onclick="window.location.href='{{ url_for('user.moderator_list') }}'"
+        >
+          <span class="label">Action History</span>
+        </div>
+        {% if session.get('account_role') == "moderator" %}
+        <div
+          class="nav-item"
+            onclick="window.location.href='{{ url_for('app.moderator_dashboard') }}'">
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/group.svg') }}"
+            alt="Group"
+          />
+          <span class="label">Mod-Dashboard</span>
+        </div>
+        {% endif %}
         <div class="nav-item">
-          <img class="icon" src="{{ url_for('static', filename='Resource/eco.svg') }}" alt="Read" />
-          <span class="label">Read</span>
+          <img
+            class="icon"
+            src="{{ url_for('static', filename='Resource/notifications.svg') }}"
+            alt="Read"
+          />
+          <span class="label">Notifications</span>
         </div>
       </nav>
 
       <button class="toggle-btn" id="toggleBtn">❯</button>
     </div>
+    <div class="mobile-header-bar">
+      <button, id="burgermenu" class="burgermenu-btn">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/burgermenu.svg') }}"
+          alt="closemenu"
+        />
+      </button>
+    </div>
+    <div class="mobile-navbar">
+      <div class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/home.svg') }}"
+          alt="home"
+        />
+        <span class="label">Home</span>
+      </div>
+
+      <div
+        class="nav-item"
+        onclick="window.location.href='{{ url_for('app.challenge') }}'"
+      >
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/chalange.svg') }}"
+          alt="Challenges"
+        />
+        <span class="label">Challenges</span>
+      </div>
+
+      <div class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/group.svg') }}"
+          alt="Group"
+        />
+        <span class="label">Group</span>
+      </div>
+
+      <div class="nav-item">
+        <img
+          class="icon"
+          src="{{ url_for('static', filename='Resource/notifications.svg') }}"
+          alt="Read"
+        />
+        <span class="label">Notifications</span>
+      </div>
+    </div>
+    <script>
+      const burgerMenu = document.getElementById("burgermenu");
+      const mobileNavbar = document.querySelector(".mobile-navbar");
+
+      burgerMenu.addEventListener("click", () => {
+        if (mobileNavbar.classList.contains("open")) {
+          mobileNavbar.classList.remove("open");
+          mobileNavbar.style.display = "none";
+        } else {
+          mobileNavbar.classList.add("open");
+          mobileNavbar.style.display = "flex";
+        }
+      });
+    </script>
     <script>
       const toggle = document.getElementById("toggleBtn");
       const navbar = document.getElementsByClassName("navbar")[0];
@@ -94,14 +209,23 @@
           </div>
           <div class="header-right">
             <button class="profile-icon">👤</button>
+            {% if session.get('account_role') == "moderator" %}
+              <button class= "moderator-inboxbtn" onclick="window.location.href='{{ url_for('app.moderator_evidence') }}'">
+                <img
+                  class="icon"
+                  src="{{ url_for('static', filename='Resource/moderator-inbox.svg') }}"
+                  alt="Moderator Inbox"
+                />
+              </button>
+              <button class="review-button" onclick="window.location.href='{{ url_for('moderator.create_challenge_page') }}'" style="font-size: 14px; padding: 8px 20px;">
+                + Create Challenge
+              </button>
+            {% endif %}
           </div>
         </header>
 
-        <div class="badge-message">
-          <p>
-            Congratulations! You've earned a new badge:
-            <strong>Eco Advocate</strong>
-          </p>
+        <div class="badge-message" id="badge-container" style="display: none;">
+          <p id="badge-text"></p>
         </div>
         <div class="link">
           <a href="#" id="social-link">Click to share on social media! →</a>
@@ -112,7 +236,14 @@
       <div id="progress-wrraper" class="dashboard-graphs-wrraper">
         <div class="dashboard-graph-left">
           <div id="graph-container">
-            <img src="{{ url_for('static', filename='Resource/GroupProgress.svg') }}" alt="graph" />
+            <div class="chart-wrapper">
+              <svg
+                id="donut"
+                viewBox="0 0 400 400"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+              <div class="legend" id="legend"></div>
+            </div>
             <span id="graph-caption">Savings by Category</span>
           </div>
           <div id="progress-message">
@@ -127,12 +258,51 @@
           </div>
           <div id="matrix-wrrapper">
             <span id="matrix-caption">Estimated weekly CO₂e savings</span>
-            <img src="{{ url_for('static', filename='Resource/matrixNoShadow.svg') }}" alt="matrix" />
+            <div class="calendar">
+              <div class="months" id="months"></div>
+              <div class="matrix" id="matrix"></div>
+            </div>
           </div>
         </div>
         <div class="dashboard-graph-right">
           <div id="image-container-right">
-            <img src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}" alt="graph" />
+            <img
+              src="{{ url_for('static', filename='Resource/DashboardImage.svg') }}"
+              alt="graph"
+            />
+            <div class="meter">
+
+              <img src="{{url_for('static', filename='Resource/metertemp.svg') }}" class="meter-bg">
+          
+              <div class="needle" id="needle"></div>
+          
+              <div class="meter-text">
+                  <div class="number">159</div>
+                  <div>gCO₂/kWh (MODERATE)</div>
+              </div>
+          
+          </div>
+      
+      <script>
+      
+          function updateMeter(value){
+          
+              const minValue = 0
+              const maxValue = 280
+          
+              const minAngle = -105
+              const maxAngle = 105
+          
+              const ratio = (value - minValue) / (maxValue - minValue)
+          
+              const angle = minAngle + ratio * (maxAngle - minAngle)
+          
+              const needle = document.getElementById("needle")
+          
+              needle.style.transform =
+                  `translateX(-50%) rotate(${angle}deg)`
+          }
+          </script>
             <p id="matrix-caption-leftside">
               Colours show the total estimated carbon impact of your actions
               each week, based on reported activities and standard conversion
@@ -147,11 +317,14 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Travel.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Travel.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Travel</h3>
             </div>
-            <button class="card-menu">⋮</button>
+            <button id="travel-info-btn" class="card-menu">⋮</button>
           </div>
           <div class="card-structure">
             <div class="card-body">
@@ -178,11 +351,14 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Food.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Food.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Food</h3>
             </div>
-            <button class="card-menu">⋮</button>
+            <button id="food-info-btn" class="card-menu">⋮</button>
           </div>
           <div class="card-structure">
             <div class="card-body">
@@ -201,7 +377,7 @@
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
-              <button class="add-button">+</button>
+              <button id="food-action-btn" class="add-button">+</button>
             </div>
           </div>
         </div>
@@ -209,11 +385,14 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Energy.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Energy.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Energy</h3>
             </div>
-            <button class="card-menu">⋮</button>
+            <button id="energy-info-btn" class="card-menu">⋮</button>
           </div>
           <div class="card-structure">
             <div class="card-body">
@@ -232,7 +411,7 @@
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
-              <button class="add-button">+</button>
+              <button id="energy-action-btn" class="add-button">+</button>
             </div>
           </div>
         </div>
@@ -240,11 +419,14 @@
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon">
-                <img src="{{ url_for('static', filename='Resource/Waste.svg') }}" alt="icon" />
+                <img
+                  src="{{ url_for('static', filename='Resource/Waste.svg') }}"
+                  alt="icon"
+                />
               </div>
               <h3>Waste</h3>
             </div>
-            <button class="card-menu">⋮</button>
+            <button id="waste-info-btn" class="card-menu">⋮</button>
           </div>
           <div class="card-structure">
             <div class="card-body">
@@ -263,7 +445,7 @@
             </div>
             <div class="trend-updown"></div>
             <div class="button-container">
-              <button class="add-button">+</button>
+              <button id="waste-action-btn" class="add-button">+</button>
             </div>
           </div>
         </div>
@@ -271,11 +453,414 @@
       <div class="spacer"></div>
     </div>
 
+    <!-- Travel Impact Information Card -->
+    <div id="travel-info-overlay" class="info-overlay hidden">
+      <div class="info-card">
+        <button id="closeTravelInfo">X</button>
+
+        <h2><b>Travel Impact Calculation</b></h2>
+        <p>
+          We estimate your travel emissions using your journey distance and the
+          transport method selected. Lower-impact options, such as walking, are
+          used as a baseline, while car and bus journeys are calculated using
+          standard emissions factors. In some cases, factors such as fuel type,
+          fuel efficiency, and passenger occupancy may also be include. This
+          gives you a useful estimate of the carbon impact of your journey,
+          rather than an exact value.
+        </p>
+
+        <h2><b>Formula</b></h2>
+        <p>For most journeys, the calculation uses a simple method:</p>
+        <p>
+          <b
+            >Estimate CO2e = Distance Travelled × Emissions Factor of Transport
+            Type</b
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Energy Action Input Overlay -->
+    <div id="energy-overlay" class="overlay-wrapper hidden">
+      <div class="action_log_card">
+        <form class="energy_form">
+          <div class="form-row">
+            <label>What energy-saving action did you take?</label>
+            <select id="energy-action-type" required style="width: 100%; min-width: 300px;">
+              <option value="heating">Turn the heating down</option>
+              <option value="lights">Switch off unused lights</option>
+              <option value="cold-wash">Used a cold wash</option>
+              <option value="air-dry">Air dry clothes</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Quantity</label>
+            <div class="distance-input">
+              <input type="number" id="energy-quantity" placeholder="0" step="1" min="1" required />
+              <span id="energy-unit-label">HR</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Evidence URL (Optional)</label>
+            <input type="url" id="energy-evidence-url" placeholder="https://example.com/image.jpg">
+          </div>
+
+          <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label>Submit to Challenge (Optional)</label>
+            <select id="energy-challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
+              <option value="">None</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Energy Impact Information Card -->
+    <div id="energy-info-overlay" class="info-overlay hidden">
+      <div class="info-card">
+        <button id="closeEnergyInfo">X</button>
+
+        <h2><b>How Energy Tracking Works</b></h2>
+
+        <p>
+          Log energy-saving actions anytime. To calculate savings, first upload
+          a meter photo of your starting reading. Then submit a new meter image
+          or monthly bill whenever available, and we'll compare the readings to
+          estimate your energy and carbon savings.
+        </p>
+
+        <h2><b>Good Energy Actions to Log</b></h2>
+        <ul>
+          <li>Used library/study space instead of heating my room</li>
+          <li>Turned heating down for X hours</li>
+          <li>Switched off unused lights/devices</li>
+        </ul>
+
+        <h2><b>Formula</b></h2>
+
+        <p>
+          <b
+            >Estimated CO2e = Energy consumed x emissions factor of the chosen
+            energy type</b
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Food Info Overlay -->
+    <div id="food-info-overlay" class="info-overlay hidden">
+      <div class="info-card">
+        <button id="closeFoodInfo">X</button>
+
+        <h2><b>Food Impact Calculation</b></h2>
+
+        <p>
+          We estimate your food-related impact using life cycle assement data
+          for food products. This includes environmental factors such as
+          emissions, land use and water use from production through to
+          processing. Your receipt helps us identify lower-impact choices and
+          generate an estimated saving. These results are intended as an
+          informed estimate, not an exact value.
+        </p>
+
+        <h2><b>Formula</b></h2>
+
+        <p>
+          <b
+            >Estimated CO2e = Food Consumed x Emissions factor of chosen food
+            type</b
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Waste Info Overlay -->
+    <div id="waste-info-overlay" class="info-overlay hidden">
+      <div class="info-card">
+        <button id="closeWasteInfo">X</button>
+
+        <h2><b>Waste Impact Calculation</b></h2>
+        <p>
+          We estimate your waste-related impact based on your recycling habits,
+          the type of materials you recycle, and the size of the bin bag you
+          use. The bin bag size helps us estimate the approximate weight of your
+          recycling. We then apply general conversion factors for different
+          types of recyclable waste to calculate an estimated CO2e saving. These
+          results are intended as informed estimate rather than an exact value.
+        </p>
+
+        <h2><b>Formula</b></h2>
+        <p><b>Saved CO2e = Reference Basket - Chosen Basket</b></p>
+        <p><b>Chosen Basket = CO2e produced based on your chosen product</b></p>
+        <p><b>Produced CO2e = Product Weight x CO2e Estimation Factor</b></p>
+        <p><b>Reference Basket</b></p>
+        <p>
+          A standard higher-carbon shopping basket used as a benchmark for
+          comparison
+        </p>
+      </div>
+    </div>
+
+    <!-- Food Action Input Overlay -->
+    <div id="food-overlay" class="overlay-wrapper hidden">
+      <div class="action_log_card">
+        <form class="food_form">
+          <div class="form-row">
+            <label>Search and add ingredients (max 5)</label>
+            <div style="position: relative;">
+              <input type="text" id="food-search" placeholder="Type ingredient name..." autocomplete="off" style="width: 100%; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;" />
+              <div id="food-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"></div>
+            </div>
+          </div>
+
+          <div id="food-ingredient-list" style="display: flex; flex-direction: column; gap: 8px; margin: 8px 0; min-height: 8px;"></div>
+
+          <div class="form-row">
+            <label>Evidence URL (Optional)</label>
+            <input type="url" id="food-evidence-url" placeholder="https://example.com/image.jpg">
+          </div>
+
+          <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label>Submit to Challenge (Optional)</label>
+            <select id="food-challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
+              <option value="">None</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Waste Action Input Overlay -->
+    <div id="waste-overlay" class="overlay-wrapper hidden">
+      <div class="action_log_card">
+        <form class="waste_form">
+          <div class="form-row">
+            <label>What waste action did you take?</label>
+            <select id="waste-action-type" required style="width: 100%; min-width: 300px;">
+              <option value="recycle-paper">Recycled paper</option>
+              <option value="recycle-cardboard">Recycled cardboard</option>
+              <option value="recycle-plastic">Recycled plastic</option>
+              <option value="recycle-glass">Recycled glass</option>
+              <option value="recycle-aluminium">Recycled aluminium</option>
+              <option value="recycle-steel">Recycled steel / tin cans</option>
+              <option value="compost-food">Composted food waste</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Quantity</label>
+            <div class="distance-input">
+              <input type="number" id="waste-quantity" placeholder="0.0" step="0.1" min="0.1" required />
+              <span>KG</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Evidence URL (Optional)</label>
+            <input type="url" id="waste-evidence-url" placeholder="https://example.com/image.jpg">
+          </div>
+
+          <div class="form-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <label>Submit to Challenge (Optional)</label>
+            <select id="waste-challenge-id" style="width: 100%; min-width: 300px; padding: 10px 12px; font-size: 16px; border: none; border-bottom: 2px solid #aaa; outline: none;">
+              <option value="">None</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Impact Comparison Overlay -->
+    <div id="impact-overlay" class="congrats-overlay hidden">
+      <div class="impact-comparison-container">
+        <div class="back-button" id="closeImpact">X</div>
+
+        <div class="content-container">
+          <div class="type-and-distance">
+            <p id="impact-title">Train Journey - Impact Comparison</p>
+            <p id="impact-distance">Distance: 0km</p>
+          </div>
+
+          <!--<div class="actual-emission">
+            <p>Your Choice</p>
+            <p id="actual-co2">0 kg CO2e</p>
+          </div>-->
+
+          <div class="calculation">
+            <p id="impact-factor">Factor: 0 kg CO₂e/km</p>
+            <p id="impact-calculation">0 × 0 = 0 kg CO₂e</p>
+          </div>
+
+          <div class="achievement-text">
+            <p>To add to overall achievement just submit</p>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="impactSubmitBtn">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Energy Impact Comparison Overlay -->
+    <div id="energy-impact-overlay" class="congrats-overlay hidden">
+      <div class="impact-comparison-container">
+        <div class="back-button" id="closeEnergyImpact">X</div>
+
+        <div class="content-container">
+          <div class="type-and-distance">
+            <p id="energy-impact-title">Energy Action - Impact Comparison</p>
+            <p id="energy-impact-quantity">Quantity: 0</p>
+          </div>
+
+          <div class="calculation">
+            <p id="energy-impact-factor">Factor: 0 kg CO₂e per unit</p>
+            <p id="energy-impact-calculation">0 × 0 = 0 kg CO₂e</p>
+          </div>
+
+          <div class="achievement-text">
+            <p>To add to overall achievement just submit</p>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="energyImpactSubmitBtn">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Waste Impact Comparison Overlay -->
+    <div id="waste-impact-overlay" class="congrats-overlay hidden">
+      <div class="impact-comparison-container">
+        <div class="back-button" id="closeWasteImpact">X</div>
+
+        <div class="content-container">
+          <div class="type-and-distance">
+            <p id="waste-impact-title">Waste Action - Impact Comparison</p>
+            <p id="waste-impact-quantity">Quantity: 0 kg</p>
+          </div>
+
+          <div class="calculation">
+            <p id="waste-impact-factor">Factor: 0 kg CO₂e per kg</p>
+            <p id="waste-impact-calculation">0 × 0 = 0 kg CO₂e</p>
+          </div>
+
+          <div class="achievement-text">
+            <p>To add to overall achievement just submit</p>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="wasteImpactSubmitBtn">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Food Impact Comparison Overlay -->
+    <div id="food-impact-overlay" class="congrats-overlay hidden">
+      <div class="impact-comparison-container">
+        <div class="back-button" id="closeFoodImpact">X</div>
+
+        <div class="content-container">
+          <div class="type-and-distance">
+            <p id="food-impact-title">Food - Impact Comparison</p>
+          </div>
+
+          <div id="food-impact-breakdown"></div>
+
+          <div class="calculation">
+            <p id="food-impact-total">Total: 0 kg CO₂e</p>
+          </div>
+
+          <div class="achievement-text">
+            <p>To add to overall achievement just submit</p>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="foodImpactSubmitBtn">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Congrats Card with Calculation Overlay -->
+    <div id="congrats-overlay" class="congrats-overlay hidden">
+      <div class="congrats-card-container">
+        <div class="close-button" id="closeCongrats">✕</div>
+
+        <div class="content-container">
+          <div class="well-done-message">
+            <h1 id="co2e-result">You saved 0 kg CO2e, Well Done!</h1>
+          </div>
+
+          <div class="celebration-icons">
+            <img
+              src="{{ url_for('static', filename='Resource/happyface.png') }}"
+              alt=""
+            />
+            <img
+              src="{{ url_for('static', filename='Resource/confetti.png') }}"
+              alt=""
+            />
+          </div>
+
+          <div class="points-added">
+            <p id="points-result">0 points added to your total score</p>
+          </div>
+
+          <div class="trophy-icon">
+            <img
+              src="{{ url_for('static', filename='Resource/trophy.png') }}"
+              alt=""
+            />
+          </div>
+
+          <div class="check-dashboard">
+            <p>Check your dashboard</p>
+          </div>
+
+          <div class="share">
+            <a href="#">Click to share on your social media</a>
+          </div>
+
+          <div class="impact-comparison-submit">
+            <button id="congratsOkBtn">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       const addButton = document.querySelector("#action_log_button");
       const actionLogOverlay = document.getElementById("dashboard-overlay");
 
+      async function populateChallengeDropdown(selectId, category) {
+        const select = document.getElementById(selectId);
+        select.innerHTML = '<option value="">None</option>';
+        const res = await fetch('/user_access/get_challenges_for_category', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ category: category })
+        });
+        const challenges = await res.json();
+        challenges.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.challenge_id;
+          opt.textContent = c.title;
+          select.appendChild(opt);
+        });
+      }
+
       addButton.addEventListener("click", () => {
+        populateChallengeDropdown('challenge-id', 'travel');
         actionLogOverlay.style.display = "flex";
       });
 
@@ -287,63 +872,208 @@
 
       const travelForm = document.querySelector(".travel_form");
 
-      travelForm.addEventListener("submit", async (e) => {
+      const actionNameMap = {
+        train: "train",
+        bus: "bus",
+        car: "car",
+        bike: "bike",
+        walk: "walk",
+      };
+
+      // Store pending action data so the impact cards can submit them
+      window.pendingTravelAction = null;
+      window.pendingEnergyAction = null;
+      window.pendingWasteAction = null;
+      window.pendingFoodAction = null;
+      window.foodFactors = {};
+
+      travelForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        
-        const travelType = document.getElementById("travel-type").value.toLowerCase();
+
+        const travelType = document
+          .getElementById("travel-type")
+          .value.toLowerCase();
         const distance = parseFloat(document.getElementById("distance").value);
-        const evidenceUrl = document.getElementById("evidence-url").value.trim();
-        const challengeId = document.getElementById("challenge-id").value.trim();
-        
+        const evidenceUrl = document
+          .getElementById("evidence-url")
+          .value.trim();
+        const challengeId = document
+          .getElementById("challenge-id")
+          .value.trim();
+
         if (!distance || distance <= 0) {
           alert("Please enter a valid distance");
           return;
         }
-        
-        const actionNameMap = {
-          train: "train",
-          bus: "bus",
-          car: "car",
-          bike: "bike",
-          walk: "walk"
-        };
-        
+
         const requestData = {
           action_name: actionNameMap[travelType] || "walk",
           category: "travel",
-          quantity: distance
+          quantity: distance,
         };
-        
+
         if (challengeId) {
           requestData.challenge_id = parseInt(challengeId);
         }
-        
+
         if (evidenceUrl) {
           requestData.evidence_url = evidenceUrl;
         }
-        
+
+        // Store for later submission by impact card
+        window.pendingTravelAction = requestData;
+
+        // Preview the impact (using known co2e factors)
+        const co2eFactors = { walk: 0.137, bike: 0.137, bus: 0.106, train: 0.094, car: 0 };
+        const factor = co2eFactors[travelType] || 0;
+        const estimatedSaved = (factor * distance).toFixed(2);
+
+        document.getElementById(
+          "impact-title"
+        ).textContent = `${travelType} Journey - Impact Comparison`;
+
+        document.getElementById(
+          "impact-distance"
+        ).textContent = `Distance Travelled: ${distance} km`;
+
+        document.getElementById(
+          "impact-factor"
+        ).textContent = `Emission Factor: ${factor} kg CO₂e per km`;
+
+        document.getElementById(
+          "impact-calculation"
+        ).textContent = `${factor} × ${distance} km = ${estimatedSaved} kg CO2e`;
+
+        // Hide the action log overlay, show impact card
+        actionLogOverlay.style.display = "none";
+        document.getElementById("impact-overlay").classList.remove("hidden");
+      });
+
+      async function fetchSaving(category) {
+        const [weekly, monthly, yearly] = await Promise.all([
+          fetch("/user_access/get_weekly_co2e_saving", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category }) }).then(r => r.json()),
+          fetch("/user_access/get_monthly_co2e_saving", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category }) }).then(r => r.json()),
+          fetch("/user_access/get_yearly_co2e_saving", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category }) }).then(r => r.json()),
+        ]);
+        return { weekly: weekly.total_saving || 0, monthly: monthly.total_saving || 0, yearly: yearly.total_saving || 0 };
+      }
+
+      function updateCard(card, data) {
+        card.querySelector(".weekly-value").textContent = `${data.weekly.toFixed(1)} kg`;
+        card.querySelector(".monthly-value").textContent = `${data.monthly.toFixed(1)} kg`;
+        card.querySelector(".total-value").textContent = `${data.yearly.toFixed(1)} kg`;
+      }
+
+      async function loadDashboardData() {
+        try {
+          const cards = document.querySelectorAll(".card");
+          const categories = ["travel", "food", "energy", "waste"];
+
+          const results = await Promise.all(categories.map(c => fetchSaving(c)));
+
+          categories.forEach((cat, i) => updateCard(cards[i], results[i]));
+
+          const totalMonthly = results.reduce((sum, r) => sum + r.monthly, 0);
+          const totalWeekly = results.reduce((sum, r) => sum + r.weekly, 0);
+
+          document.getElementById("progress-value").textContent = totalMonthly.toFixed(1);
+          document.getElementById("co2e-message").textContent = `You saved ${totalMonthly.toFixed(1)} kg CO2e this month`;
+
+          updateMeter(totalWeekly);
+          document.querySelector(".meter .number").textContent = totalWeekly.toFixed(1);
+        } catch (error) {
+          console.error("Failed to load dashboard data:", error);
+        }
+      }
+
+      const BADGE_LABELS = {
+        week:   "🏅 Week Warrior - 7 day streak",
+        month:  "🥈 Monthly Hero - 30 day streak",
+        super:  "🥇 Super Badge - 2 month streak",
+        legend: "👑 Legend - 6 month streak"
+      };
+
+      async function loadBadges() {
+        try {
+          const res = await fetch("/user_access/get_my_badges", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+          });
+          const badges = await res.json();
+          const container = document.getElementById("badge-container");
+          const text = document.getElementById("badge-text");
+          if (badges.length === 0) {
+            container.style.display = "none";
+            return;
+          }
+          text.innerHTML = badges.map(b => `<strong>${BADGE_LABELS[b.badge_type] || b.badge_type}</strong>`).join("&nbsp;&nbsp;|&nbsp;&nbsp;");
+          container.style.display = "block";
+        } catch (error) {
+          console.error("Failed to load badges:", error);
+        }
+      }
+
+      window.addEventListener("load", () => {
+        loadDashboardData();
+        loadBadges();
+      });
+
+      /* Close congrats card */
+      const closeCongrats = document.getElementById("closeCongrats");
+      const congratsOkBtn = document.getElementById("congratsOkBtn");
+      const congratsOverlay = document.getElementById("congrats-overlay");
+
+      closeCongrats.addEventListener("click", () => {
+        congratsOverlay.classList.add("hidden");
+      });
+
+      congratsOkBtn.addEventListener("click", () => {
+        congratsOverlay.classList.add("hidden");
+      });
+
+      congratsOverlay.addEventListener("click", (e) => {
+        if (e.target === congratsOverlay) {
+          congratsOverlay.classList.add("hidden");
+        }
+      });
+
+      /* Script for Impact Comparison Card */
+      const impactSubmitBtn = document.getElementById("impactSubmitBtn");
+      const impactOverlay = document.getElementById("impact-overlay");
+
+      impactSubmitBtn.addEventListener("click", async () => {
+        if (!window.pendingTravelAction) {
+          alert("No action to submit");
+          return;
+        }
+
         try {
           const response = await fetch("/user_access/submit_action", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(requestData)
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.pendingTravelAction),
           });
-          
+
           const data = await response.json();
-          
+
           if (response.ok) {
-            const co2Factor = data.co2e_factor;
-            const quantity = data.quantity;
+            const totalSaved = data.co2e_saved.toFixed(2);
 
-            alert(data.message || "Action logged successfully!");
+            document.getElementById(
+              "co2e-result"
+            ).textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
 
-            alert(`CO2e Saved = C02e Factor (${co2Factor}) * Quantity  (${quantity}) = ${co2Factor * quantity}`)
-            
-            actionLogOverlay.style.display = "none";
+            document.getElementById("points-result").textContent = `${Math.round(
+              totalSaved
+            )} points added to your total score`;
+
+            impactOverlay.classList.add("hidden");
+            congratsOverlay.classList.remove("hidden");
+
+            window.pendingTravelAction = null;
             travelForm.reset();
             loadDashboardData();
+            init();
           } else {
             alert("Error: " + (data.error || "Failed to log action"));
           }
@@ -353,45 +1083,458 @@
         }
       });
 
-      async function loadDashboardData() {
+      /* Close Impact Overlay */
+      document.getElementById("closeImpact").addEventListener("click", () => {
+        document.getElementById("impact-overlay").classList.add("hidden");
+      });
+
+      /* Energy Impact Card — Submit & Close */
+      document.getElementById("energyImpactSubmitBtn").addEventListener("click", async () => {
+        if (!window.pendingEnergyAction) { alert("No action to submit"); return; }
         try {
-          const monthlyResponse = await fetch("/user_access/get_monthly_co2e_saving", {
+          const response = await fetch("/user_access/submit_action", {
             method: "POST",
-            headers: {"Content-Type": "application/json"}
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.pendingEnergyAction),
           });
-          const monthlyData = await monthlyResponse.json();
-          
-          const progressValue = monthlyData.total_saving || 0;
-          document.getElementById("progress-value").textContent = progressValue.toFixed(1);
-          document.getElementById("co2e-message").textContent = `You saved ${progressValue.toFixed(1)} kg CO2e this month`;
-          
-          const weeklyResponse = await fetch("/user_access/get_weekly_co2e_saving", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"}
-          });
-          const weeklyData = await weeklyResponse.json();
-          
-          const yearlyResponse = await fetch("/user_access/get_yearly_co2e_saving", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"}
-          });
-          const yearlyData = await yearlyResponse.json();
-          
-          const travelCard = document.querySelectorAll(".card")[0];
-          const weeklyValue = travelCard.querySelector(".weekly-value");
-          const monthlyValue = travelCard.querySelector(".monthly-value");
-          const totalValue = travelCard.querySelector(".total-value");
-          
-          weeklyValue.textContent = `${(weeklyData.total_saving || 0).toFixed(1)} kg`;
-          monthlyValue.textContent = `${(monthlyData.total_saving || 0).toFixed(1)} kg`;
-          totalValue.textContent = `${(yearlyData.total_saving || 0).toFixed(1)} kg`;
-          
+          const data = await response.json();
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            document.getElementById("energy-impact-overlay").classList.add("hidden");
+            congratsOverlay.classList.remove("hidden");
+            window.pendingEnergyAction = null;
+            energyForm.reset();
+            loadDashboardData();
+            init();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
         } catch (error) {
-          console.error("Failed to load dashboard data:", error);
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
         }
+      });
+
+      document.getElementById("closeEnergyImpact").addEventListener("click", () => {
+        document.getElementById("energy-impact-overlay").classList.add("hidden");
+      });
+
+      document.getElementById("energy-impact-overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("energy-impact-overlay")) {
+          document.getElementById("energy-impact-overlay").classList.add("hidden");
+        }
+      });
+
+      /* Waste Impact Card — Submit & Close */
+      document.getElementById("wasteImpactSubmitBtn").addEventListener("click", async () => {
+        if (!window.pendingWasteAction) { alert("No action to submit"); return; }
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.pendingWasteAction),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            document.getElementById("waste-impact-overlay").classList.add("hidden");
+            congratsOverlay.classList.remove("hidden");
+            window.pendingWasteAction = null;
+            wasteForm.reset();
+            loadDashboardData();
+            init();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
+      });
+
+      document.getElementById("closeWasteImpact").addEventListener("click", () => {
+        document.getElementById("waste-impact-overlay").classList.add("hidden");
+      });
+
+      document.getElementById("waste-impact-overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("waste-impact-overlay")) {
+          document.getElementById("waste-impact-overlay").classList.add("hidden");
+        }
+      });
+
+      /* Food Impact Card — Submit & Close */
+      document.getElementById("foodImpactSubmitBtn").addEventListener("click", async () => {
+        if (!window.pendingFoodAction) { alert("No action to submit"); return; }
+        try {
+          const response = await fetch("/user_access/submit_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(window.pendingFoodAction),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            const totalSaved = data.co2e_saved.toFixed(2);
+            document.getElementById("co2e-result").textContent = `You saved ${totalSaved} kg CO2e, Well Done!`;
+            document.getElementById("points-result").textContent = `${Math.round(totalSaved)} points added to your total score`;
+            document.getElementById("food-impact-overlay").classList.add("hidden");
+            congratsOverlay.classList.remove("hidden");
+            window.pendingFoodAction = null;
+            document.getElementById("food-ingredient-list").innerHTML = "";
+            foodForm.reset();
+            loadDashboardData();
+            init();
+          } else {
+            alert("Error: " + (data.error || "Failed to log action"));
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          alert("Failed to submit action. Please try again.");
+        }
+      });
+
+      document.getElementById("closeFoodImpact").addEventListener("click", () => {
+        document.getElementById("food-impact-overlay").classList.add("hidden");
+      });
+
+      document.getElementById("food-impact-overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("food-impact-overlay")) {
+          document.getElementById("food-impact-overlay").classList.add("hidden");
+        }
+      });
+
+      /* Open Travel Info Card */
+      const travelInfoBtn = document.getElementById("travel-info-btn");
+      const travelInfoOverlay = document.getElementById("travel-info-overlay");
+      travelInfoBtn.addEventListener("click", () => {
+        travelInfoOverlay.classList.remove("hidden");
+      });
+
+      travelInfoOverlay.addEventListener("click", (e) => {
+        if (e.target === travelInfoOverlay) {
+          travelInfoOverlay.classList.add("hidden");
+        }
+      });
+
+      const closeTravelInfo = document.getElementById("closeTravelInfo");
+
+      closeTravelInfo.addEventListener("click", () => {
+        travelInfoOverlay.classList.add("hidden");
+      });
+
+      /* Energy Overlay Script */
+      const energyInfoBtn = document.getElementById("energy-info-btn");
+      const energyInfoOverlay = document.getElementById("energy-info-overlay");
+      const closeEnergyInfo = document.getElementById("closeEnergyInfo");
+
+      energyInfoBtn.addEventListener("click", () => {
+        energyInfoOverlay.classList.remove("hidden");
+      });
+
+      closeEnergyInfo.addEventListener("click", () => {
+        energyInfoOverlay.classList.add("hidden");
+      });
+
+      energyInfoOverlay.addEventListener("click", (e) => {
+        if (e.target === energyInfoOverlay) {
+          energyInfoOverlay.classList.add("hidden");
+        }
+      });
+
+      /* Food Overlay Script */
+      const foodInfoBtn = document.getElementById("food-info-btn");
+      const foodInfoOverlay = document.getElementById("food-info-overlay");
+      const closeFoodInfo = document.getElementById("closeFoodInfo");
+
+      foodInfoBtn.addEventListener("click", () => {
+        foodInfoOverlay.classList.remove("hidden");
+      });
+
+      closeFoodInfo.addEventListener("click", () => {
+        foodInfoOverlay.classList.add("hidden");
+      });
+
+      foodInfoOverlay.addEventListener("click", (e) => {
+        if (e.target === foodInfoOverlay) {
+          foodInfoOverlay.classList.add("hidden");
+        }
+      });
+
+      /* Waste Overlay Script */
+      const wasteInfoBtn = document.getElementById("waste-info-btn");
+      const wasteInfoOverlay = document.getElementById("waste-info-overlay");
+      const closeWasteInfo = document.getElementById("closeWasteInfo");
+
+      wasteInfoBtn.addEventListener("click", () => {
+        wasteInfoOverlay.classList.remove("hidden");
+      });
+
+      closeWasteInfo.addEventListener("click", () => {
+        wasteInfoOverlay.classList.add("hidden");
+      });
+
+      wasteInfoOverlay.addEventListener("click", (e) => {
+        if (e.target === wasteInfoOverlay) {
+          wasteInfoOverlay.classList.add("hidden");
+        }
+      });
+
+      /* Waste Action Form */
+      const wasteActionBtn = document.getElementById("waste-action-btn");
+      const wasteOverlay = document.getElementById("waste-overlay");
+      const wasteForm = document.querySelector(".waste_form");
+
+      wasteActionBtn.addEventListener("click", () => {
+        populateChallengeDropdown('waste-challenge-id', 'waste');
+        wasteOverlay.style.display = "flex";
+      });
+
+      wasteOverlay.addEventListener("click", (e) => {
+        if (e.target === wasteOverlay) {
+          wasteOverlay.style.display = "none";
+        }
+      });
+
+      const wasteCo2eFactors = { "recycle-paper": 1.0, "recycle-cardboard": 1.0, "recycle-plastic": 1.2, "recycle-glass": 0.3, "recycle-aluminium": 9.5, "recycle-steel": 1.5, "compost-food": 0.5 };
+      const wasteActionLabels = { "recycle-paper": "Recycle Paper", "recycle-cardboard": "Recycle Cardboard", "recycle-plastic": "Recycle Plastic", "recycle-glass": "Recycle Glass", "recycle-aluminium": "Recycle Aluminium", "recycle-steel": "Recycle Steel", "compost-food": "Compost Food" };
+
+      wasteForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const actionType = document.getElementById("waste-action-type").value;
+        const quantity = parseFloat(document.getElementById("waste-quantity").value);
+        const evidenceUrl = document.getElementById("waste-evidence-url").value.trim();
+        const challengeId = document.getElementById("waste-challenge-id").value.trim();
+
+        if (!quantity || quantity <= 0) {
+          alert("Please enter a valid quantity");
+          return;
+        }
+
+        const formData = {
+          action_name: actionType,
+          category: "waste",
+          quantity: quantity,
+          evidence_url: evidenceUrl || null,
+          challenge_id: challengeId ? parseInt(challengeId) : null,
+        };
+
+        window.pendingWasteAction = formData;
+
+        const factor = wasteCo2eFactors[actionType] || 0;
+        const estimatedSaved = (factor * quantity).toFixed(2);
+
+        document.getElementById("waste-impact-title").textContent = `${wasteActionLabels[actionType] || actionType} - Impact Comparison`;
+        document.getElementById("waste-impact-quantity").textContent = `Quantity: ${quantity} KG`;
+        document.getElementById("waste-impact-factor").textContent = `Emission Factor: ${factor} kg CO₂e per KG`;
+        document.getElementById("waste-impact-calculation").textContent = `${factor} × ${quantity} KG = ${estimatedSaved} kg CO₂e`;
+
+        wasteOverlay.style.display = "none";
+        document.getElementById("waste-impact-overlay").classList.remove("hidden");
+      });
+
+      /* Open Energy form when buttonis clicked  */
+      const energyActionBtn = document.getElementById("energy-action-btn"); // the + button in energy card
+      const energyOverlay = document.getElementById("energy-overlay"); // form card overlay to enter energy-saving action
+      const energyForm = document.querySelector(".energy_form"); // energy form inside energyOverlay
+
+      /* Update energy unit label based on action type */
+      const energyUnitMap = { heating: "HR", lights: "HR", "cold-wash": "Load", "air-dry": "Load" };
+      document.getElementById("energy-action-type").addEventListener("change", (e) => {
+        document.getElementById("energy-unit-label").textContent = energyUnitMap[e.target.value] || "HR";
+      });
+
+      /* Show energyOverlay when the + button is clicked */
+      energyActionBtn.addEventListener("click", () => {
+        populateChallengeDropdown('energy-challenge-id', 'energy');
+        energyOverlay.style.display = "flex";
+      });
+
+      /* Hide energyOverlay when clicking outside the form */
+      energyOverlay.addEventListener("click", (e) => {
+        if (e.target === energyOverlay) {
+          energyOverlay.style.display = "none";
+        }
+      });
+
+      /* Form processing when submit button is pressed — show impact card */
+      const energyCo2eFactors = { heating: 0.148, lights: 0.01056, "cold-wash": 0.176, "air-dry": 0.725 };
+      const energyActionLabels = { heating: "Turn heating down", lights: "Switch off lights", "cold-wash": "Cold wash", "air-dry": "Air dry clothes" };
+
+      energyForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const actionType = document.getElementById("energy-action-type").value;
+        const quantity = parseFloat(document.getElementById("energy-quantity").value);
+        const evidenceUrl = document.getElementById("energy-evidence-url").value.trim();
+        const challengeId = document.getElementById("energy-challenge-id").value.trim();
+
+        if (!quantity || quantity <= 0) {
+          alert("Please enter a valid quantity");
+          return;
+        }
+
+        const formData = {
+          action_name: actionType,
+          category: "energy",
+          quantity: quantity,
+          evidence_url: evidenceUrl || null,
+          challenge_id: challengeId ? parseInt(challengeId) : null,
+        };
+
+        window.pendingEnergyAction = formData;
+
+        const factor = energyCo2eFactors[actionType] || 0;
+        const unitLabel = energyUnitMap[actionType] || "HR";
+        const estimatedSaved = (factor * quantity).toFixed(2);
+
+        document.getElementById("energy-impact-title").textContent = `${energyActionLabels[actionType] || actionType} - Impact Comparison`;
+        document.getElementById("energy-impact-quantity").textContent = `Quantity: ${quantity} ${unitLabel}`;
+        document.getElementById("energy-impact-factor").textContent = `Emission Factor: ${factor} kg CO₂e per ${unitLabel}`;
+        document.getElementById("energy-impact-calculation").textContent = `${factor} × ${quantity} ${unitLabel} = ${estimatedSaved} kg CO₂e`;
+
+        energyOverlay.style.display = "none";
+        document.getElementById("energy-impact-overlay").classList.remove("hidden");
+      });
+      /* Food Action Form */
+      const foodActionBtn = document.getElementById("food-action-btn");
+      const foodOverlay = document.getElementById("food-overlay");
+      const foodForm = document.querySelector(".food_form");
+      const foodSearch = document.getElementById("food-search");
+      const foodSuggestions = document.getElementById("food-suggestions");
+      let foodTypes = [];
+
+      foodActionBtn.addEventListener("click", async () => {
+        if (foodTypes.length === 0) {
+          const res = await fetch("/user_access/get_food_types", { method: "POST", headers: { "Content-Type": "application/json" } });
+          foodTypes = await res.json();
+        }
+        if (Object.keys(window.foodFactors).length === 0) {
+          const res = await fetch("/user_access/get_food_types_with_factors", { method: "POST", headers: { "Content-Type": "application/json" } });
+          window.foodFactors = await res.json();
+        }
+        populateChallengeDropdown("food-challenge-id", "food");
+        foodOverlay.style.display = "flex";
+      });
+
+      foodOverlay.addEventListener("click", (e) => {
+        if (e.target === foodOverlay) {
+          foodOverlay.style.display = "none";
+        }
+      });
+
+      foodSearch.addEventListener("input", () => {
+        const query = foodSearch.value.toLowerCase().trim();
+        foodSuggestions.innerHTML = "";
+        if (!query) { foodSuggestions.style.display = "none"; return; }
+
+        const matches = foodTypes.filter(name => name.toLowerCase().includes(query)).slice(0, 8);
+        if (matches.length === 0) { foodSuggestions.style.display = "none"; return; }
+
+        matches.forEach(name => {
+          const item = document.createElement("div");
+          item.textContent = name;
+          item.style.cssText = "padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 15px;";
+          item.addEventListener("mouseenter", () => item.style.background = "#f5f5f5");
+          item.addEventListener("mouseleave", () => item.style.background = "");
+          item.addEventListener("click", () => {
+            addFoodIngredient(name);
+            foodSearch.value = "";
+            foodSuggestions.style.display = "none";
+          });
+          foodSuggestions.appendChild(item);
+        });
+        foodSuggestions.style.display = "block";
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!foodSearch.contains(e.target) && !foodSuggestions.contains(e.target)) {
+          foodSuggestions.style.display = "none";
+        }
+      });
+
+      function addFoodIngredient(name) {
+        const list = document.getElementById("food-ingredient-list");
+        if (list.children.length >= 5) {
+          alert("Maximum 5 ingredients per meal");
+          return;
+        }
+        const row = document.createElement("div");
+        row.className = "distance-input";
+        row.dataset.name = name;
+        row.innerHTML = `
+          <span style="flex: 1; font-size: 15px;">${name}</span>
+          <input type="number" placeholder="0.0" step="0.1" min="0.01" required style="width: 80px; padding: 8px; border: none; border-bottom: 2px solid #aaa; outline: none; font-size: 15px;" />
+          <span>KG</span>
+          <button type="button" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; padding: 0 4px;" onclick="this.parentElement.remove()">×</button>
+        `;
+        list.appendChild(row);
       }
 
-      window.addEventListener("load", loadDashboardData);
+      foodForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const list = document.getElementById("food-ingredient-list");
+        const rows = Array.from(list.children);
+
+        if (rows.length === 0) {
+          alert("Please add at least one ingredient");
+          return;
+        }
+
+        const ingredients = [];
+        for (const row of rows) {
+          const name = row.dataset.name;
+          const kg = parseFloat(row.querySelector("input").value);
+          if (!kg || kg <= 0) {
+            alert(`Please enter a valid quantity for ${name}`);
+            return;
+          }
+          ingredients.push([name, kg]);
+        }
+
+        const evidenceUrl = document.getElementById("food-evidence-url").value.trim();
+        const challengeId = document.getElementById("food-challenge-id").value.trim();
+
+        const formData = {
+          action_name: "food",
+          category: "food",
+          quantity: ingredients,
+          evidence_url: evidenceUrl || null,
+          challenge_id: challengeId ? parseInt(challengeId) : null,
+        };
+
+        window.pendingFoodAction = formData;
+
+        // Build breakdown using fetched factors
+        const breakdownEl = document.getElementById("food-impact-breakdown");
+        breakdownEl.innerHTML = "";
+        let totalEstimated = 0;
+
+        for (const [name, kg] of ingredients) {
+          const factor = window.foodFactors[name] || 0;
+          const saved = factor * kg;
+          totalEstimated += saved;
+
+          const line = document.createElement("div");
+          line.className = "calculation";
+          line.innerHTML = `<p>${name}: ${factor} × ${kg} KG = ${saved.toFixed(2)} kg CO₂e</p>`;
+          breakdownEl.appendChild(line);
+        }
+
+        document.getElementById("food-impact-title").textContent = "Food Meal - Impact Comparison";
+        document.getElementById("food-impact-total").textContent = `Total: ${totalEstimated.toFixed(2)} kg CO₂e`;
+
+        foodOverlay.style.display = "none";
+        document.getElementById("food-impact-overlay").classList.remove("hidden");
+      });
+
     </script>
+    <script src="{{ url_for('static', filename='wrapper-script.js') }}"></script>
+    <script src="{{ url_for('static', filename='matrix.js') }}"></script>
+
   </body>
 </html>

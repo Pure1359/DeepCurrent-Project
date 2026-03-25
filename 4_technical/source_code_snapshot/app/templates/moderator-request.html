@@ -1,128 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pending Submissions - Moderator</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-</head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="/4_technical/source_code_snapshot/app/static/style.css"
+    />
+  </head>
 
-<body>
-
-<div class="moderating-card">
-
-    <div class="moderating-header">
+  <body>
+    <div class="moderating-card">
+      <div class="moderating-header">
         <h2>Moderating Requests</h2>
-        <img src="{{ url_for('static', filename='Resource/groupicon.svg') }}" class="moderating-icon">
-    </div>
+        <img
+          src="{{ url_for('static', filename='Resource/groupicon.svg') }}"
+          class="moderating-icon"
+        />
+      </div>
 
-    <div class="moderating-body">
-
-        <table class="moderating-table">
-
+      <div class="moderating-body">
+        <div class="moderating-table-scroll">
+          <table class="moderating-table">
             <thead>
-                <tr>
-                    <th>Action</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Evidence</th>
-                    <th>Date</th>
-                    <th colspan="2">Review</th>
-                </tr>
+              <tr>
+                <th>Action</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Evidence</th>
+                <th>Date</th>
+                <th>Flags</th>
+                <th colspan="2">Review</th>
+              </tr>
             </thead>
 
             <tbody id="submissions-list">
-                <tr>
-                    <td colspan="7" style="text-align: center;">Loading...</td>
-                </tr>
+              <tr>
+                <td colspan="7" style="text-align: center">Loading...</td>
+              </tr>
             </tbody>
-
-        </table>
-
+          </table>
+        </div>
+      </div>
     </div>
 
-</div>
+    <div
+      id="food-modal"
+      class="food-modal-overlay hidden"
+      onclick="closeFoodModal(event)"
+    >
+      <div class="food-modal-card">
+        <div class="moderating-header">
+          <h2>Ingredient Details</h2>
+          <span class="food-modal-close" onclick="closeFoodModal()"
+            >&times;</span
+          >
+        </div>
+        <div class="moderating-body">
+          <table class="moderating-table">
+            <thead>
+              <tr>
+                <th>Ingredient</th>
+                <th>Weight (kg)</th>
+              </tr>
+            </thead>
+            <tbody id="food-modal-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-<script>
-    window.addEventListener('load', loadPendingSubmissions);
+    <style>
+      .food-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
 
-    async function loadPendingSubmissions() {
+      .food-modal-overlay.hidden {
+        display: none;
+      }
+
+      .food-modal-card {
+        width: 450px;
+        background: #fcfbfc;
+        border-radius: 16px;
+        border: 0.8px solid #153a39;
+        overflow: hidden;
+      }
+
+      .food-modal-card .moderating-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .food-modal-close {
+        font-size: 28px;
+        cursor: pointer;
+        color: #153a39;
+        font-weight: bold;
+      }
+
+      .expand-btn {
+        background: #214f4d;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+    </style>
+
+    <script>
+      window.addEventListener("load", loadPendingSubmissions);
+
+      async function loadPendingSubmissions() {
         try {
-            const response = await fetch('/moderator_access/view_pending_submission', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({offset: 0, limit: 100})
-            });
+          const response = await fetch(
+            "/moderator_access/view_pending_submission",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ offset: 0, limit: 9999 }),
+            }
+          );
 
-            const submissions = await response.json();
-            const tbody = document.getElementById('submissions-list');
-            
-            if (submissions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No pending submissions</td></tr>';
-                return;
+          const submissions = await response.json();
+          const tbody = document.getElementById("submissions-list");
+
+          if (submissions.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="7" style="text-align: center;">No pending submissions</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = "";
+
+          submissions.forEach((submission) => {
+            const row = document.createElement("tr");
+            const date = new Date(
+              submission.evidence_date
+            ).toLocaleDateString();
+            const evidenceId = submission.evidence_id;
+
+            let quantityCell;
+            if (submission.category === "food") {
+              const totalKg = submission.quantity
+                .trim()
+                .split(" ")
+                .reduce((sum, item) => sum + parseFloat(item.split(":")[1]), 0);
+              const roundedKg = parseFloat(totalKg.toPrecision(3));
+              quantityCell = `<td>${roundedKg} KG <button class="expand-btn" data-quantity="${submission.quantity}">Expand</button></td>`;
+            } else {
+              quantityCell = `<td>${submission.quantity} ${submission.unit}</td>`;
             }
 
-            tbody.innerHTML = '';
-            
-            submissions.forEach(submission => {
-                const row = document.createElement('tr');
-                const date = new Date(submission.evidence_date).toLocaleDateString();
-                const evidenceId = submission.evidence_id;
-                
-                row.innerHTML = `
+            const flagsCell = submission.flags
+              ? `<td style="color: #c0392b; font-weight: 600; font-size: 12px;">${submission.flags}</td>`
+              : `<td style="color: gray;">None</td>`;
+
+            row.innerHTML = `
                     <td>${submission.actionName}</td>
                     <td>${submission.category}</td>
-                    <td>${submission.quantity} ${submission.unit}</td>
+                    ${quantityCell}
                     <td><a href="${submission.evidence_url}" target="_blank">View</a></td>
                     <td>${date}</td>
+                    ${flagsCell}
                     <td><button class="review-button approve-btn" data-evidence-id="${evidenceId}">Approve</button></td>
                     <td><button class="review-button reject-btn" data-evidence-id="${evidenceId}">Reject</button></td>
                 `;
-                
-                tbody.appendChild(row);
-            });
 
-            document.querySelectorAll('.approve-btn').forEach(btn => {
-                btn.addEventListener('click', () => handleDecision(btn.dataset.evidenceId, 'Accepted', 'Evidence approved'));
-            });
+            tbody.appendChild(row);
+          });
 
-            document.querySelectorAll('.reject-btn').forEach(btn => {
-                btn.addEventListener('click', () => handleDecision(btn.dataset.evidenceId, 'Rejected', 'Evidence rejected'));
-            });
+          document.querySelectorAll(".expand-btn").forEach((btn) => {
+            btn.addEventListener("click", () =>
+              openFoodModal(btn.dataset.quantity)
+            );
+          });
 
+          document.querySelectorAll(".approve-btn").forEach((btn) => {
+            btn.addEventListener("click", () =>
+              handleDecision(
+                btn.dataset.evidenceId,
+                "Accepted",
+                "Evidence approved"
+              )
+            );
+          });
+
+          document.querySelectorAll(".reject-btn").forEach((btn) => {
+            btn.addEventListener("click", () =>
+              handleDecision(
+                btn.dataset.evidenceId,
+                "Rejected",
+                "Evidence rejected"
+              )
+            );
+          });
         } catch (error) {
-            console.error('Failed to load submissions:', error);
-            document.getElementById('submissions-list').innerHTML = 
-                '<tr><td colspan="7" style="text-align: center;">Failed to load submissions</td></tr>';
+          console.error("Failed to load submissions:", error);
+          document.getElementById("submissions-list").innerHTML =
+            '<tr><td colspan="7" style="text-align: center;">Failed to load submissions</td></tr>';
         }
-    }
+      }
 
-    async function handleDecision(evidenceId, result, reason) {
+      async function handleDecision(evidenceId, result, reason) {
         try {
-            const response = await fetch('/moderator_access/make_decision', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    evidence_id: evidenceId,
-                    result: result,
-                    reason: reason
-                })
-            });
+          const response = await fetch("/moderator_access/make_decision", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              evidence_id: evidenceId,
+              result: result,
+              reason: reason,
+            }),
+          });
 
-            const data = await response.json();
+          const data = await response.json();
 
-            if (response.ok) {
-                alert(data.message);
-                loadPendingSubmissions();
-            } else {
-                alert('Error: ' + (data.error));
-            }
+          if (response.ok) {
+            alert(data.message);
+            loadPendingSubmissions();
+          } else {
+            alert("Error: " + data.error);
+          }
         } catch (error) {
-            console.error('Failed to submit decision:', error);
-            alert('Failed to submit decision');
+          console.error("Failed to submit decision:", error);
+          alert("Failed to submit decision");
         }
-    }
-</script>
+      }
 
-</body>
+      function openFoodModal(quantityStr) {
+        const items = quantityStr.trim().split(" ");
+        const tbody = document.getElementById("food-modal-body");
+        tbody.innerHTML = "";
+
+        items.forEach((item) => {
+          const [name, kg] = item.split(":");
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                <td>${name}</td>
+                <td>${kg}</td>
+            `;
+          tbody.appendChild(row);
+        });
+
+        document.getElementById("food-modal").classList.remove("hidden");
+      }
+
+      function closeFoodModal(event) {
+        if (!event || event.target === document.getElementById("food-modal")) {
+          document.getElementById("food-modal").classList.add("hidden");
+        }
+      }
+    </script>
+  </body>
 </html>

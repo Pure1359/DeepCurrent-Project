@@ -13,6 +13,8 @@ from custom_error.Challenge_Exception import *
 from custom_error.Group_Exception import *
 from app.services.groups import *
 from app.services.challenges import *
+from app.services.challenges import get_all_active_challenges, get_challenge_for_user as get_challenge_for_user_service
+from app.services.badges import get_user_badges
 
 #need to do required login 
 user_bp = Blueprint("user", __name__)
@@ -36,13 +38,8 @@ def moderator_list():
 @user_bp.route("/get_action_history", methods = ["POST"])
 def list_action_history():
     
-    data = request.get_json()
-    offset = data.get("offset", 0)
-    offset = 0
-    limit = 100
-    limit = data.get("limit", 30)
     account_id = session.get("account_id")
-    return get_action_history(account_id, limit, offset)
+    return get_action_history(account_id)
 
 #The app.service.actions already implement automatic challenge distribution
 @user_bp.route("/submit_action",  methods = ["POST"])
@@ -68,21 +65,18 @@ def submit_action():
     #     error_message = f"Category name : {category} is not recognized as a valid category name"
     #     return make_response(jsonify(error = error_message), 400)
     
-    if quantity <= 0:
+    if category != "food" and quantity <= 0:
         error_message = "Quantity can not be 0 or have negative value"
         return make_response(jsonify(error = error_message), 400)
 
     #if we pass all check
     #then we log an action
-    response = log_action(account_id, action_name, category, quantity, challenge_id, evidence_url)
+    try:
+        response = log_action(account_id, action_name, category, quantity, challenge_id, evidence_url)
+    except ValueError as error:
+        return make_response(jsonify(error = str(error)), 400)
 
-    action_log_id = response["action_log_id"]
-    evidence_id = response["evidence_id"]
-    decision_id = response["decision_id"]
-    challenge_id = response["challenge_id"]
-    co2e_factor = response["co2e_factor"]
-
-    return jsonify({"success" :True, "message":"Successfully log an action", "action_log_id" : action_log_id, "evidence_id" : evidence_id, "decision_id" : decision_id, "challenge_id" : challenge_id, "co2e_factor" : co2e_factor, "quantity" : quantity}), 200
+    return jsonify({"success" :True, "message":"Successfully log an action", **response}), 200
     
 
 @user_bp.route("/join_challenge",  methods = ["POST"])
@@ -101,30 +95,117 @@ def join_challenge():
 @user_bp.route("/get_challenge_for_user", methods = ["POST"])
 def get_challenge_for_user():
     account_id = session.get("account_id")
-    get_challenge = """SELECT challenge_id FROM IndividualParticipation WHERE account_id = %s"""
+    challenge_result = get_challenge_for_user_service(account_id)
+    return jsonify(challenge_result)
+
+@user_bp.route("/get_all_challenges", methods = ["POST"])
+def list_all_challenges():
+    account_id = session.get("account_id")
+    challenges = get_all_active_challenges()
+    joined_ids = [row["challenge_id"] for row in get_challenge_for_user_service(account_id)]
+
+    #Find what group this user owns (if any)
+    owned_group_id = None
     with db_cursor() as (connection, cursor):
-        cursor.execute(get_challenge, (account_id,))
-        challenge_result = cursor.fetchall()    
-        response = jsonify(challenge_result)
-        return response
+        cursor.execute("SELECT group_id FROM UserGroup WHERE group_creator_id = %s", (account_id,))
+        owned_group = cursor.fetchone()
+        if owned_group:
+            owned_group_id = owned_group["group_id"]
+
+        #Get group challenge IDs that this users owned group has joined
+        group_joined_ids = []
+        if owned_group_id:
+            cursor.execute("SELECT challenge_id FROM GroupParticipation WHERE group_id = %s", (owned_group_id,))
+            group_joined_ids = [row["challenge_id"] for row in cursor.fetchall()]
+
+    for c in challenges:
+        if c["challenge_type"] == "Personal":
+            c["joined"] = c["challenge_id"] in joined_ids
+        else:
+            c["joined"] = c["challenge_id"] in group_joined_ids
+        c["owned_group_id"] = owned_group_id
+
+    return jsonify(challenges)
     
+@user_bp.route("/get_challenges_for_category", methods = ["POST"])
+def get_challenges_for_category():
+    account_id = session.get("account_id")
+    data = request.get_json()
+    category = data.get("category")
+    challenges = get_user_active_challenges_by_category(account_id)
+    return jsonify(challenges)
+
 @user_bp.route("/get_weekly_co2e_saving", methods = ["POST"])
 def get_user_weekly_saving():
     account_id = session.get("account_id")
-    result = get_weekly_saved(account_id)
+    data = request.get_json()
+    category = data.get("category") if data else None
+    result = get_weekly_saved(account_id, category)
     return jsonify({"total_saving":result})
 
 @user_bp.route("/get_monthly_co2e_saving", methods = ["POST"])
 def get_user_monthly_saving():
     account_id = session.get("account_id")
-    result = get_monthly_saved(account_id)
+    data = request.get_json()
+    category = data.get("category") if data else None
+    result = get_monthly_saved(account_id, category)
     return jsonify({"total_saving":result})
 
 @user_bp.route("/get_yearly_co2e_saving", methods = ["POST"])
 def get_user_yearly_saving():
     account_id = session.get("account_id")
-    result = get_yearly_saved(account_id)
+    data = request.get_json()
+    category = data.get("category") if data else None
+    result = get_yearly_saved(account_id, category)
     return jsonify({"total_saving":result})
+
+@user_bp.route("/get_food_types", methods=["POST"])
+def get_food_types():
+    sql = "SELECT actionName FROM ActionType WHERE category = 'food' ORDER BY actionName ASC"
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql)
+        result = cursor.fetchall()
+    return jsonify([row["actionName"] for row in result])
+
+@user_bp.route("/get_food_types_with_factors", methods=["POST"])
+def get_food_types_with_factors():
+    sql = "SELECT actionName, co2e_factor FROM ActionType WHERE category = 'food'"
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql)
+        result = cursor.fetchall()
+    return jsonify({row["actionName"]: row["co2e_factor"] for row in result})
+
+@user_bp.route("/get_all_active_challenges", methods=["POST"])
+def get_all_active_challenges_route():
+    result = get_all_active_challenges()
+    return jsonify(result)
+
+@user_bp.route("/get_individual_leaderboard", methods=["POST"])
+def get_individual_leaderboard():
+    data = request.get_json()
+    challenge_id = data.get("challenge_id")
+    try:
+        result = challenge_leaderboard_individual(challenge_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@user_bp.route("/get_group_leaderboard", methods=["POST"])
+def get_group_leaderboard():
+    data = request.get_json()
+    challenge_id = data.get("challenge_id")
+    try:
+        result = challenge_leaderboard_group(challenge_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@user_bp.route("/get_my_badges", methods=["POST"])
+def get_my_badges():
+    account_id = session.get("account_id")
+    result = get_user_badges(account_id)
+    return jsonify(result)
 
 
 @user_bp.route("/create_group", methods = ["POST"])
@@ -134,7 +215,7 @@ def user_create_group():
     account_id = session.get("account_id")
     try:
         group_id = UserCreateGroup(account_id, group_name)
-    except DuplicateGroupName as error:
+    except (DuplicateGroupName, UserAlreadyJoinGroup) as error:
         error_message = str(error)
         return make_response(jsonify(error = error_message), 409)
 
@@ -162,11 +243,11 @@ def user_leave_group():
         UserLeaveGroup(account_id, group_id)
     except LeaveGroupError as error:
         error_message = str(error)
-        return make_response(jsonify(error = error_message)), 409
+        return make_response(jsonify(error = error_message), 409)
     
     return jsonify({"success" : True, "message" : "Successfully leave the group"}), 200
 
-@user_bp.route("get_group_memeber", methods = ["POST"])
+@user_bp.route("/get_group_member", methods = ["POST"])
 def get_group_member():
     data = request.get_json()
     group_id = data.get("group_id")
@@ -174,14 +255,14 @@ def get_group_member():
 
     return jsonify({"success" : True, "member" : member_list}), 200
 
-@user_bp.route("get_user_groups", methods = ["POST"])
+@user_bp.route("/get_user_groups", methods = ["POST"])
 def get_user_groups():
     account_id = session.get("account_id")
     group_list = getUserGroups(account_id)
     return jsonify({"success" : True, "member" : group_list}), 200
 
-@user_bp.route("group_join_challenge", methods = ["POST"])
-def group_join_challenge():
+@user_bp.route("/join_group_challenge", methods = ["POST"])
+def join_group_challenge():
     account_id = session.get("account_id")
     data = request.get_json()
     challenge_id = data.get("challenge_id")
@@ -191,10 +272,51 @@ def group_join_challenge():
         return {"success" :True, "message":f"Successfully added the group to challenge : {challenge_id}"}, 200
     except (GroupPermissionError, ChallengeIdNotFound, GroupAlreadyJoinChallenge, InvalidChallengeDate) as error:
         error_message = str(error)
-        return make_response(jsonify(error = error_message)), 409
+        return make_response(jsonify(error = error_message), 409)
 
-    
+@user_bp.route("/get_all_groups", methods = ["POST"])
+def list_all_groups():
+    account_id = session.get("account_id")
+    groups = getAllGroups()
+    user_groups = getUserGroups(account_id)
+    for group in groups:
+        group["is_member"] = group["group_name"] in user_groups
+        group["is_owner"] = group["group_creator_id"] == account_id
+    return jsonify(groups)
 
+@user_bp.route("/get_category_stats", methods=["POST"])
+def get_category_stats():
+    account_id = session.get("account_id")
+    get_stats = """
+        SELECT 
+            at.category,
+            SUM(al.co2e_saved) AS total_saved
+        FROM ActionLog al
+        JOIN ActionType at
+            ON al.actionType_id = at.actionType_id
+        WHERE al.submitted_by = %s
+        GROUP BY at.category
+        ORDER BY total_saved DESC
+    """
+
+    with db_cursor() as (connection, cursor):
+        cursor.execute(get_stats, (account_id,))
+        stats_result = cursor.fetchall()
+
+        total = sum((row["total_saved"] or 0) for row in stats_result)
+
+        colors = ["#378ADD", "#1D9E75", "#D85A30", "#7F77DD", "#E0B43B", "#D94F70"]
+
+        data = []
+        for i, row in enumerate(stats_result):
+            pct = ((row["total_saved"] or 0) / total * 100) if total else 0
+            data.append({
+                "label": row["category"],
+                "pct": round(pct, 1),
+                "color": colors[i % len(colors)]
+            })
+
+        return jsonify(data)
 
 
     

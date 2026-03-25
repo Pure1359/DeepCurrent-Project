@@ -1,22 +1,39 @@
-import sqlite3
-from typing import Any
-
 from app.db_config import db_cursor
 from app.services.auth import verify_session_role
 from flask import abort
 from custom_error.Challenge_Exception import InvalidChallengeDate, ChallengeIdNotFound, UserAlreadyJoinChallenge, GroupAlreadyJoinChallenge
 from custom_error.Group_Exception import *
 from datetime import datetime
-# Placeholder for now
-# Create functions that have to do with challenges
-# Follow templates in users.py and auth.py
-# Some Ideas:
-# create_challenge
-# join_challenge_individual
-# join_challenge_group
-# challenge_leaderboard_individual
-# challenge_leaderboard_group
-#Required role : Who can create the challenge? Parameter : Role -> {Admin, Locally Group Leader , etc}
+
+def _parse_date(value):
+    if not isinstance(value, str):
+        return value
+    value = value.split(".")[0]
+    return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+
+def require_active_challenge(cursor, challenge_id: int) -> dict[str, any]:
+    cursor.execute(
+        "SELECT challenge_id, start_date, end_date, title, challenge_type, rules FROM Challenge WHERE challenge_id = %s",
+        (challenge_id,),
+    )
+    challenge = cursor.fetchone()
+
+    # Check if challenge exists
+    if challenge is None:
+        raise ChallengeIdNotFound(f"The Challenge with ID: {challenge_id} does not exists in database")
+
+    start_date = _parse_date(challenge["start_date"])
+    end_date = _parse_date(challenge["end_date"])
+    now = datetime.now()
+
+    # Check if challenge is active
+    if start_date and start_date > now:
+        raise InvalidChallengeDate("The challenge is currently not active")
+    if end_date and end_date < now:
+        raise InvalidChallengeDate("The challenge is currently not active")
+
+    return challenge
+
 def create_challenge(created_by, challenge_type, title, start_date, end_date, rules):
     sql = """INSERT INTO Challenge (created_by, challenge_type, title, start_date, end_date, rules) 
             VALUES (%s, %s, %s, %s, %s, %s)"""
@@ -46,15 +63,13 @@ def join_challenge_individual(challenge_id, account_id):
             start_date = check_challenge_result["start_date"]
             end_date = check_challenge_result["end_date"]
 
-            if isinstance(start_date, str):
-                start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            if isinstance(end_date, str):
-                end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            start_date = _parse_date(start_date)
+            end_date = _parse_date(end_date)
 
             if (start_date > current_time or end_date < current_time):
                 raise InvalidChallengeDate("The challenge is currently not active")
-            
-            
+
+
         #if this is reached then user is not already in the challenge and the challenge exists and is still active
         cursor.execute(sql, (challenge_id, account_id, current_time))
     
@@ -88,60 +103,117 @@ def join_challenge_group(challenge_id, group_id, account_id):
     
         if check_challenge is not None:
             #check if challenge is active or not
-            start_date = check_challenge["start_date"]
-            end_date = check_challenge["end_date"]
-            start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            start_date = _parse_date(check_challenge["start_date"])
+            end_date = _parse_date(check_challenge["end_date"])
 
             if (start_date > current_time or end_date < current_time):
                 raise InvalidChallengeDate("The challenge is currently not active")
         
         cursor.execute(sql, (challenge_id, group_id, current_time))
             
-    
-#ignore specific challenge conflict with category type, we will check this later
-def challenge_leaderboard_individual(start_date :str, end_date:str, challenge_category_type:str = "All", specific_challenge:int|None = None) -> list[dict]:
-    """
-    Give the ranking and leaderboard of individuals and groups based on parameter given
 
-    Args:
-        start_date (string): The start date to filter rankings from
-        end_date (string): The end date to filter ranking to
-        challenge_category_type(string): What type of challenge to be consider for ranking ("Travel", "Energy", "Food", "Waste", "All")
-        specific_challenge(int): Use to show leaderboard only for 1 particular challenge, by using challenge id. 
-
-    Returns:
-        list[dict] : list of dictionary, each dictionary represent each record , each key in dictionary represent each field
-    """
-
-    if specific_challenge is not None and challenge_category_type != "All":
-        raise ValueError("Invalid argument type : if specific_challenge is given, challenge_category_type must be \"All\"")
-    
-    
-    query = """SELECT Accounts.account_id, username, SUM(ChallengeAction.point_awarded) AS Total_Points FROM Accounts INNER JOIN ActionLog ON Accounts.account_id = ActionLog.submitted_by INNER JOIN ActionType ON ActionLog.actionType_id = ActionType.actionType_id INNER JOIN ChallengeAction ON ActionLog.log_id = ChallengeAction.log_id INNER JOIN Evidence ON Evidence.log_id = ActionLog.log_id INNER JOIN Decision ON Evidence.evidence_id = Decision.evidence_id WHERE ActionLog.log_date BETWEEN %s AND %s AND Decision.decision_status = 'Approved'"""
-
-    parameter: list[str|int] = [start_date, end_date]
-
-
-    if specific_challenge is not None:
-        query += """ AND ChallengeAction.challenge_id = %s"""
-        parameter.append(specific_challenge)
-
-    if challenge_category_type != "All":
-        query += """ AND ActionType.category = %s"""
-        parameter.append(challenge_category_type)
-
-    #Group by operation
-    query += """ GROUP BY Accounts.account_id , username"""
-
-
+def get_all_active_challenges():
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sql = """SELECT c.challenge_id, c.challenge_type, c.title, c.start_date, c.end_date, c.rules, c.created_by
+             FROM Challenge c
+             WHERE c.start_date <= %s AND c.end_date >= %s
+             ORDER BY c.end_date ASC"""
     with db_cursor() as (connection, cursor):
-        cursor.execute(query, parameter)
-        query_result = cursor.fetchall()
-    
+        cursor.execute(sql, (now, now))
+        return cursor.fetchall()
 
-    return query_result
+def get_challenge_for_user(account_id):
+    sql = """SELECT challenge_id FROM IndividualParticipation WHERE account_id = %s"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id,))
+        return cursor.fetchall()
 
+def get_user_active_challenges_by_category(account_id):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sql = """SELECT Challenge.challenge_id, Challenge.title, Challenge.challenge_type, Challenge.start_date, Challenge.end_date
+             FROM Challenge
+             JOIN IndividualParticipation ON IndividualParticipation.challenge_id = Challenge.challenge_id
+             WHERE IndividualParticipation.account_id = %s
+               AND Challenge.start_date <= %s
+               AND Challenge.end_date >= %s
+             UNION
+             SELECT Challenge.challenge_id, Challenge.title, Challenge.challenge_type, Challenge.start_date, Challenge.end_date
+             FROM Challenge
+             JOIN GroupParticipation ON GroupParticipation.challenge_id = Challenge.challenge_id
+             JOIN AccountGroup ON AccountGroup.group_id = GroupParticipation.group_id
+             WHERE AccountGroup.account_id = %s
+               AND Challenge.start_date <= %s
+               AND Challenge.end_date >= %s
+             ORDER BY end_date ASC"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql, (account_id, now, now, account_id, now, now))
+        return cursor.fetchall()
 
-def challenge_leaderboard_group():
-    pass
+def challenge_leaderboard_individual(challenge_id: int, limit: int = 10):
+    with db_cursor() as (_connection, cursor):
+        require_active_challenge(cursor, challenge_id)
+        cursor.execute(
+            """
+            SELECT
+                a.account_id,
+                a.username,
+                u.first_name,
+                u.last_name,
+                COALESCE(SUM(ca.point_awarded), 0) AS points,
+                COALESCE(SUM(CASE WHEN ca.log_id IS NOT NULL THEN al.co2e_saved ELSE 0 END), 0) AS total_co2e_saved,
+                COUNT(DISTINCT ca.log_id) AS actions_count
+            FROM IndividualParticipation ip
+            INNER JOIN Accounts a ON ip.account_id = a.account_id
+            INNER JOIN Users u ON a.user_id = u.user_id
+            LEFT JOIN ActionLog al
+                ON al.submitted_by = a.account_id
+            LEFT JOIN ChallengeAction ca
+                ON ca.log_id = al.log_id
+                AND ca.challenge_id = ip.challenge_id
+                AND ca.group_id IS NULL
+            WHERE ip.challenge_id = %s
+            GROUP BY a.account_id, a.username, u.first_name, u.last_name
+            ORDER BY points DESC, total_co2e_saved DESC, actions_count DESC, a.account_id ASC
+            LIMIT %s
+            """,
+            (challenge_id, limit),
+        )
+        return cursor.fetchall()
+
+def challenge_leaderboard_group(challenge_id: int, limit: int = 10):
+    with db_cursor() as (_connection, cursor):
+        require_active_challenge(cursor, challenge_id)
+        cursor.execute(
+            """
+            SELECT
+                ug.group_id,
+                ug.group_name,
+                ug.group_creator_id,
+                (
+                    SELECT COUNT(*)
+                    FROM AccountGroup ag
+                    WHERE ag.group_id = ug.group_id
+                ) AS member_count,
+                COALESCE(SUM(ca.point_awarded), 0) AS points,
+                COALESCE(SUM(al.co2e_saved), 0) AS total_co2e_saved,
+                COUNT(DISTINCT ca.log_id) AS actions_count,
+                COALESCE(SUM(ca.point_awarded), 0) * 1.0 /
+                    NULLIF((
+                        SELECT COUNT(*)
+                        FROM AccountGroup ag2
+                        WHERE ag2.group_id = ug.group_id
+                    ), 0) AS average_points
+            FROM GroupParticipation gp
+            INNER JOIN UserGroup ug ON gp.group_id = ug.group_id
+            LEFT JOIN ChallengeAction ca
+                ON ca.challenge_id = gp.challenge_id
+                AND ca.group_id = gp.group_id
+            LEFT JOIN ActionLog al ON ca.log_id = al.log_id
+            WHERE gp.challenge_id = %s
+            GROUP BY ug.group_id, ug.group_name, ug.group_creator_id
+            ORDER BY average_points DESC, points DESC, total_co2e_saved DESC, ug.group_id ASC
+            LIMIT %s
+            """,
+            (challenge_id, limit),
+        )
+        return cursor.fetchall()

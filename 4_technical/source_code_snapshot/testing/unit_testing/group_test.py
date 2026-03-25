@@ -41,7 +41,7 @@ def test_join_group(new_client_function, module_scope_database, populated_databa
 
         assert len(query_result) == 1
 
-def test_leave_group(new_client_function, module_scope_database, populated_database):
+def test_owner_leave_group(new_client_function, module_scope_database, populated_database):
     #check that owner can not left the group
     response = new_client_function.post("/login", data = {
         "email" : 'jdsiki@fakemail.com',
@@ -55,6 +55,7 @@ def test_leave_group(new_client_function, module_scope_database, populated_datab
     assert response.status_code == 409
     assert result["error"] == "Can not leave group that you are owner"
 
+def test_normal_user_leave_group(new_client_function, module_scope_database, populated_database):
     response = new_client_function.post("/login", data = {"email" : "e.watson@exeter.ac.uk", "password" : "password123"})
 
     response = new_client_function.post("/user_access/leave_group", json = {"group_id" : 1})
@@ -69,7 +70,3 @@ def test_leave_group(new_client_function, module_scope_database, populated_datab
         cursor.execute(sql, (1, account_id))
         result = cursor.fetchall()
         assert len(result) == 0
-
-@pytest.mark.skip(reason = "Leaderboard not implemented yet")
-def test_group_leaderboard():
-    pass

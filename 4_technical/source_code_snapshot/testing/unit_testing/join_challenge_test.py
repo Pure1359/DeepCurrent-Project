@@ -5,11 +5,11 @@ from app.db_config import db_cursor
 from custom_error.Challenge_Exception import UserAlreadyJoinChallenge, InvalidChallengeDate, ChallengeIdNotFound
 
 def test_join_challenge_success(new_client_module, module_scope_database, populated_database):
-    #test user join challenge as sarah
+    #test user join challenge as John
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
-        "email": "s.chen@exeter.ac.uk",
-        "password": "student789"
+        "email": "jdsiki@fakemail.com",
+        "password": "johndoe123"
     }, follow_redirects=True)
     #send request to join the challenge with id = 1
     response = new_client_module.post("/user_access/join_challenge", json={
@@ -20,37 +20,31 @@ def test_join_challenge_success(new_client_module, module_scope_database, popula
     assert response.status_code == 200
     assert data["success"] == True
     assert "Successfully added the user to challenge" in data["message"]
-    
-    # Verify in database (From setup we know that sarah id = 3 , and she just tried to join challenge id = 1)
+
+    # Verify in database (John's account_id = 4)
     with db_cursor() as (connection, cursor):
-        cursor.execute("SELECT * FROM IndividualParticipation WHERE account_id = %s AND challenge_id = %s", (3, 1))
+        cursor.execute("SELECT * FROM IndividualParticipation WHERE account_id = %s AND challenge_id = %s", (4, 1))
         result = cursor.fetchone()
         assert result is not None
-        assert result["account_id"] == 3
+        assert result["account_id"] == 4
         assert result["challenge_id"] == 1
 
 def test_join_challenge_already_joined(new_client_module, module_scope_database, populated_database):
     #test error ,when the user join same challenge twice or more
+    #Emma already joined challenge 1 in the fixture
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
         "email": "e.watson@exeter.ac.uk",
         "password": "password123"
     }, follow_redirects=True)
-    
-    #emma join challenge id = 1 
+
+    # Try to join challenge 1 again (Emma already joined in fixture)
     response = new_client_module.post("/user_access/join_challenge", json={
         "challenge_id": 1
     })
-    data = response.get_json()
-    assert response.status_code == 200
-    
-    # Try to join challenge 1 again
-    response2 = new_client_module.post("/user_access/join_challenge", json={
-        "challenge_id": 1
-    })
     #test if the error get return
-    data = response2.get_json()
-    assert response2.status_code == 400
+    data = response.get_json()
+    assert response.status_code == 400
     assert "The user already participate in this challenge" in data["error"]
 
 def test_join_challenge_not_found(new_client_module, module_scope_database, populated_database):
@@ -111,18 +105,22 @@ def test_join_multiple_challenges(new_client_module, module_scope_database, popu
     #check to see if user can join many challenge
     new_client_module.post("/logout")
     new_client_module.post("/login", data={
-        "email": "e.watson@exeter.ac.uk",
-        "password": "password123"
+        "email": "jamike@goodmail.com",
+        "password": "jackmike123"
     }, follow_redirects=True)
-    
-    # Emma already has challenge 1, try to join challenge 2
+
+    # Jack joins challenge 1
+    response1 = new_client_module.post("/user_access/join_challenge", json={
+        "challenge_id": 1
+    })
+    assert response1.status_code == 200
+
+    # Jack joins challenge 2
     response2 = new_client_module.post("/user_access/join_challenge", json={
         "challenge_id": 2
     })
-    #if status_code == 200, then the user successfully join
     data = response2.get_json()
     assert response2.status_code == 200
-
     assert "Successfully added the user to challenge" in data["message"]
 
     #check the get_challenge_for_user function that return challenge that the user is participating

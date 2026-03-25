@@ -36,9 +36,7 @@ def moderator_history():
 def view_submission_list():
     data = request.get_json()
     offset = data.get("offset", 0)
-    limit = data.get("limit", 60)
-    offset = 0
-    limit = 100
+    limit = data.get("limit", 999999)
     #validate data type in url parameter
     try:
         offset = int(offset)
@@ -52,9 +50,7 @@ def view_submission_list():
 def view_all_submission():
     data = request.get_json()
     offset = data.get("offset", 0)
-    limit = data.get("limit", 60)
-    offset = 0
-    limit = 100
+    limit = data.get("limit", 999999)
 
     try:
         offset = int(offset)
@@ -79,13 +75,17 @@ def make_submission_decision():
     return jsonify({"success": True, "message" : "Sucessfully create the decision", "decision_list" : result_list}), 200
 
     
-@moderator_bp.route("/create_challenge", methods = ["GET", "POST"])
+@moderator_bp.route("/create_challenge_page")
+def create_challenge_page():
+    return render_template("create-challenge.html")
+
+@moderator_bp.route("/create_challenge", methods = ["POST"])
 def moderator_make_challenge():
     created_by = session.get("account_id")
     challenge_type = request.form['challenge_type']
     title = request.form['title']
-    start_date = request.form['start_date']
-    end_date = request.form['end_date']
+    start_date = request.form['start_date'] + " 00:00:00"
+    end_date = request.form['end_date'] + " 23:59:59"
     rule = request.form['rule']
     challenge_id = create_challenge(created_by, challenge_type, title, start_date, end_date, rule)
 

@@ -4,9 +4,10 @@ import bcrypt
 from datetime import datetime, timezone
 
 # Import Database Functions from services/
-from app.services.users_service import create_user, create_account, update_last_active
+from app.services.users_service import create_user, create_account, update_last_active, get_yearly_daily_savings
 from app.services.auth import get_account_by_email_for_login, verify_password
 from app.services.auth import derive_role
+
 
 # Instance for application is created in __init__.py
 
@@ -19,11 +20,15 @@ def require_login():
     if not account_id:
         return None
     return int(account_id)
+# Route for the welcome page
+@bp.route("/welcome")
+def welcome():
+    return render_template("welcome.html")
 
 # Route for the home page
 @bp.route("/")
 def index():
-    return render_template("register.html") # display register.html by default
+    return render_template("welcome.html") # display welcome.html by default
 
 # Create a route to handle user registration
 @bp.route("/register", methods=["GET", "POST"])
@@ -120,12 +125,45 @@ def dashboard():
 def challenge():
     return render_template("challenge.html")
 
+@bp.route("/leaderboard")
+def leaderboard():
+    return render_template("ranktable.html")
+
+# Route to handle moderator evidence page
 @bp.route("/moderator-evidence")
 def moderator_evidence():
+    account_id = require_login()
+    if not account_id:
+        return redirect(url_for("app.login"))
+    
+    if session.get("account_role") != "moderator":
+        abort(403)
     return render_template("mod-evidence.html")
+
+# Route to handle moderator dashboard
+@bp.route("/moderator-dashboard")
+def moderator_dashboard():
+    account_id = require_login()
+    if not account_id:
+        return redirect(url_for("app.login"))
+    
+    if session.get("account_role") != "moderator":
+        abort(403)
+    
+    return render_template("moderator-request.html")
+
+@bp.get("/get_yearly_savings")
+def get_yearly_savings():
+    account_id = require_login()
+    if not account_id:
+        return {"error": "Not logged in"}, 401
+    
+    data = get_yearly_daily_savings(account_id)
+    return {"savings": data}
 
 # Route to handle logout
 @bp.post("/logout")
 def logout():
     session.clear()
     return redirect(url_for("app.login"))
+

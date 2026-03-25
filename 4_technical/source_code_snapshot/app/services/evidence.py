@@ -31,7 +31,7 @@ def submit_evidence(some_param):
     pass
 
 def list_pending_decision(limit, offset):
-    sql = """SELECT 
+    sql = """SELECT
                 actionName,
                 category,
                 quantity,
@@ -39,15 +39,19 @@ def list_pending_decision(limit, offset):
                 evidence_type,
                 evidence_date,
                 Evidence.evidence_id,
-                unit
+                unit,
+                GROUP_CONCAT(agf.rule_code, ', ') AS flags
             FROM Decision
-            JOIN Evidence 
+            JOIN Evidence
                 ON Decision.evidence_id = Evidence.evidence_id
-            JOIN ActionLog 
+            JOIN ActionLog
                 ON Evidence.log_id = ActionLog.log_id
-            JOIN ActionType 
+            JOIN ActionType
                 ON ActionType.actionType_id = ActionLog.actionType_id
+            LEFT JOIN AntiGamingFlag agf
+                ON agf.action_log_id = ActionLog.log_id
             WHERE decision_status = 'pending'
+            GROUP BY Evidence.evidence_id
             ORDER BY evidence_date DESC
             LIMIT %s OFFSET %s
          """

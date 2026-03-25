@@ -1,23 +1,18 @@
-import sqlite3
 from typing import Any, Literal
 from flask import Response, jsonify
 from app.db_config import db_cursor
 from datetime import datetime
 from custom_error.Group_Exception import *
 
-# Placeholder for now
-# Create functions that have to do with groups
-# Follow templates in users.py and auth.py
-# Some Ideas:
-# create_group
-# add_account_to_group
-# list_group_members
-# remove_account_from_group
-# get_group_id
-
 def UserCreateGroup(account_id, group_name) -> int | DuplicateGroupName:
     time: datetime = datetime.now()
     with db_cursor() as (connection, cursor):
+        #check if user already belongs to a group
+        sql = """SELECT * FROM AccountGroup WHERE account_id = %s"""
+        cursor.execute(sql, (account_id,))
+        if cursor.fetchone() is not None:
+            raise UserAlreadyJoinGroup("You already belong to a group, leave it first before creating a new one")
+
         #check for duplicate group_name
         sql = """SELECT * FROM UserGroup WHERE group_name = %s"""
         cursor.execute(sql, (group_name,))
@@ -32,23 +27,23 @@ def UserCreateGroup(account_id, group_name) -> int | DuplicateGroupName:
         #Insert user into AccountGroup
         UserJoinGroup(account_id, UserGroupID)
         return UserGroupID
-    
+
 
 def UserJoinGroup(account_id, group_id):
     with db_cursor() as (connection, cursor):
         time: datetime = datetime.now()
-        #check if the user is already joined
-        sql = """SELECT * FROM AccountGroup WHERE account_id = %s AND group_id = %s"""
-        cursor.execute(sql, (account_id, group_id))
+        #check if the user already belongs to any group
+        sql = """SELECT * FROM AccountGroup WHERE account_id = %s"""
+        cursor.execute(sql, (account_id,))
         result = cursor.fetchone()
         if result is not None:
-            raise UserAlreadyJoinGroup("User already join the group")
+            raise UserAlreadyJoinGroup("You already belong to a group, leave it first before joining another")
 
         sql = """INSERT INTO AccountGroup(account_id, group_id, roles, joined) VALUES (%s, %s, %s, %s)"""
         cursor.execute(sql, (account_id, group_id, "Normal", time))
 
         return True
-    
+
 def UserLeaveGroup(account_id, group_id):
     with db_cursor() as (connection, cursor):
         #User can not leave the group if they are the owner
@@ -57,7 +52,7 @@ def UserLeaveGroup(account_id, group_id):
         result = cursor.fetchone()
         if result is not None:
             raise LeaveGroupError("Can not leave group that you are owner")
-        #User is not the owner of group then do 
+        #User is not the owner of group then do
         sql = """DELETE FROM AccountGroup WHERE account_id = %s AND group_id = %s"""
         cursor.execute(sql, (account_id, group_id))
         return True
@@ -78,3 +73,10 @@ def getUserGroups(account_id) -> list[str]:
         result = cursor.fetchall()
     return [record["group_name"] for record in result]
 
+def getAllGroups():
+    sql = """SELECT UserGroup.group_id, UserGroup.group_name, UserGroup.group_creator_id,
+                    (SELECT COUNT(*) FROM AccountGroup WHERE AccountGroup.group_id = UserGroup.group_id) as member_count
+             FROM UserGroup ORDER BY UserGroup.group_name ASC"""
+    with db_cursor() as (connection, cursor):
+        cursor.execute(sql)
+        return cursor.fetchall()

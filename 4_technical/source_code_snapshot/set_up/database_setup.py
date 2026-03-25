@@ -4,7 +4,7 @@ from flask import template_rendered
 import pytest
 import sqlite3
 from app.services.users_service import create_account, create_user
-from app.services.challenges import create_challenge
+from app.services.challenges import create_challenge, join_challenge_individual
 from app.services.actions import log_action
 from app import create_app
 from app.db_config import db_cursor
@@ -54,19 +54,140 @@ def default_actionType_data():
         cursor.execute(sql, ("train", "travel", "KM", 0.5))
         cursor.execute(sql, ("car", "travel", "KM", 0.4))
 
+        # Food ingredients (co2e in kg per kg of food) - source: GB (United Kingdom)
+        cursor.execute(sql, ("Alternative Meat", "food", "KG", 3.030))
+        cursor.execute(sql, ("Apples", "food", "KG", 0.513))
+        cursor.execute(sql, ("Apricots", "food", "KG", 0.811))
+        cursor.execute(sql, ("Artichoke Plants", "food", "KG", 0.988))
+        cursor.execute(sql, ("Artichokes", "food", "KG", 0.988))
+        cursor.execute(sql, ("Asparagus", "food", "KG", 1.347))
+        cursor.execute(sql, ("Aubergines", "food", "KG", 0.960))
+        cursor.execute(sql, ("Baking/Cooking Supplies", "food", "KG", 1.534))
+        cursor.execute(sql, ("Beef", "food", "KG", 70.164))
+        cursor.execute(sql, ("Beer", "food", "KG", 0.690))
+        cursor.execute(sql, ("Beetroot", "food", "KG", 0.319))
+        cursor.execute(sql, ("Biscuits/Cookies", "food", "KG", 3.238))
+        cursor.execute(sql, ("Bison/Buffalo", "food", "KG", 113.291))
+        cursor.execute(sql, ("Black Eyed Peas", "food", "KG", 1.145))
+        cursor.execute(sql, ("Blackberries", "food", "KG", 1.060))
+        cursor.execute(sql, ("Blueberries", "food", "KG", 1.197))
+        cursor.execute(sql, ("Bread", "food", "KG", 1.483))
+        cursor.execute(sql, ("Breakfast Cereal", "food", "KG", 2.773))
+        cursor.execute(sql, ("Broccoli", "food", "KG", 0.674))
+        cursor.execute(sql, ("Brussel Sprouts", "food", "KG", 0.387))
+        cursor.execute(sql, ("Butter", "food", "KG", 3.259))
+        cursor.execute(sql, ("Carrots", "food", "KG", 0.294))
+        cursor.execute(sql, ("Cassava", "food", "KG", 0.726))
+        cursor.execute(sql, ("Cauliflower", "food", "KG", 0.674))
+        cursor.execute(sql, ("Celery", "food", "KG", 0.401))
+        cursor.execute(sql, ("Cheese", "food", "KG", 4.114))
+        cursor.execute(sql, ("Chicken", "food", "KG", 3.927))
+        cursor.execute(sql, ("Chicken (Processed)", "food", "KG", 5.760))
+        cursor.execute(sql, ("Chickpeas", "food", "KG", 1.014))
+        cursor.execute(sql, ("Chocolate/Confectionery", "food", "KG", 4.996))
+        cursor.execute(sql, ("Chutneys/Relishes", "food", "KG", 3.180))
+        cursor.execute(sql, ("Coffee", "food", "KG", 6.976))
+        cursor.execute(sql, ("Condiments/Sauces", "food", "KG", 1.733))
+        cursor.execute(sql, ("Cooking Oil", "food", "KG", 2.867))
+        cursor.execute(sql, ("Cooking Sauces (Fresh)", "food", "KG", 1.616))
+        cursor.execute(sql, ("Cooking Sauces (Shelf Stable)", "food", "KG", 1.616))
+        cursor.execute(sql, ("Courgettes", "food", "KG", 0.863))
+        cursor.execute(sql, ("Cranberries", "food", "KG", 0.768))
+        cursor.execute(sql, ("Cream", "food", "KG", 1.665))
+        cursor.execute(sql, ("Cucumbers", "food", "KG", 0.405))
+        cursor.execute(sql, ("Dates", "food", "KG", 2.713))
+        cursor.execute(sql, ("Dessert Sauces/Toppings", "food", "KG", 1.782))
+        cursor.execute(sql, ("Dressings/Dips", "food", "KG", 3.429))
+        cursor.execute(sql, ("Egg Products", "food", "KG", 1.659))
+        cursor.execute(sql, ("Eggs", "food", "KG", 1.228))
+        cursor.execute(sql, ("Fennel", "food", "KG", 0.144))
+        cursor.execute(sql, ("Figs", "food", "KG", 0.459))
+        cursor.execute(sql, ("Fish", "food", "KG", 2.616))
+        cursor.execute(sql, ("Fish (Processed)", "food", "KG", 2.807))
+        cursor.execute(sql, ("Flavoured Drinks", "food", "KG", 0.533))
+        cursor.execute(sql, ("Fruit Juice", "food", "KG", 1.541))
+        cursor.execute(sql, ("Garlic", "food", "KG", 1.197))
+        cursor.execute(sql, ("Ginger", "food", "KG", 1.245))
+        cursor.execute(sql, ("Gooseberries", "food", "KG", 0.513))
+        cursor.execute(sql, ("Grains/Flour", "food", "KG", 1.534))
+        cursor.execute(sql, ("Grapes", "food", "KG", 0.871))
+        cursor.execute(sql, ("Ice Cream", "food", "KG", 2.554))
+        cursor.execute(sql, ("Kiwifruits", "food", "KG", 0.717))
+        cursor.execute(sql, ("Lamb", "food", "KG", 38.144))
+        cursor.execute(sql, ("Lemons", "food", "KG", 0.641))
+        cursor.execute(sql, ("Lentils", "food", "KG", 3.433))
+        cursor.execute(sql, ("Limes", "food", "KG", 0.616))
+        cursor.execute(sql, ("Mandarins", "food", "KG", 0.602))
+        cursor.execute(sql, ("Margarine", "food", "KG", 3.220))
+        cursor.execute(sql, ("Meat Substitutes", "food", "KG", 0.710))
+        cursor.execute(sql, ("Milk", "food", "KG", 0.341))
+        cursor.execute(sql, ("Mushrooms", "food", "KG", 0.288))
+        cursor.execute(sql, ("Nuts/Seeds", "food", "KG", 3.017))
+        cursor.execute(sql, ("Olives", "food", "KG", 1.966))
+        cursor.execute(sql, ("Onions", "food", "KG", 0.647))
+        cursor.execute(sql, ("Oranges", "food", "KG", 0.618))
+        cursor.execute(sql, ("Pears", "food", "KG", 0.459))
+        cursor.execute(sql, ("Peas", "food", "KG", 1.018))
+        cursor.execute(sql, ("Pineapples", "food", "KG", 0.563))
+        cursor.execute(sql, ("Plant-Based Milk", "food", "KG", 0.455))
+        cursor.execute(sql, ("Pork", "food", "KG", 4.762))
+        cursor.execute(sql, ("Pork (Processed)", "food", "KG", 4.356))
+        cursor.execute(sql, ("Potatoes", "food", "KG", 0.462))
+        cursor.execute(sql, ("Pumpkin/Squash", "food", "KG", 0.863))
+        cursor.execute(sql, ("Quinces", "food", "KG", 0.459))
+        cursor.execute(sql, ("Raspberries", "food", "KG", 0.745))
+        cursor.execute(sql, ("Sparkling Wine", "food", "KG", 1.615))
+        cursor.execute(sql, ("Strawberries", "food", "KG", 0.418))
+        cursor.execute(sql, ("Swede/Rutabaga", "food", "KG", 0.294))
+        cursor.execute(sql, ("Sweetcorn", "food", "KG", 0.597))
+        cursor.execute(sql, ("Tomato Ketchup", "food", "KG", 1.847))
+        cursor.execute(sql, ("Tomatoes", "food", "KG", 0.456))
+        cursor.execute(sql, ("Turkey", "food", "KG", 5.675))
+        cursor.execute(sql, ("Vegetables (Processed)", "food", "KG", 0.889))
+        cursor.execute(sql, ("Watermelons", "food", "KG", 0.395))
+        cursor.execute(sql, ("Wine", "food", "KG", 1.615))
+        cursor.execute(sql, ("Yogurt", "food", "KG", 0.511))
+        cursor.execute(sql, ("Yogurt Substitutes", "food", "KG", 0.585))
+
+        cursor.execute(sql, ("cold-wash", "energy", "Load", 0.176))
+        cursor.execute(sql, ("air-dry", "energy", "Load", 0.725))
+        cursor.execute(sql, ("heating", "energy", "HR", 0.148))
+        cursor.execute(sql, ("lights", "energy", "HR", 0.01056))
+
+        cursor.execute(sql, ("recycle-paper", "waste", "KG", 1.0))
+        cursor.execute(sql, ("recycle-cardboard", "waste", "KG", 1.0))
+        cursor.execute(sql, ("recycle-plastic", "waste", "KG", 1.2))
+        cursor.execute(sql, ("recycle-glass", "waste", "KG", 0.3))
+        cursor.execute(sql, ("recycle-aluminium", "waste", "KG", 9.5))
+        cursor.execute(sql, ("recycle-steel", "waste", "KG", 1.5))
+        cursor.execute(sql, ("compost-food", "waste", "KG", 0.5))
+
 def production_setup(james_id = 2):
     start_date = datetime.now()
     end_date = start_date + timedelta(days=30)
-    challenge1_id = create_challenge(james_id, "travel", "let walk", start_date, end_date, "walk as much as you can")
-    challenge2_id = create_challenge(james_id, "food", "Green Eat", start_date, end_date, "Eat vegetarian food")
-    
+    challenge1_id = create_challenge(james_id, "Personal", "let walk", start_date, end_date, "walk as much as you can")
+    challenge2_id = create_challenge(james_id, "Personal", "Green Eat", start_date, end_date, "Eat vegetarian food")
+
     past_start = datetime.now() - timedelta(days=60)
     past_end = datetime.now() - timedelta(days=30)
-    challenge3_id = create_challenge(james_id, "travel", "Expired Challenge", past_start, past_end, "This challenge has ended")
-    
+    challenge3_id = create_challenge(james_id, "Personal", "Expired Challenge", past_start, past_end, "This challenge has ended")
+
     future_start = datetime.now() + timedelta(days=30)
     future_end = datetime.now() + timedelta(days=60)
-    challenge4_id = create_challenge(james_id, "food", "Future Challenge", future_start, future_end, "This challenge hasn't started yet")
+    challenge4_id = create_challenge(james_id, "Personal", "Future Challenge", future_start, future_end, "This challenge hasn't started yet")
+
+    challenge5_id = create_challenge(james_id, "Personal", "Low Carbon Meals", start_date, end_date, "Log your meals and try to keep CO2e low")
+
+    # Additional personal challenges
+    create_challenge(james_id, "Personal", "Cycle to Campus", start_date, end_date, "Cycle instead of driving for a week")
+    create_challenge(james_id, "Personal", "Meat-Free Monday", start_date, end_date, "Eat no meat every Monday this month")
+
+    # Group challenges
+    create_challenge(james_id, "Group", "Hall Energy Saver", start_date, end_date, "Reduce your hall energy usage as a team")
+    create_challenge(james_id, "Group", "Green Commute Team", start_date, end_date, "Log the most eco-friendly commutes as a group")
+    create_challenge(james_id, "Group", "Zero Waste Week", start_date, end_date, "Produce the least waste as a group this week")
+    create_challenge(james_id, "Group", "Team Veggie Challenge", start_date, end_date, "Log the most vegetarian meals as a group")
+    create_challenge(james_id, "Group", "Campus Walk-Off", start_date, end_date, "Walk the most km as a group this month")
 
     emma_actions = [
         ("walk", "travel", 2, challenge1_id, "https://www.youtube.com/"),
@@ -77,29 +198,64 @@ def production_setup(james_id = 2):
         ("walk", "travel", 8, None, None),
         ("bus", "travel", 12, None, None),
         ("walk", "travel", 3, None, None),
-        ("walk", "travel", 7, challenge1_id, None),
+        ("walk", "travel", 7, challenge1_id, "https://www.youtube.com/"),
         ("walk", "travel", 4, None, None),
         ("bus", "travel", 18, None, None),
+        ("food", "food", [("Broccoli", 0.3), ("Chicken", 0.5), ("Potatoes", 0.4)], challenge5_id, "https://www.youtube.com/"),
     ]
-    
+
     emma_account_id = 1
+    join_challenge_individual(challenge1_id, emma_account_id)
+    join_challenge_individual(challenge2_id, emma_account_id)
+    join_challenge_individual(challenge5_id, emma_account_id)
     for action_name, category, quantity, challenge_id, evidence_url in emma_actions:
         log_action(emma_account_id, action_name, category, quantity, challenge_id, evidence_url)
     
     print(f"Created {len(emma_actions)} actions for Emma")
     
+    # Matrix test data for Emma - spread across the year
+    # actionType_id: 1=walk, 2=bus, 3=bike, 4=train, 5=car (based on default_actionType_data)
+    matrix_test_data = [
+        (1, 1,  0.7),   # walk 1km - level 1
+        (1, 2,  1.4),   # walk 2km - level 2
+        (2, 4,  3.6),   # bus 4km  - level 3
+        (2, 8,  7.2),   # bus 8km  - level 4
+    ]
+
+    sql = """INSERT INTO ActionLog (submitted_by, actionType_id, quantity, co2e_saved, log_date)
+            VALUES (%s, %s, %s, %s, %s)"""
+
+    test_dates = [
+        datetime.now() - timedelta(days=60),
+        datetime.now() - timedelta(days=30),
+        datetime.now() - timedelta(days=14),
+        datetime.now() - timedelta(days=7),
+        datetime.now() - timedelta(days=3),
+        datetime.now() - timedelta(days=1),
+        datetime.now(),
+    ]
+
+    with db_cursor() as (connection, cursor):
+        for i, date in enumerate(test_dates):
+            action = matrix_test_data[i % len(matrix_test_data)]
+            cursor.execute(sql, (emma_account_id, action[0], action[1], action[2], date))
+
+    print(f"Created {len(test_dates)} matrix test entries for Emma")
+        
     # Sarah's actions (account_id = 3)
     sarah_actions = [
         ("walk", "travel", 20, challenge1_id, "url6"),
         ("bus", "travel", 25, challenge1_id, "url7"),
         ("walk", "travel", 6, None, None),
         ("bus", "travel", 9, None, None),
-        ("bus", "travel", 11, challenge2_id, None),
+        ("bus", "travel", 11, challenge2_id, "https://www.youtube.com/"),
         ("walk", "travel", 13, None, None),
         ("bus", "travel", 22, None, None),
     ]
     
     sarah_account_id = 3
+    join_challenge_individual(challenge1_id, sarah_account_id)
+    join_challenge_individual(challenge2_id, sarah_account_id)
     for action_name, category, quantity, challenge_id, evidence_url in sarah_actions:
         log_action(sarah_account_id, action_name, category, quantity, challenge_id, evidence_url)
 

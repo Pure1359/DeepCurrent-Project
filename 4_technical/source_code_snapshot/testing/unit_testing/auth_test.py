@@ -19,7 +19,7 @@ def test_user_cannot_access_moderator_routes(new_client_module, module_scope_dat
     
     # Try to access moderator route
     response = new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "travel",
+        "challenge_type": "Personal",
         "title": "Test",
         "start_date": "2026-03-01",
         "end_date": "2026-03-30",
@@ -40,7 +40,7 @@ def test_moderator_can_access_moderator_routes(new_client_module, module_scope_d
     end_date = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
     
     response = new_client_module.post("/moderator_access/create_challenge", data={
-        "challenge_type": "travel",
+        "challenge_type": "Personal",
         "title": "Moderator Test",
         "start_date": start_date,
         "end_date": end_date,
@@ -72,13 +72,16 @@ def test_moderator_can_access_user_routes(new_client_module, module_scope_databa
         "password": "moderator456"
     }, follow_redirects=True)
     
+    # Moderator joins challenge 1 first
+    new_client_module.post("/user_access/join_challenge", json={"challenge_id": 1})
+
     # Moderator should be able to log actions (user route)
     response = new_client_module.post("/user_access/submit_action", json={
         "action_name": "walk",
         "category": "travel",
         "quantity": 10,
         "challenge_id": 1,
-        "evidence_url": None
+        "evidence_url": "https://www.youtube.com/"
     })
     
     assert response.status_code == 200

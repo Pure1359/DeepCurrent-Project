@@ -1,0 +1,189 @@
+body {
+  font-family: Arial, sans-serif;
+  margin-top: 60px;
+  overflow: hidden;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-image: url("Resource/RegisterBackground.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.body,
+h1,
+p,
+label {
+  color: #153a39;
+}
+body::after {
+  content: "";
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.3),
+    rgba(255, 255, 255, 0.1)
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.bodycontainer {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  background-color: #fcfbfc;
+  border-radius: 10px;
+  border: solid;
+  border-width: 48px;
+  border-color: #fcfbfc;
+}
+.register-container,
+label {
+  display: -webkit-inline-box;
+  align-items: self-start;
+  width: 200px;
+}
+.register-container,
+input {
+  width: 300px;
+  padding: 10px;
+  margin: 10px 0;
+  border: solid;
+  border-radius: 6px;
+  border-width: 1px;
+}
+.register-container,
+button {
+  width: 160px;
+  height: 40px;
+  margin: 20px 0;
+  border: solid;
+  border-width: 1.2px;
+  border-radius: 20px;
+  background-color: #214f4d;
+  border-color: white;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+.register-container,
+a {
+  margin-left: 32px;
+  color: #153a39;
+  font-size: 16px;
+}
+
+.register-link {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive adjustment */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  body {
+    padding: 30px 20px;
+    margin-top: 30px;
+  }
+
+  .bodycontainer {
+    border-width: 30px;
+    width: 90%;
+    max-width: 500px;
+  }
+
+  .register-container {
+    max-width: 100%;
+  }
+
+  .register-container input {
+    width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  body {
+    margin-top: 20px;
+    padding: 20px 15px;
+  }
+
+  .bodycontainer {
+    width: 80%;
+    border-width: 20px;
+    border-radius: 8px;
+  }
+
+  .register-container {
+    width: 100%;
+  }
+
+  .register-container label {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .register-container input {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .register-container button {
+    width: 100%;
+    font-size: 18px;
+  }
+
+  .register-container a {
+    margin-left: 0;
+    text-align: center;
+    display: block;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  p {
+    text-align: center;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  body {
+    padding: 15px 10px;
+  }
+
+  .bodycontainer {
+    border-width: 15px;
+  }
+
+  .register-container input {
+    padding: 9px;
+    font-size: 15px;
+  }
+
+  .register-container button {
+    height: 38px;
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  p,
+  label,
+  .register-container a {
+    font-size: 14px;
+  }
+}
