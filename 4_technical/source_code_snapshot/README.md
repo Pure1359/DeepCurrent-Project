@@ -137,13 +137,13 @@ MIT (See LICENSE)
 
 DeepCurrent Development Team
 
-| Name  		  		 | Assignment  					  |
-|----------------		 |------------					  |
-| Joaquin Bradley Rigunay| Frontend 					  |
-| Xuan Ting Pheng 		 | Frontend 					  |
-| Farzad Rezaei Kohvadeh | Frontend						  |
-| Pure Nantasuwan 		 | Backend 						  |
-| Carlin Barlow 		 | Backend 						  |
-| Rumi Mansoubi 		 | Backend 						  |
-| Akkshay Sharrma 		 | Backend 						  |
-| Jayden Kam 			 | Database Management / Creation |
+| Name                   | Assignment  | Notes |
+|----------------        |------------ |--------|
+| Joaquin Bradley Rigunay| Frontend    | Co-designed cards for front end and merging with backend |
+| Xuan Ting Pheng        | Frontend    | Co-designed cards for front end and helped take meeting notes |
+| Farzad Rezaei Kohvadeh | Frontend    | Frontend UI designer, Figma designs, HTML, CSS, and JavaScript. |
+| Pure Nantasuwan        | Backend     | Backend, GitHub, testing, food and waste research |
+| Carlin Barlow          | Backend     | Backend, deployment, documentation, partial testing |
+| Rumi Mansoubi          | Backend     | Project lead: man management, workload spread/advice/direction, documentation, backend development, presentation slides and scripts, scheduled meetings, travel research    |
+| Akkshay Sharrma        | Backend     | Documentation and research for backend    |
+| Jayden Kam             | Database    | Database design, seeded data, documentation, energy research |
