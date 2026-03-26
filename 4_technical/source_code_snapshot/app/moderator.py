@@ -65,7 +65,7 @@ def view_all_submission():
 def make_submission_decision():
     data = request.get_json()
     evidence_id = data.get("evidence_id")
-    decision_result = data.get("result")
+    decision_result = data.get("result").lower()
     reason = data.get("reason")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     reviewer_id = session.get("account_id")
