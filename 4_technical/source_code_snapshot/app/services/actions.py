@@ -378,7 +378,7 @@ def leaderboard(limit):
         LEFT JOIN ChallengeAction ca ON ca.log_id = al.log_id
         LEFT JOIN Evidence e ON e.log_id = al.log_id
         LEFT JOIN Decision d ON d.evidence_id = e.evidence_id
-        WHERE d.decision_status IN ('approved', 'accepted')
+        WHERE d.decision_status IN ('approved', 'Accepted')
         GROUP BY a.account_id, u.first_name, u.last_name
         ORDER BY points DESC
         LIMIT %s
